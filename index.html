@@ -570,44 +570,42 @@ async function generatePlan(){
     document.getElementById('loadingSection').style.display='none';
     renderShell(head,inputs);
 
-    // STEP 2: generate the week in 3 small chunks, all in parallel.
-    // Smaller chunks return faster, so the first days appear quickly (#3),
-    // while each chunk still plans multiple days together to avoid repeats.
-    // We tell each chunk what the others cover, and reveal strictly in order.
+    // STEP 2: generate the week in small chunks, SEQUENTIALLY, passing the dishes
+    // already chosen into each next chunk so nothing repeats across the whole week.
+    // (The first chunk is small so the first days still appear quickly.)
     const chunks=[
       {days:['Monday','Tuesday'],start:0},
       {days:['Wednesday','Thursday','Friday'],start:2},
       {days:['Saturday','Sunday'],start:5}
     ];
-    const allDayNames=DAYS.join(', ');
     revealedCount=0;updateProgress();
+    const usedNames=[];   // every dish name used so far, across the week
 
-    const buffer={};            // index -> day data, held until its turn
-    let nextReveal=0;
-    function flush(){
-      while(buffer[nextReveal]!==undefined){
-        const d=buffer[nextReveal];
-        if(d&&!d.error){d.day=DAYS[nextReveal];currentPlan.days[nextReveal]=d;renderDay(d,nextReveal);}
-        else{currentPlan.days[nextReveal]={day:DAYS[nextReveal],error:true};renderDayError(DAYS[nextReveal],nextReveal);}
-        nextReveal++;
+    for(const ch of chunks){
+      let got=[];
+      try{
+        const res=await callAI(weekPrompt(inputs,head.theme,ch.days,usedNames));
+        got=res.days||[];
+      }catch(e){got=[];}
+      ch.days.forEach((dn,j)=>{
+        const idx=ch.start+j;
+        let d=got[j];
+        if(d){
+          // client-side safety net: if a meal name duplicates one already used, tag it
+          ['breakfast','lunch','dinner'].forEach(slot=>{
+            if(d[slot]&&d[slot].name){
+              const nm=d[slot].name.trim().toLowerCase();
+              if(usedNames.includes(nm)){d[slot].name=d[slot].name+' (chef\'s twist)';}
+              usedNames.push(d[slot].name.trim().toLowerCase());
+            }
+          });
+          d.day=DAYS[idx];currentPlan.days[idx]=d;renderDay(d,idx);
+        }else{
+          currentPlan.days[idx]={day:DAYS[idx],error:true};renderDayError(DAYS[idx],idx);
+        }
         revealedCount++;updateProgress();
-      }
+      });
     }
-
-    const chunkPromises=chunks.map(ch=>{
-      const others=DAYS.filter(d=>!ch.days.includes(d));
-      return callAI(weekPrompt(inputs,head.theme,ch.days,others))
-        .then(res=>{
-          const got=res.days||[];
-          ch.days.forEach((dn,j)=>{buffer[ch.start+j]=got[j]||{error:true};});
-          flush();
-        })
-        .catch(()=>{
-          ch.days.forEach((dn,j)=>{buffer[ch.start+j]={error:true};});
-          flush();
-        });
-    });
-    await Promise.all(chunkPromises);
 
     // safety: fill any gaps
     for(let i=0;i<7;i++){
@@ -635,10 +633,11 @@ Respond ONLY with valid JSON, no markdown: {"theme":"","note":""}`;
 }
 
 /* one day at a time: breakfast, lunch, dinner. `seed` keeps days distinct. */
-function weekPrompt(inp,theme,days,otherDays){
+function weekPrompt(inp,theme,days,usedNames){
   return `You are Mealody, a friendly home cook planning part of a weekly menu themed "${theme}".
 
-Plan these days: ${days.join(', ')}. (The rest of the week — ${otherDays.join(', ')} — is handled separately.)
+Plan these days: ${days.join(', ')}.
+${usedNames&&usedNames.length?`ALREADY USED THIS WEEK — do NOT use any of these dishes again (and no renamed versions of them): ${usedNames.join(', ')}.`:''}
 
 Constraints:
 - Diet: ${inp.diet}
@@ -650,7 +649,8 @@ Constraints:
 - Strictly avoid: ${inp.allergies||'none'}
 
 CRITICAL — VARIETY:
-- Every single meal across all these days must be a DIFFERENT dish. No repeats.
+- Every single meal across all these days must be a DIFFERENT dish. No repeats — not within these days, and NOT matching the already-used list above.
+- This applies per slot too: breakfasts must all differ from each other, lunches must all differ, dinners must all differ.
 - BREAKFASTS especially must vary a lot — do NOT use eggs (or any single ingredient) as the base for more than ONE breakfast. Rotate across different breakfast styles (grains, breads, fruit, dairy, regional breakfasts, etc.).
 - Do not lean on the same hero ingredient repeatedly across the week; spread the available ingredients around.
 - Do NOT repeat the same dish under different names (e.g. "Palak Paneer" and "Spinach Paneer" are the SAME dish — never do that).
