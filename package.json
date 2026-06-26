@@ -1,0 +1,7 @@
+{
+  "name": "mealody",
+  "version": "1.0.0",
+  "description": "Mealody — AI weekly meal planner",
+  "private": true,
+  "type": "module"
+}

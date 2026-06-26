@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mealody — AI Weekly Meal Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --cream:#fff8ee;
+  --ink:#2d2240;
+  --soft:#6b5d7a;
+  --faint:#a89db8;
+  --line:#ffe0c2;
+  --card:#ffffff;
+  --grape:#7c5cff;
+  --grape-dim:#6344e6;
+  --tang:#ff7a3c;
+  --tang-dim:#f0641f;
+  --berry:#ff4f81;
+  --lime:#3fc56b;
+  --sun:#ffc23c;
+  --sky:#39c0e8;
+  --r:22px;--r-sm:14px;
+  --bounce:cubic-bezier(.34,1.56,.64,1);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;}
+/* floating background blobs */
+body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(60px);opacity:.4;pointer-events:none;z-index:0;}
+body::before{width:360px;height:360px;background:radial-gradient(circle,var(--sun),transparent 70%);top:-100px;right:-80px;animation:floatblob 14s ease-in-out infinite alternate;}
+body::after{width:320px;height:320px;background:radial-gradient(circle,var(--berry),transparent 70%);bottom:8%;left:-100px;animation:floatblob 18s ease-in-out infinite alternate-reverse;}
+@keyframes floatblob{0%{transform:translate(0,0) scale(1);}100%{transform:translate(40px,50px) scale(1.15);}}
+::-webkit-scrollbar{width:9px;height:9px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--grape);border-radius:99px;border:2px solid var(--cream);}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 1.5rem;position:relative;z-index:1;}
+
+/* MASTHEAD */
+header{padding:1.5rem 0;}
+.masthead{display:flex;justify-content:space-between;align-items:center;}
+.logo{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em;color:var(--grape);}
+.logo .dot{color:var(--tang);display:inline-block;animation:wobble 2s ease-in-out infinite;}
+@keyframes wobble{0%,100%{transform:rotate(0);}25%{transform:rotate(-12deg);}75%{transform:rotate(12deg);}}
+.tagline{font-size:.72rem;color:#fff;background:var(--berry);text-transform:uppercase;letter-spacing:.14em;padding:.4rem .9rem;border-radius:99px;font-weight:700;transform:rotate(-2deg);box-shadow:0 4px 0 rgba(255,79,129,.3);}
+
+/* HERO */
+.hero{text-align:center;padding:2.5rem 0 3rem;position:relative;}
+.hero-eyebrow{display:inline-block;font-size:.74rem;color:var(--grape);background:#fff;border:2px solid var(--grape);text-transform:uppercase;letter-spacing:.14em;font-weight:700;margin-bottom:1.5rem;padding:.45rem 1.1rem;border-radius:99px;transform:rotate(-1.5deg);animation:popin .5s var(--bounce);box-shadow:0 4px 0 rgba(124,92,255,.25);}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(2.6rem,6.5vw,4.6rem);font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:1.5rem;}
+.hero h1 em{font-style:normal;color:var(--tang);display:inline-block;position:relative;animation:bobble 2.5s ease-in-out infinite;}
+.hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:5px;background:var(--sun);border-radius:99px;transform:rotate(-1deg);}
+@keyframes bobble{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-8px) rotate(1deg);}}
+.hero p{font-size:1.05rem;color:var(--soft);max-width:540px;margin:0 auto;line-height:1.7;}
+@keyframes popin{from{opacity:0;transform:scale(.8) rotate(-1.5deg);}to{opacity:1;transform:scale(1) rotate(-1.5deg);}}
+
+/* PLANNER FORM */
+.planner{padding:2rem 0;}
+.form-card{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:2rem;box-shadow:8px 8px 0 var(--grape);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.field{display:flex;flex-direction:column;gap:.5rem;}
+.field.full{grid-column:1/-1;}
+.field label{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;text-transform:none;letter-spacing:0;color:var(--ink);display:inline-flex;align-items:baseline;gap:.4rem;}
+.field label .opt{font-family:'Inter',sans-serif;}
+/* colorful label variants */
+.lbl-grape{color:var(--grape);}
+.lbl-tang{color:var(--tang);}
+.lbl-berry{color:var(--berry);}
+.lbl-lime{color:#2ea355;}
+.lbl-sky{color:#1f9ec4;}
+.lbl-sun{color:#d99a13;}
+.lbl-plum{color:#9a4ea3;}
+.field label .opt{color:var(--faint);font-weight:500;text-transform:none;letter-spacing:0;}
+.field textarea,.field input,.field select{font-family:inherit;font-size:.92rem;color:var(--ink);background:var(--cream);border:2px solid var(--line);border-radius:var(--r-sm);padding:.8rem .9rem;outline:none;transition:all .2s;width:100%;}
+.field textarea:focus,.field input:focus,.field select:focus{border-color:var(--grape);box-shadow:0 0 0 4px rgba(124,92,255,.12);}
+.hint{font-size:.74rem;color:var(--faint);}
+
+/* tag input box */
+.tag-box{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;background:var(--cream);border:2px solid var(--line);border-radius:var(--r-sm);padding:.6rem .65rem;min-height:52px;cursor:text;transition:all .2s;}
+.tag-box:focus-within{border-color:var(--grape);box-shadow:0 0 0 4px rgba(124,92,255,.12);}
+.tag-chips{display:contents;}
+.tag-chip{display:inline-flex;align-items:center;gap:.35rem;background:var(--grape);color:#fff;border-radius:99px;padding:.3rem .45rem .3rem .8rem;font-size:.8rem;font-weight:600;animation:chipin .45s var(--ease) both;box-shadow:0 3px 0 var(--grape-dim);}
+@keyframes chipin{from{opacity:0;}to{opacity:1;}}
+.tag-chip button{width:17px;height:17px;border-radius:50%;border:none;background:rgba(255,255,255,.3);color:#fff;cursor:pointer;font-size:.7rem;line-height:1;display:flex;align-items:center;justify-content:center;padding:0;transition:all .15s;}
+.tag-chip button:hover{background:rgba(255,255,255,.55);transform:rotate(90deg);}
+.tag-type{flex:1;min-width:140px;border:none!important;background:transparent!important;padding:.2rem .25rem!important;font-size:.9rem;outline:none;box-shadow:none!important;}
+.tag-box-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem;}
+.clear-all{font-size:.72rem;font-weight:700;color:#fff;background:var(--berry);border:none;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:.25rem;transition:all .18s;padding:.25rem .7rem;border-radius:99px;box-shadow:0 3px 0 rgba(255,79,129,.35);}
+.clear-all:hover{transform:translateY(-1px);}
+.clear-all:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(255,79,129,.35);}
+.clear-all.hidden{display:none;}
+
+/* suggestion categories */
+.suggest-cats{margin-top:.85rem;display:flex;flex-direction:column;gap:1rem;}
+.sug-cat{display:flex;flex-direction:column;gap:.55rem;}
+.sug-cat-name{font-family:'Fraunces',serif;font-size:.95rem;font-weight:700;text-transform:none;letter-spacing:0;display:inline-flex;align-items:center;gap:.45rem;}
+.cat-protein .sug-cat-name{color:var(--berry);}
+.cat-veggie .sug-cat-name{color:#2ea355;}
+.cat-carb .sug-cat-name{color:#d99a13;}
+.cat-extra .sug-cat-name{color:var(--grape);}
+.cat-left .sug-cat-name{color:var(--tang);}
+.sug-cat-name .cdot{width:10px;height:10px;border-radius:50%;}
+.sug-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:.5rem;}
+.sug{padding:.55rem .7rem;border-radius:12px;font-size:.8rem;font-weight:600;background:var(--card);border:2px solid var(--line);color:var(--soft);cursor:pointer;transition:all .18s var(--bounce);font-family:inherit;text-align:center;position:relative;}
+.sug:hover{transform:translateY(-2px) rotate(-1deg);}
+/* hovering an already-selected suggestion: brighten + show it's removable */
+.sug.added{color:#fff;border-color:transparent;}
+.sug.added::after{content:"✓";position:absolute;top:3px;right:6px;font-size:.62rem;opacity:.9;}
+/* hovering an already-selected ingredient: invert to white with colored text so it clearly reacts */
+.sug.added:hover{background:#fff!important;transform:translateY(-2px) rotate(-1deg);}
+.sug.added:hover::after{content:"✕";opacity:1;font-weight:800;}
+.cat-protein .sug.added:hover{color:var(--berry);box-shadow:0 5px 0 #d83568;}
+.cat-veggie .sug.added:hover{color:#2ea355;box-shadow:0 5px 0 #2ea355;}
+.cat-carb .sug.added:hover{color:#d99a13;box-shadow:0 5px 0 #e0a420;}
+.cat-extra .sug.added:hover{color:var(--grape);box-shadow:0 5px 0 var(--grape-dim);}
+.cat-left .sug.added:hover{color:var(--tang);box-shadow:0 5px 0 var(--tang-dim);}
+/* category colors */
+.cat-protein .cdot{background:var(--berry);} .cat-protein .sug:hover{border-color:var(--berry);color:var(--berry);} .cat-protein .sug.added{background:var(--berry);box-shadow:0 3px 0 #d83568;}
+.cat-veggie .cdot{background:var(--lime);} .cat-veggie .sug:hover{border-color:var(--lime);color:var(--lime);} .cat-veggie .sug.added{background:var(--lime);box-shadow:0 3px 0 #2ea355;}
+.cat-carb .cdot{background:var(--sun);} .cat-carb .sug:hover{border-color:var(--sun);color:#d99a13;} .cat-carb .sug.added{background:var(--sun);color:var(--ink);box-shadow:0 3px 0 #e0a420;}
+.cat-extra .cdot{background:var(--grape);} .cat-extra .sug:hover{border-color:var(--grape);color:var(--grape);} .cat-extra .sug.added{background:var(--grape);box-shadow:0 3px 0 var(--grape-dim);}
+.cat-left .cdot{background:var(--tang);} .cat-left .sug:hover{border-color:var(--tang);color:var(--tang);} .cat-left .sug.added{background:var(--tang);box-shadow:0 3px 0 var(--tang-dim);}
+
+/* mood chips */
+.chips{display:flex;flex-wrap:wrap;gap:.55rem;}
+.chip{padding:.5rem 1rem;border-radius:99px;font-size:.84rem;font-weight:600;background:var(--card);border:2px solid var(--line);color:var(--soft);cursor:pointer;transition:all .18s var(--bounce);font-family:inherit;}
+.chip:hover{border-color:var(--grape);color:var(--grape);transform:translateY(-2px) rotate(-1deg);}
+.chip.on{background:var(--grape);border-color:var(--grape);color:#fff;box-shadow:0 4px 0 var(--grape-dim);transform:rotate(-1deg);}
+
+/* segmented diet — 3 equal cols */
+.seg{display:grid;grid-template-columns:1fr 1fr 1fr;border:2px solid var(--ink);border-radius:14px;overflow:hidden;background:var(--card);width:100%;}
+.seg button{padding:.75rem .5rem;font-size:.84rem;font-weight:700;background:transparent;border:none;color:var(--soft);cursor:pointer;font-family:inherit;transition:all .18s;border-right:2px solid var(--ink);}
+.seg button:last-child{border-right:none;}
+.seg button:hover{background:var(--cream);}
+.seg button.on{background:var(--lime);color:#fff;}
+
+/* stepper */
+.stepper{display:inline-flex;align-items:center;gap:1rem;background:var(--card);border:2px solid var(--line);border-radius:99px;padding:.3rem .4rem;width:fit-content;}
+.stepper button{width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--sun);color:var(--ink);font-size:1.1rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s var(--bounce);}
+.stepper button:hover{transform:scale(1.15) rotate(8deg);}
+.stepper button:active{transform:scale(.92);}
+.stepper .count{font-weight:800;min-width:24px;text-align:center;font-size:1.05rem;}
+
+/* cuisine grid */
+.cuisine-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:.6rem;}
+.cui{display:flex;flex-direction:column;align-items:center;gap:.4rem;padding:.95rem .5rem;border-radius:16px;border:2px solid var(--line);background:var(--card);cursor:pointer;transition:all .2s var(--bounce);font-family:inherit;}
+.cui:hover{transform:translateY(-3px) rotate(-2deg);border-color:var(--grape);}
+.cui .cui-emoji{font-size:1.7rem;line-height:1;transition:transform .2s var(--bounce);}
+.cui:hover .cui-emoji{transform:scale(1.25) rotate(8deg);}
+.cui .cui-name{font-size:.78rem;font-weight:700;color:var(--soft);}
+.cui.on{border-color:var(--grape);background:var(--grape);box-shadow:0 4px 0 var(--grape-dim);transform:rotate(-1.5deg);}
+.cui.on .cui-name{color:#fff;}
+
+/* allergy chips */
+.allergy-chips{display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;}
+.al-chip{padding:.5rem 1rem;border-radius:99px;font-size:.84rem;font-weight:600;background:var(--card);border:2px solid var(--line);color:var(--soft);cursor:pointer;transition:all .18s var(--bounce);font-family:inherit;}
+.al-chip:hover{border-color:var(--berry);color:var(--berry);transform:translateY(-2px) rotate(-1deg);}
+.al-chip.on{background:var(--berry);border-color:var(--berry);color:#fff;box-shadow:0 4px 0 #d83568;transform:rotate(-1deg);}
+.al-add{display:inline-flex;align-items:center;gap:.3rem;padding:.5rem 1rem;border-radius:99px;font-size:.84rem;font-weight:700;background:var(--cream);border:2px dashed var(--faint);color:var(--faint);cursor:pointer;font-family:inherit;transition:all .18s;}
+.al-add:hover{border-color:var(--berry);color:var(--berry);transform:rotate(-2deg);}
+.al-input{padding:.5rem 1rem;border-radius:99px;font-size:.84rem;border:2px solid var(--berry);background:var(--card);color:var(--ink);font-family:inherit;outline:none;width:150px;}
+
+/* generate button */
+.generate-row{display:flex;justify-content:center;margin-top:2rem;}
+.generate{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:700;padding:1rem 3rem;background:var(--tang);color:#fff;border:3px solid var(--ink);border-radius:99px;cursor:pointer;transition:all .2s var(--bounce);display:inline-flex;align-items:center;gap:.6rem;box-shadow:0 6px 0 var(--tang-dim);}
+.generate:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 8px 0 var(--tang-dim);}
+.generate:active{transform:translateY(3px);box-shadow:0 3px 0 var(--tang-dim);}
+.generate:disabled{opacity:.5;cursor:not-allowed;}
+.generate .spark{display:inline-block;animation:spin 3s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* LOADING */
+.loading{text-align:center;padding:4rem 0;}
+.loading .pot{font-size:3.5rem;display:inline-block;animation:potbounce 1s var(--bounce) infinite;}
+@keyframes potbounce{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-16px) rotate(5deg);}}
+.loading p{font-family:'Fraunces',serif;font-size:1.3rem;color:var(--grape);margin-top:1rem;font-weight:600;}
+.loading .sub{font-size:.85rem;color:var(--faint);margin-top:.35rem;}
+
+/* RESULT */
+.result{padding:1rem 0 4rem;display:none;}
+.week-head{text-align:center;padding:2rem;border:3px solid var(--ink);border-radius:var(--r);margin-bottom:2.5rem;background:var(--card);box-shadow:8px 8px 0 var(--sun);position:relative;}
+.week-theme-label{display:inline-block;font-size:.72rem;color:#fff;background:var(--berry);text-transform:uppercase;letter-spacing:.16em;font-weight:700;margin-bottom:.9rem;padding:.35rem .9rem;border-radius:99px;transform:rotate(-2deg);}
+.week-title{font-family:'Fraunces',serif;font-size:clamp(2rem,4.5vw,3rem);font-weight:700;letter-spacing:-.01em;margin-bottom:.85rem;line-height:1.05;}
+.week-note{font-size:1rem;color:var(--soft);max-width:560px;margin:0 auto;line-height:1.7;}
+.week-actions{display:flex;gap:.75rem;justify-content:center;margin-top:1.5rem;flex-wrap:wrap;}
+.week-progress{max-width:360px;margin:0 auto 2.25rem;text-align:center;transition:opacity .4s;}
+.wp-bar{height:12px;background:var(--line);border:2px solid var(--ink);border-radius:99px;overflow:hidden;}
+.wp-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--tang),var(--berry),var(--grape));border-radius:99px;transition:width .5s var(--bounce);}
+.wp-text{font-size:.82rem;font-weight:700;color:var(--soft);margin-top:.55rem;}
+.week-progress.done{opacity:0;pointer-events:none;height:0;margin:0;overflow:hidden;}
+.act-btn{font-size:.85rem;font-weight:700;padding:.7rem 1.4rem;border-radius:99px;border:2px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit;transition:all .18s var(--bounce);display:inline-flex;align-items:center;gap:.4rem;}
+.act-btn:hover{transform:translateY(-2px) rotate(-1deg);}
+.act-btn.primary{background:var(--grape);border-color:var(--ink);color:#fff;box-shadow:0 4px 0 var(--grape-dim);}
+
+/* DAY */
+.day{margin-bottom:2.5rem;animation:dayup .5s var(--bounce);}
+@keyframes dayup{from{opacity:0;transform:translateY(20px) scale(.98);}to{opacity:1;transform:none;}}
+.day-label{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem;}
+.day-name{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;background:var(--ink);color:#fff;padding:.3rem 1.1rem;border-radius:99px;transform:rotate(-1.5deg);}
+.day-sub{font-size:.8rem;color:var(--tang);font-weight:600;font-style:italic;transition:opacity .3s;}
+.meals{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+.meal{background:var(--card);border:2.5px solid var(--ink);border-radius:18px;padding:1.3rem;display:flex;flex-direction:column;gap:.6rem;transition:all .2s var(--bounce);position:relative;overflow:hidden;box-shadow:5px 5px 0 var(--line);}
+.meal:nth-child(1){--mc:var(--tang);}
+.meal:nth-child(2){--mc:var(--lime);}
+.meal:nth-child(3){--mc:var(--grape);}
+.meal::before{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:var(--mc,var(--grape));}
+.meal:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:8px 10px 0 var(--mc,var(--grape));}
+.meal-slot{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#fff;background:var(--mc,var(--grape));padding:.2rem .6rem;border-radius:99px;width:fit-content;margin-top:.4rem;}
+.meal-name{font-family:'Fraunces',serif;font-size:1.12rem;font-weight:700;line-height:1.25;}
+.meal-why{font-size:.82rem;color:var(--soft);line-height:1.5;}
+.meal-ingredients{font-size:.78rem;color:var(--faint);line-height:1.5;margin-top:auto;padding-top:.6rem;border-top:2px dashed var(--line);}
+.meal-regen{position:absolute;top:.75rem;right:.75rem;width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);background:var(--sun);color:var(--ink);cursor:pointer;font-size:.8rem;opacity:0;transition:all .2s var(--bounce);display:flex;align-items:center;justify-content:center;z-index:2;}
+.meal:hover .meal-regen{opacity:1;}
+.meal-regen:hover{transform:rotate(180deg) scale(1.1);}
+.meal.regenerating{opacity:.5;}
+.meal-skeleton{min-height:150px;background:linear-gradient(100deg,var(--card) 30%,var(--cream) 50%,var(--card) 70%);background-size:200% 100%;animation:shimmer 1.3s ease-in-out infinite;border-style:dashed;box-shadow:none;display:flex;align-items:center;justify-content:center;text-align:center;padding:1rem;}
+.skel-slot{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);display:block;margin-bottom:.4rem;}
+.skel-msg{font-size:.82rem;font-weight:600;color:var(--tang);font-style:italic;transition:opacity .3s;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.day-retry{align-items:center;gap:.4rem;padding:1.5rem;text-align:center;cursor:pointer;}
+.day-retry:hover{transform:translateY(-2px);}
+.retry-emoji{font-size:1.9rem;margin-bottom:.25rem;animation:potbounce 1.2s var(--bounce) infinite;}
+
+/* SHOPPING */
+.shopping{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:2rem;margin-top:1.5rem;box-shadow:8px 8px 0 var(--lime);}
+.shopping h3{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;margin-bottom:.4rem;}
+.shopping .sub{font-size:.88rem;color:var(--soft);margin-bottom:1.5rem;}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.6rem;}
+.shop-item{display:flex;align-items:center;gap:.6rem;font-size:.9rem;color:var(--ink);padding:.45rem 0;cursor:pointer;transition:transform .15s var(--bounce);}
+.shop-item:hover{transform:translateX(3px);}
+.shop-box{width:22px;height:22px;border:2.5px solid var(--ink);border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;color:transparent;transition:all .2s var(--bounce);}
+.shop-item.checked .shop-box{background:var(--lime);border-color:var(--lime);color:#fff;transform:scale(1.05) rotate(-5deg);}
+.shop-item.checked span{color:var(--faint);text-decoration:line-through;}
+
+.error{background:#ffe0e6;border:2px solid var(--berry);color:#c01f4a;padding:1rem 1.25rem;border-radius:var(--r-sm);font-size:.9rem;text-align:center;margin:1rem 0;font-weight:600;}
+
+footer{padding:2rem 0;text-align:center;font-size:.8rem;color:var(--faint);position:relative;z-index:1;}
+footer a{color:var(--grape);text-decoration:none;font-weight:700;}
+
+@media(max-width:760px){
+  .form-grid{grid-template-columns:1fr;}
+  .meals{grid-template-columns:1fr;}
+  .form-card{padding:1.5rem;box-shadow:5px 5px 0 var(--grape);}
+  .hero{padding:1.5rem 0 2rem;}
+  .week-actions{flex-direction:column;align-items:stretch;}
+  .act-btn{justify-content:center;}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="wrap masthead">
+    <div class="logo">Mealody<span class="dot">.</span></div>
+    <div class="tagline">AI Weekly Meal Planner</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">Plan the week in one click</div>
+    <h1>What's cooking,<br/><em>exactly</em> for you?</h1>
+    <p>Tell Mealody what's in your kitchen and how you're feeling. It plans a full week of breakfast, lunch, and dinner — built around your ingredients, your mood, and last night's leftovers.</p>
+  </div>
+</section>
+
+<section class="planner">
+  <div class="wrap">
+    <div class="form-card" id="formCard">
+      <div class="form-grid">
+        <div class="field full">
+          <div class="tag-box-head">
+            <label class="lbl-tang">Ingredients on hand <span class="opt">— tap to add, or type your own</span></label>
+            <button class="clear-all hidden" id="ingClear" onclick="clearIng()">✕ Clear all</button>
+          </div>
+          <div class="tag-box" id="ingBox" onclick="document.getElementById('ingType').focus()">
+            <span class="tag-chips" id="ingChips"></span>
+            <input type="text" class="tag-type" id="ingType" placeholder="Type an ingredient + Enter" onkeydown="ingKey(event)"/>
+          </div>
+          <div class="suggest-cats" id="ingSuggest"></div>
+        </div>
+
+        <div class="field full">
+          <div class="tag-box-head">
+            <label class="lbl-berry">Leftovers to rescue <span class="opt">— optional, we'll use these first</span></label>
+            <button class="clear-all hidden" id="leftClear" onclick="clearLeft()">✕ Clear all</button>
+          </div>
+          <div class="tag-box" id="leftBox" onclick="document.getElementById('leftType').focus()">
+            <span class="tag-chips" id="leftChips"></span>
+            <input type="text" class="tag-type" id="leftType" placeholder="Type a leftover + Enter" onkeydown="leftKey(event)"/>
+          </div>
+          <div class="suggest-cats" id="leftSuggest"></div>
+        </div>
+
+        <div class="field full">
+          <label class="lbl-grape">This week, I'm feeling… <span class="opt">— pick what fits</span></label>
+          <div class="chips" id="moodChips"></div>
+        </div>
+
+        <div class="field">
+          <label class="lbl-lime">Diet</label>
+          <div class="seg" id="dietSeg">
+            <button class="on" data-diet="Vegetarian">🥬 Veg</button>
+            <button data-diet="Non-vegetarian">🍗 Non-veg</button>
+            <button data-diet="Vegan">🌱 Vegan</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="lbl-sun">Servings</label>
+          <div class="stepper">
+            <button onclick="stepServings(-1)">−</button>
+            <span class="count" id="servingsCount">2</span>
+            <button onclick="stepServings(1)">+</button>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label class="lbl-sky">Cuisine <span class="opt">— pick one or more to blend</span></label>
+          <div class="cuisine-grid" id="cuisineGrid"></div>
+        </div>
+
+        <div class="field full">
+          <label class="lbl-plum">Allergies / avoid <span class="opt">— tap any that apply</span></label>
+          <div class="allergy-chips" id="allergyChips"></div>
+        </div>
+      </div>
+
+      <div class="generate-row">
+        <button class="generate" id="genBtn" onclick="generatePlan()"><span class="spark">✦</span> Plan my week</button>
+      </div>
+    </div>
+
+    <div id="errorBox"></div>
+  </div>
+</section>
+
+<section class="planner" id="loadingSection" style="display:none;">
+  <div class="wrap loading">
+    <span class="pot">🍲</span>
+    <p id="loadingMsg">Reading your kitchen…</p>
+    <div class="sub">Mealody is composing a week that fits your mood</div>
+  </div>
+</section>
+
+<section class="result" id="resultSection">
+  <div class="wrap" id="resultContent"></div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Built by <a href="https://nusrathfathima.com">Nusrath Fathima</a> · Powered by AI
+  </div>
+</footer>
+
+<script>
+/* ── STATE ── */
+const MOODS=['🛋️ Cozy','⚡ Energetic','⏱️ Stressed & quick','🌶️ Adventurous','🥗 Light & fresh','🍲 Comfort food','😴 Lazy / low-effort','✨ Impress someone'];
+let selectedMoods=new Set(['Cozy']);
+let diet='Vegetarian';
+let servings=2;
+let currentPlan=null;
+let lastInputs=null;
+
+/* mood chips */
+const moodWrap=document.getElementById('moodChips');
+MOODS.forEach(m=>{
+  const b=document.createElement('button');
+  b.className='chip'+(selectedMoods.has(m)?' on':'');
+  b.textContent=m;
+  b.onclick=()=>{
+    if(selectedMoods.has(m))selectedMoods.delete(m);else selectedMoods.add(m);
+    b.classList.toggle('on');
+  };
+  moodWrap.appendChild(b);
+});
+
+/* diet segmented */
+document.querySelectorAll('#dietSeg button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('#dietSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');diet=b.dataset.diet;
+  };
+});
+
+/* cuisine grid */
+const CUISINES=[
+  {v:'',emoji:'✨',name:'Surprise me'},
+  {v:'Indian',emoji:'🇮🇳',name:'Indian'},
+  {v:'Hyderabadi',emoji:'🍛',name:'Hyderabadi'},
+  {v:'Italian',emoji:'🇮🇹',name:'Italian'},
+  {v:'Mediterranean',emoji:'🫒',name:'Mediterranean'},
+  {v:'Mexican',emoji:'🌮',name:'Mexican'},
+  {v:'East Asian',emoji:'🥢',name:'East Asian'},
+  {v:'Middle Eastern',emoji:'🧆',name:'Middle Eastern'},
+  {v:'American comfort',emoji:'🍔',name:'American'}
+];
+let selectedCuisines=new Set();   // empty = surprise me / mixed
+const cuiGrid=document.getElementById('cuisineGrid');
+function renderCuisine(){
+  cuiGrid.innerHTML=CUISINES.map(c=>{
+    const on = c.v==='' ? selectedCuisines.size===0 : selectedCuisines.has(c.v);
+    return `<button class="cui ${on?'on':''}" onclick="pickCuisine('${c.v}')"><span class="cui-emoji">${c.emoji}</span><span class="cui-name">${c.name}</span></button>`;
+  }).join('');
+}
+function pickCuisine(v){
+  if(v===''){selectedCuisines.clear();}          // "Surprise me" clears all
+  else{
+    if(selectedCuisines.has(v))selectedCuisines.delete(v);
+    else selectedCuisines.add(v);
+  }
+  renderCuisine();
+}
+renderCuisine();
+
+/* allergy chips */
+const ALLERGENS=['Nuts','Dairy','Gluten','Shellfish','Eggs','Soy','Fish','Sesame'];
+let selectedAllergies=new Set();
+const alWrap=document.getElementById('allergyChips');
+function renderAllergies(){
+  alWrap.innerHTML='';
+  ALLERGENS.forEach(a=>{
+    const b=document.createElement('button');
+    b.className='al-chip'+(selectedAllergies.has(a)?' on':'');b.textContent=a;
+    b.onclick=()=>{if(selectedAllergies.has(a))selectedAllergies.delete(a);else selectedAllergies.add(a);renderAllergies();};
+    alWrap.appendChild(b);
+  });
+  // custom-added allergies (not in preset list)
+  [...selectedAllergies].filter(a=>!ALLERGENS.includes(a)).forEach(a=>{
+    const b=document.createElement('button');
+    b.className='al-chip on';b.innerHTML=a+' ✕';
+    b.onclick=()=>{selectedAllergies.delete(a);renderAllergies();};
+    alWrap.appendChild(b);
+  });
+  // "+ Other" trigger
+  const add=document.createElement('button');
+  add.className='al-add';add.textContent='+ Other';
+  add.onclick=()=>showAllergyInput(add);
+  alWrap.appendChild(add);
+}
+function showAllergyInput(trigger){
+  const inp=document.createElement('input');
+  inp.className='al-input';inp.placeholder='Type & Enter';
+  inp.onkeydown=e=>{
+    if(e.key==='Enter'){const v=e.target.value.trim();if(v)selectedAllergies.add(v);renderAllergies();}
+    else if(e.key==='Escape'){renderAllergies();}
+  };
+  inp.onblur=()=>{const v=inp.value.trim();if(v)selectedAllergies.add(v);renderAllergies();};
+  trigger.replaceWith(inp);inp.focus();
+}
+renderAllergies();
+
+function stepServings(d){servings=Math.max(1,Math.min(12,servings+d));document.getElementById('servingsCount').textContent=servings;}
+
+/* ── INGREDIENT / LEFTOVER TAG PICKERS ── */
+const ING_SUGGEST=[
+  {name:'Proteins',cls:'cat-protein',items:['Chicken','Lamb / Mutton','Eggs','Paneer','Tofu','Lentils','Chickpeas','Fish','Beef','Beans','Yogurt']},
+  {name:'Veggies',cls:'cat-veggie',items:['Spinach','Tomatoes','Onions','Potatoes','Bell peppers','Carrots','Broccoli','Mushrooms','Zucchini','Cauliflower']},
+  {name:'Carbs',cls:'cat-carb',items:['Rice','Wheat','Pasta','Bread','Quinoa','Oats','Noodles','Tortillas']},
+  {name:'Extras',cls:'cat-extra',items:['Garlic','Ginger','Cheese','Butter','Coconut milk','Olive oil','Lemon']}
+];
+const LEFT_SUGGEST=[
+  {name:'Common leftovers',cls:'cat-left',items:['Cooked rice','Roast chicken','Dal','Pasta','Curry','Roasted veggies','Boiled potatoes','Soup','Grilled meat','Salad']}
+];
+
+let ingList=[], leftList=[];
+
+function renderChips(list,chipsId,removeFn){
+  const wrap=document.getElementById(chipsId);
+  wrap.innerHTML=list.map((x,i)=>`<span class="tag-chip">${x}<button onclick="event.stopPropagation();${removeFn}(${i})" aria-label="Remove">✕</button></span>`).join('');
+  // toggle the clear-all button for this box
+  const clearBtn=document.getElementById(chipsId.replace('Chips','Clear'));
+  if(clearBtn)clearBtn.classList.toggle('hidden',list.length===0);
+}
+function clearIng(){ingList=[];renderChips(ingList,'ingChips','removeIng');renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');}
+function clearLeft(){leftList=[];renderChips(leftList,'leftChips','removeLeft');renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');}
+function renderSuggest(data,containerId,list,addFn){
+  const c=document.getElementById(containerId);
+  const lower=list.map(x=>x.toLowerCase());
+  c.innerHTML=data.map(cat=>`
+    <div class="sug-cat ${cat.cls}">
+      <span class="sug-cat-name"><span class="cdot"></span>${cat.name}</span>
+      <div class="sug-items">
+        ${cat.items.map(it=>`<button class="sug ${lower.includes(it.toLowerCase())?'added':''}" onclick="${addFn}('${it.replace(/'/g,"\\'")}')">${it}</button>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+/* ingredients */
+function addIng(name){
+  name=name.trim();if(!name)return;
+  const idx=ingList.findIndex(x=>x.toLowerCase()===name.toLowerCase());
+  if(idx>-1){ingList.splice(idx,1);}   // already there -> toggle off
+  else{ingList.push(name);}
+  renderChips(ingList,'ingChips','removeIng');
+  renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');
+}
+function removeIng(i){ingList.splice(i,1);renderChips(ingList,'ingChips','removeIng');renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');}
+function ingKey(e){
+  if(e.key==='Enter'){e.preventDefault();addIng(e.target.value);e.target.value='';}
+  else if(e.key==='Backspace'&&!e.target.value&&ingList.length){removeIng(ingList.length-1);}
+}
+
+/* leftovers */
+function addLeft(name){
+  name=name.trim();if(!name)return;
+  const idx=leftList.findIndex(x=>x.toLowerCase()===name.toLowerCase());
+  if(idx>-1){leftList.splice(idx,1);}
+  else{leftList.push(name);}
+  renderChips(leftList,'leftChips','removeLeft');
+  renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');
+}
+function removeLeft(i){leftList.splice(i,1);renderChips(leftList,'leftChips','removeLeft');renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');}
+function leftKey(e){
+  if(e.key==='Enter'){e.preventDefault();addLeft(e.target.value);e.target.value='';}
+  else if(e.key==='Backspace'&&!e.target.value&&leftList.length){removeLeft(leftList.length-1);}
+}
+
+// initial suggestion render
+renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');
+renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');
+
+/* ── LOADING MESSAGES ── */
+const LOAD_MSGS=['Reading your kitchen…','Tasting ideas…','Balancing the week…','Rescuing those leftovers…','Plating it up…'];
+let loadTimer=null;
+function startLoading(){
+  let i=0;
+  document.getElementById('loadingMsg').textContent=LOAD_MSGS[0];
+  loadTimer=setInterval(()=>{i=(i+1)%LOAD_MSGS.length;document.getElementById('loadingMsg').textContent=LOAD_MSGS[i];},2200);
+}
+function stopLoading(){clearInterval(loadTimer);}
+
+/* ── GENERATE PLAN ── */
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+async function generatePlan(){
+  const ingredients=ingList.join(', ');
+  if(!ingredients){
+    showError('Add a few ingredients — tap a suggestion or type your own.');
+    return;
+  }
+  const inputs={
+    ingredients,
+    leftovers:leftList.join(', '),
+    moods:[...selectedMoods].join(', ')||'no strong preference',
+    diet,
+    servings,
+    cuisine:[...selectedCuisines].join(' & '),
+    allergies:[...selectedAllergies].join(', ')
+  };
+  lastInputs=inputs;
+  clearError();
+  document.getElementById('formCard').style.display='none';
+  document.getElementById('loadingSection').style.display='block';
+  document.getElementById('resultSection').style.display='none';
+  startLoading();
+
+  try{
+    // STEP 1: get the theme + note quickly (small, fast request)
+    const head=await callAI(themePrompt(inputs));
+    currentPlan={theme:head.theme,note:head.note,days:[],shopping:[]};
+
+    // show the week header + empty day slots immediately
+    stopLoading();
+    document.getElementById('loadingSection').style.display='none';
+    renderShell(head,inputs);
+
+    // STEP 2: generate the week in 3 small chunks, all in parallel.
+    // Smaller chunks return faster, so the first days appear quickly (#3),
+    // while each chunk still plans multiple days together to avoid repeats.
+    // We tell each chunk what the others cover, and reveal strictly in order.
+    const chunks=[
+      {days:['Monday','Tuesday'],start:0},
+      {days:['Wednesday','Thursday','Friday'],start:2},
+      {days:['Saturday','Sunday'],start:5}
+    ];
+    const allDayNames=DAYS.join(', ');
+    revealedCount=0;updateProgress();
+
+    const buffer={};            // index -> day data, held until its turn
+    let nextReveal=0;
+    function flush(){
+      while(buffer[nextReveal]!==undefined){
+        const d=buffer[nextReveal];
+        if(d&&!d.error){d.day=DAYS[nextReveal];currentPlan.days[nextReveal]=d;renderDay(d,nextReveal);}
+        else{currentPlan.days[nextReveal]={day:DAYS[nextReveal],error:true};renderDayError(DAYS[nextReveal],nextReveal);}
+        nextReveal++;
+        revealedCount++;updateProgress();
+      }
+    }
+
+    const chunkPromises=chunks.map(ch=>{
+      const others=DAYS.filter(d=>!ch.days.includes(d));
+      return callAI(weekPrompt(inputs,head.theme,ch.days,others))
+        .then(res=>{
+          const got=res.days||[];
+          ch.days.forEach((dn,j)=>{buffer[ch.start+j]=got[j]||{error:true};});
+          flush();
+        })
+        .catch(()=>{
+          ch.days.forEach((dn,j)=>{buffer[ch.start+j]={error:true};});
+          flush();
+        });
+    });
+    await Promise.all(chunkPromises);
+
+    // safety: fill any gaps
+    for(let i=0;i<7;i++){
+      if(!currentPlan.days[i]){currentPlan.days[i]={day:DAYS[i],error:true};renderDayError(DAYS[i],i);}
+    }
+    hideProgress();
+
+    // STEP 3: build the shopping list from everything generated
+    buildShoppingList();
+  }catch(err){
+    stopLoading();
+    document.getElementById('loadingSection').style.display='none';
+    document.getElementById('formCard').style.display='block';
+    showError("Mealody couldn't compose a menu just now. Please try again in a moment.");
+    console.error(err);
+  }
+}
+
+/* small, fast request: just the week's theme + note */
+function themePrompt(inp){
+  return `You are Mealody, a creative private chef planning a week of meals.
+Mood this week: ${inp.moods}. Diet: ${inp.diet}. Cuisine(s): ${inp.cuisine||'mixed / cook\'s choice'}. Key ingredients: ${inp.ingredients}.
+Give the week a short evocative THEME TITLE and a warm 1-2 sentence note reflecting the mood.
+Respond ONLY with valid JSON, no markdown: {"theme":"","note":""}`;
+}
+
+/* one day at a time: breakfast, lunch, dinner. `seed` keeps days distinct. */
+function weekPrompt(inp,theme,days,otherDays){
+  return `You are Mealody, a friendly home cook planning part of a weekly menu themed "${theme}".
+
+Plan these days: ${days.join(', ')}. (The rest of the week — ${otherDays.join(', ')} — is handled separately.)
+
+Constraints:
+- Diet: ${inp.diet}
+- Servings: ${inp.servings} people
+- Available ingredients (prioritize): ${inp.ingredients}
+- Leftovers to use first: ${inp.leftovers||'none'}
+- Mood: ${inp.moods}
+- Cuisine(s): ${inp.cuisine||'your choice / mixed'}${inp.cuisine&&inp.cuisine.includes(' & ')?' — blend these across the week, mixing days between them':''}
+- Strictly avoid: ${inp.allergies||'none'}
+
+CRITICAL — VARIETY:
+- Every single meal across all these days must be a DIFFERENT dish. No repeats.
+- BREAKFASTS especially must vary a lot — do NOT use eggs (or any single ingredient) as the base for more than ONE breakfast. Rotate across different breakfast styles (grains, breads, fruit, dairy, regional breakfasts, etc.).
+- Do not lean on the same hero ingredient repeatedly across the week; spread the available ingredients around.
+- Do NOT repeat the same dish under different names (e.g. "Palak Paneer" and "Spinach Paneer" are the SAME dish — never do that).
+- Vary proteins, cooking styles and flavors day to day so the week feels different.
+
+NAMING — keep it simple:
+- Use everyday dish names ordinary people instantly recognize and can read easily.
+- Avoid fancy, long, or hard-to-pronounce names. Use the common home name (e.g. "Egg curry & rice", "Veg pulao", "Dal & roti", "Chicken biryani", "Curd rice").
+
+ROUTINE: Follow how families from the chosen cuisine ACTUALLY eat day to day — a realistic everyday home routine, not festive food every day.
+${inp.cuisine&&inp.cuisine.includes('Hyderabadi')?`For Hyderabadi days: a typical household's daily routine. Breakfast e.g. idli, dosa, upma, chai with nashta, kheema-pav. Lunch e.g. rice with dal + a simple curry + curd; biryani on a day or two. Dinner e.g. roti with a sabzi or curry, or khichdi. Simple recognizable names only.`:''}
+
+Each meal needs a SIMPLE NAME, a VERY SHORT "why" (max 6 words), and a brief key-ingredients list (max 5 items, comma separated). Keep all text tight to save time.
+Respond ONLY with valid JSON, no markdown, with one entry per requested day in order:
+{"days":[${days.map(d=>'{"breakfast":{"name":"","why":"","ingredients":""},"lunch":{"name":"","why":"","ingredients":""},"dinner":{"name":"","why":"","ingredients":""}}').join(',')}]}`;
+}
+
+async function callAI(prompt){
+  // When deployed (on Vercel), call YOUR serverless function which keeps the API key secret.
+  // When running inside the Claude preview, that endpoint doesn't exist, so fall back to a
+  // direct call (which only works in the preview environment).
+  let data;
+  try{
+    const res=await fetch("/api/generate",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt})
+    });
+    if(!res.ok)throw new Error("backend "+res.status);
+    data=await res.json();
+  }catch(e){
+    // Preview fallback (no backend present)
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:1600,messages:[{role:"user",content:prompt}]})
+    });
+    data=await res.json();
+  }
+  let text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+  text=text.replace(/```json/g,'').replace(/```/g,'').trim();
+  return JSON.parse(text);
+}
+
+/* ── RENDER: shell first, then fill days as they arrive ── */
+const FUNNY_LINES=[
+  'Bribing the chef… 🤫',
+  'Chopping onions, shedding tears 😢',
+  'Arguing about pineapple 🍍',
+  'Preheating the imagination 🔥',
+  'Sniffing the spice rack 🌶️',
+  'Negotiating with the leftovers 🥡',
+  'Stealing grandma\'s secrets 👵',
+  'Licking the spoon 🥄',
+  'Consulting the flavor gods ✨',
+  'Making it extra delicious 😋',
+  'Shooing away the food critic 🧐',
+  'Adding a pinch of magic 🪄'
+];
+function randomFunny(){return FUNNY_LINES[Math.floor(Math.random()*FUNNY_LINES.length)];}
+let revealedCount=0;
+function updateProgress(){
+  const fill=document.getElementById('wpFill');
+  const text=document.getElementById('wpText');
+  if(!fill||!text)return;
+  const pct=Math.round(revealedCount/7*100);
+  fill.style.width=pct+'%';
+  text.textContent=revealedCount>=7?'Your week is served! 🍽️':`${revealedCount} of 7 days ready…`;
+}
+function hideProgress(){const p=document.getElementById('weekProgress');if(p){setTimeout(()=>p.classList.add('done'),700);}}
+let funnyTimer=null;
+function startFunnyRotation(){
+  stopFunnyRotation();
+  funnyTimer=setInterval(()=>{
+    document.querySelectorAll('.skel-msg').forEach(el=>{
+      el.style.opacity='0';
+      setTimeout(()=>{el.textContent=randomFunny();el.style.opacity='1';},250);
+    });
+  },2400);
+}
+function stopFunnyRotation(){if(funnyTimer){clearInterval(funnyTimer);funnyTimer=null;}}
+
+function renderShell(head,inputs){
+  const el=document.getElementById('resultContent');
+  let html=`
+    <div class="week-head">
+      <div class="week-theme-label">Your week</div>
+      <div class="week-title">${head.theme}</div>
+      <p class="week-note">${head.note}</p>
+      <div class="week-actions">
+        <button class="act-btn" onclick="resetPlanner()">← Start over</button>
+        <button class="act-btn primary" onclick="window.print()">🖨 Print / Save PDF</button>
+      </div>
+    </div>
+    <div class="week-progress" id="weekProgress">
+      <div class="wp-bar"><div class="wp-fill" id="wpFill"></div></div>
+      <div class="wp-text" id="wpText">Cooking up your week…</div>
+    </div>
+    <div id="daysWrap">`;
+  DAYS.forEach((day,di)=>{
+    html+=`<div class="day" id="day-${di}">
+      <div class="day-label"><span class="day-name">${day}</span><span class="day-sub" id="daysub-${di}"></span></div>
+      <div class="meals" id="meals-${di}">
+        <div class="meal meal-skeleton"><div><span class="skel-slot">Breakfast</span><span class="skel-msg">${randomFunny()}</span></div></div>
+        <div class="meal meal-skeleton"><div><span class="skel-slot">Lunch</span><span class="skel-msg">${randomFunny()}</span></div></div>
+        <div class="meal meal-skeleton"><div><span class="skel-slot">Dinner</span><span class="skel-msg">${randomFunny()}</span></div></div>
+      </div>
+    </div>`;
+  });
+  html+=`</div><div id="shoppingWrap"></div>`;
+  el.innerHTML=html;
+  const rs=document.getElementById('resultSection');
+  rs.style.display='block';
+  startFunnyRotation();
+  // land on the menu title — scroll the week header to the top of the viewport
+  setTimeout(()=>{
+    const wh=rs.querySelector('.week-head');
+    const y=(wh?wh.getBoundingClientRect().top:rs.getBoundingClientRect().top)+window.pageYOffset-16;
+    window.scrollTo({top:y,behavior:'smooth'});
+  },80);
+}
+
+function renderDay(d,di){
+  const sub=document.getElementById('daysub-'+di);
+  sub.dataset.done='1';sub.textContent='';
+  if(document.querySelectorAll('.day-sub[data-done="1"]').length>=7)stopFunnyRotation();
+  document.getElementById('meals-'+di).innerHTML=
+    mealCard(d.breakfast,'Breakfast',di,'breakfast')+
+    mealCard(d.lunch,'Lunch',di,'lunch')+
+    mealCard(d.dinner,'Dinner',di,'dinner');
+}
+
+const SIMMER_LINES=[
+  'This one needs a little longer on the stove.',
+  'The kitchen got a bit busy here — give it another go.',
+  'Still simmering. Stir it once more?',
+  'This dish slipped off the pass. Send it back?'
+];
+function renderDayError(day,di){
+  const subE=document.getElementById('daysub-'+di);if(subE){subE.dataset.done='1';subE.textContent='';}
+  const line=SIMMER_LINES[di%SIMMER_LINES.length];
+  document.getElementById('meals-'+di).innerHTML=
+    `<div class="meal day-retry" style="grid-column:1/-1;text-align:center;cursor:pointer" onclick="retryDay(${di})">
+       <div class="retry-emoji">🍳</div>
+       <div class="meal-name" style="font-size:.98rem">${line}</div>
+       <div class="meal-why">Tap to cook up ${day} again</div>
+     </div>`;
+}
+
+async function retryDay(di){
+  {const s=document.getElementById('daysub-'+di);s.dataset.done='';s.textContent=randomFunny();}
+  document.getElementById('meals-'+di).innerHTML='<div class="meal meal-skeleton"></div><div class="meal meal-skeleton"></div><div class="meal meal-skeleton"></div>';
+  // names of dishes already used elsewhere, so the retry doesn't repeat them
+  const used=[];
+  currentPlan.days.forEach((d,i)=>{if(i!==di&&d&&!d.error){['breakfast','lunch','dinner'].forEach(s=>{if(d[s])used.push(d[s].name);});}});
+  const prompt=`You are Mealody, a friendly home cook. Plan ${DAYS[di]}'s breakfast, lunch and dinner for a weekly menu themed "${currentPlan.theme}".
+Diet: ${lastInputs.diet}. Servings: ${lastInputs.servings}. Ingredients: ${lastInputs.ingredients}. Mood: ${lastInputs.moods}. Cuisine: ${lastInputs.cuisine||'your choice'}. Avoid: ${lastInputs.allergies||'none'}.
+Use SIMPLE everyday dish names people instantly recognize. Do NOT use any of these already-used dishes: ${used.join(', ')||'none'}.
+Respond ONLY with valid JSON, no markdown: {"breakfast":{"name":"","why":"","ingredients":""},"lunch":{"name":"","why":"","ingredients":""},"dinner":{"name":"","why":"","ingredients":""}}`;
+  try{
+    const d=await callAI(prompt);
+    d.day=DAYS[di];currentPlan.days[di]=d;renderDay(d,di);buildShoppingList();
+  }catch(e){renderDayError(DAYS[di],di);}
+}
+
+function buildShoppingList(){
+  // collect ingredient words from all meals, minus what the user said they have
+  const have=(lastInputs.ingredients+' '+lastInputs.leftovers).toLowerCase();
+  const items=new Set();
+  currentPlan.days.forEach(d=>{
+    if(!d||d.error)return;
+    ['breakfast','lunch','dinner'].forEach(s=>{
+      if(d[s]&&d[s].ingredients){
+        d[s].ingredients.split(/,|·|;/).forEach(part=>{
+          const it=part.trim().toLowerCase();
+          if(it&&it.length>1&&!have.includes(it.split(' ')[0])){
+            items.add(part.trim());
+          }
+        });
+      }
+    });
+  });
+  const list=[...items].slice(0,24);
+  document.getElementById('shoppingWrap').innerHTML=`<div class="shopping">
+    <h3>Shopping list</h3>
+    <div class="sub">Likely not in your kitchen — tap to check off</div>
+    <div class="shop-grid">
+      ${list.length?list.map(s=>`<div class="shop-item" onclick="this.classList.toggle('checked')"><span class="shop-box">✓</span><span>${s}</span></div>`).join(''):'<div class="hint">You seem to have everything you need!</div>'}
+    </div>
+  </div>`;
+}
+
+function mealCard(m,slot,dayIdx,slotKey){
+  return `<div class="meal" id="meal-${dayIdx}-${slotKey}">
+    <button class="meal-regen" onclick="regenMeal(${dayIdx},'${slotKey}')" title="Swap this meal">↻</button>
+    <span class="meal-slot">${slot}</span>
+    <div class="meal-name">${m.name}</div>
+    <div class="meal-why">${m.why}</div>
+    <div class="meal-ingredients">${m.ingredients}</div>
+  </div>`;
+}
+
+/* ── REGENERATE ONE MEAL ── */
+async function regenMeal(dayIdx,slotKey){
+  const card=document.getElementById(`meal-${dayIdx}-${slotKey}`);
+  card.classList.add('regenerating');
+  const day=currentPlan.days[dayIdx];
+  const prompt=`You are Mealody, a private chef. Suggest ONE alternative ${slotKey} for ${day.day} that fits this week's theme "${currentPlan.theme}" and mood "${lastInputs.moods}".
+Diet: ${lastInputs.diet}. Servings: ${lastInputs.servings}. Available ingredients: ${lastInputs.ingredients}. Avoid: ${lastInputs.allergies||'none'}.
+It must be different from "${day[slotKey].name}". Use a SIMPLE, everyday dish name people instantly recognize — avoid fancy or hard-to-read names.
+Respond ONLY with valid JSON, no markdown: {"name":"","why":"","ingredients":""}`;
+  try{
+    const data=await callAI(prompt);
+    currentPlan.days[dayIdx][slotKey]=data;
+    const slotLabel=slotKey.charAt(0).toUpperCase()+slotKey.slice(1);
+    card.outerHTML=mealCard(data,slotLabel,dayIdx,slotKey);
+  }catch(err){
+    card.classList.remove('regenerating');
+    console.error(err);
+  }
+}
+
+function resetPlanner(){
+  // clear all selections for a fresh start
+  ingList=[];leftList=[];
+  renderChips(ingList,'ingChips','removeIng');
+  renderChips(leftList,'leftChips','removeLeft');
+  renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');
+  renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');
+  document.getElementById('ingType').value='';
+  document.getElementById('leftType').value='';
+
+  // reset moods to default (Cozy)
+  selectedMoods=new Set(['🛋️ Cozy']);
+  document.querySelectorAll('#moodChips .chip').forEach(c=>c.classList.toggle('on',c.textContent==='🛋️ Cozy'));
+
+  // reset diet to Veg
+  diet='Vegetarian';
+  document.querySelectorAll('#dietSeg button').forEach(b=>b.classList.toggle('on',b.dataset.diet==='Vegetarian'));
+
+  // reset servings, cuisine, allergies
+  servings=2;document.getElementById('servingsCount').textContent='2';
+  selectedCuisines=new Set();renderCuisine();
+  selectedAllergies=new Set();renderAllergies();
+  clearIng();clearLeft();
+
+  clearError();
+  document.getElementById('resultSection').style.display='none';
+  document.getElementById('formCard').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showError(msg){document.getElementById('errorBox').innerHTML=`<div class="error">${msg}</div>`;}
+function clearError(){document.getElementById('errorBox').innerHTML='';}
+</script>
+</body>
+</html>
