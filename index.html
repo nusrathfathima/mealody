@@ -294,6 +294,62 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   .cuisine-grid{grid-template-columns:repeat(3,1fr);}
   .chip,.al-chip{font-size:.8rem;padding:.45rem .85rem;}
 }
+/* ============ CONVERSATIONAL CHAT FLOW ============ */
+.chat-wrap{max-width:680px;margin:0 auto;padding:.5rem 0 2rem;min-height:60vh;}
+.chat-stream{display:flex;flex-direction:column;gap:1.1rem;}
+/* a row holds mascot + bubble (assistant) or just bubble (user) */
+.chat-row{display:flex;align-items:flex-end;gap:.7rem;animation:chatIn .4s var(--bounce) both;}
+.chat-row.user{flex-direction:row-reverse;}
+@keyframes chatIn{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:none;}}
+/* mascot avatar */
+.chat-avatar{width:46px;height:46px;flex-shrink:0;align-self:flex-end;}
+.chat-row.user .chat-avatar{display:none;}
+/* bubbles */
+.bubble{padding:.85rem 1.1rem;border-radius:20px;font-size:.95rem;line-height:1.5;max-width:78%;position:relative;}
+.bubble.bot{background:var(--card);border:2px solid var(--ink);border-bottom-left-radius:6px;box-shadow:3px 3px 0 var(--line);color:var(--ink);}
+.bubble.user{background:var(--grape);color:#fff;border:2px solid var(--grape);border-bottom-right-radius:6px;box-shadow:3px 3px 0 var(--grape-dim);font-weight:600;}
+.bubble.quip{background:var(--sun);color:var(--ink);border:2px solid var(--ink);border-bottom-left-radius:6px;box-shadow:3px 3px 0 var(--line);font-weight:600;}
+/* typing indicator */
+.typing{display:inline-flex;gap:4px;padding:.2rem 0;}
+.typing span{width:8px;height:8px;border-radius:50%;background:var(--faint);animation:typedot 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s;}
+.typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typedot{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-6px);opacity:1;}}
+/* the interactive answer area under the latest question */
+.chat-input-area{margin-top:.4rem;animation:chatIn .4s var(--bounce) both;}
+.chat-input-card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:1.1rem;box-shadow:4px 4px 0 var(--grape);}
+/* next / skip buttons */
+.chat-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem;flex-wrap:wrap;}
+.chat-btn{font-family:inherit;font-size:.9rem;font-weight:700;padding:.6rem 1.4rem;border-radius:99px;border:2px solid var(--ink);cursor:pointer;transition:all .2s var(--bounce);}
+.chat-btn.next{background:var(--tang);color:#fff;box-shadow:0 4px 0 var(--tang-dim);}
+.chat-btn.next:hover{transform:translateY(-2px);box-shadow:0 6px 0 var(--tang-dim);}
+.chat-btn.next:active{transform:translateY(2px);box-shadow:0 2px 0 var(--tang-dim);}
+.chat-btn.skip{background:var(--card);color:var(--soft);box-shadow:0 3px 0 var(--line);}
+.chat-btn.skip:hover{transform:translateY(-2px);}
+.chat-btn:disabled{opacity:.45;cursor:not-allowed;}
+/* progress dots */
+.chat-progress{display:flex;gap:.4rem;justify-content:center;margin:0 auto 1.4rem;}
+.chat-progress .pdot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:all .3s var(--bounce);}
+.chat-progress .pdot.done{background:var(--lime);}
+.chat-progress .pdot.active{background:var(--grape);transform:scale(1.4);}
+/* restart link */
+.chat-restart{text-align:center;margin-top:1.5rem;}
+.chat-restart button{background:none;border:none;color:var(--faint);font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:underline;}
+.chat-restart button:hover{color:var(--grape);}
+/* mascot SVG animations */
+.masc{overflow:visible;}
+.masc-body{transform-origin:center;animation:mascBob 3s ease-in-out infinite;}
+@keyframes mascBob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-3px) rotate(2deg);}}
+.masc-eye{transform-origin:center;animation:mascBlink 4s infinite;}
+@keyframes mascBlink{0%,92%,100%{transform:scaleY(1);}96%{transform:scaleY(.1);}}
+.masc-big .masc-body{animation:mascExcite .6s var(--bounce);}
+@keyframes mascExcite{0%{transform:scale(1);}40%{transform:scale(1.15) rotate(6deg);}100%{transform:scale(1);}}
+@media(max-width:560px){
+  .bubble{max-width:82%;font-size:.9rem;}
+  .chat-avatar{width:38px;height:38px;}
+  .chat-input-card{padding:.9rem;}
+}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 
@@ -315,7 +371,18 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   </div>
 </section>
 
-<section class="planner">
+<section class="planner" id="chatSection">
+  <div class="wrap">
+    <div class="chat-progress" id="chatProgress"></div>
+    <div class="chat-wrap">
+      <div class="chat-stream" id="chatStream"></div>
+      <div id="chatInputHost"></div>
+      <div class="chat-restart" id="chatRestart" style="display:none;"><button onclick="restartChat()">↺ Start over</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="planner" id="formSection" style="display:none;">
   <div class="wrap">
     <div class="form-card" id="formCard">
       <div class="form-grid">
@@ -419,6 +486,7 @@ MOODS.forEach(m=>{
   const b=document.createElement('button');
   b.className='chip'+(selectedMoods.has(m)?' on':'');
   b.textContent=m;
+  b.dataset.mood=m;
   b.onclick=()=>{
     if(selectedMoods.has(m))selectedMoods.delete(m);else selectedMoods.add(m);
     b.classList.toggle('on');
@@ -571,6 +639,278 @@ function leftKey(e){
 renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');
 renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');
 
+/* ============================================================
+   CONVERSATIONAL CHAT FLOW  (drives input, reuses existing pickers + state)
+   ============================================================ */
+const MASCOT_SVG=`<svg class="masc" viewBox="0 0 60 60" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <g class="masc-body">
+    <!-- chef hat -->
+    <ellipse cx="30" cy="13" rx="13" ry="8" fill="#fff" stroke="#2d2240" stroke-width="2.2"/>
+    <rect x="20" y="16" width="20" height="7" rx="3" fill="#fff" stroke="#2d2240" stroke-width="2.2"/>
+    <!-- face -->
+    <circle cx="30" cy="36" r="17" fill="var(--grape)" stroke="#2d2240" stroke-width="2.5"/>
+    <!-- cheeks -->
+    <circle cx="21" cy="40" r="3" fill="#ff8fb0" opacity=".7"/>
+    <circle cx="39" cy="40" r="3" fill="#ff8fb0" opacity=".7"/>
+    <!-- eyes -->
+    <circle class="masc-eye" cx="24" cy="34" r="2.6" fill="#fff"/>
+    <circle class="masc-eye" cx="36" cy="34" r="2.6" fill="#fff"/>
+    <!-- smile -->
+    <path d="M24 41 Q30 46 36 41" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+  </g>
+</svg>`;
+
+let chatStep=0, chatStarted=false;
+const chatStream=()=>document.getElementById('chatStream');
+const chatHost=()=>document.getElementById('chatInputHost');
+
+// The ordered conversation. Each step: a question + which picker to mount + a quip generator.
+const CHAT_STEPS=[
+  {key:'ing', q:"Hey, I'm Mealody! 👩‍🍳 Let's build your week together. First up — what's in your kitchen right now?",
+   mount:'ing', required:true,
+   summary:()=>ingList.length?ingList.join(', '):'',
+   quip:()=>{
+     const veg=['Spinach','Tomatoes','Onions','Potatoes','Bell peppers','Carrots','Broccoli','Mushrooms','Zucchini','Cauliflower'];
+     const hasVeg=ingList.filter(i=>veg.some(v=>i.toLowerCase().includes(v.toLowerCase()))).length>=3;
+     if(hasVeg)return "Look at you, eating the rainbow! 🌈";
+     if(ingList.some(i=>/chicken|mutton|lamb|beef|fish/i.test(i)))return "Ooh, something hearty in the mix 😋";
+     if(ingList.some(i=>/paneer|tofu/i.test(i)))return "Paneer/tofu — solid choice 👌";
+     return "Great start — I can work with these! ✨";
+   }},
+  {key:'left', q:"Any leftovers we should rescue before they go sad in the fridge? ♻️ (totally fine to skip)",
+   mount:'left', required:false,
+   summary:()=>leftList.length?leftList.join(', '):'No leftovers',
+   quip:()=>leftList.length?"Rescuing leftovers? You're my kind of person ♻️":"All fresh it is! 🥬"},
+  {key:'mood', q:"What's the vibe this week? Pick whatever feels right.",
+   mount:'mood', required:false,
+   summary:()=>[...selectedMoods].join(', ')||'No strong vibe',
+   quip:()=>{
+     if(selectedMoods.has('Stressed & quick'))return "Say no more — fast & comforting coming up ⏱️";
+     if(selectedMoods.has('Impress someone'))return "Ooh, showing off? I like it ✨";
+     if(selectedMoods.has('Lazy / low-effort'))return "Low effort, big flavor. My specialty 😴";
+     return "Love that energy 💫";
+   }},
+  {key:'diet', q:"What are we eating — veg, non-veg, or vegan?",
+   mount:'diet', required:false,
+   summary:()=>diet,
+   quip:()=>diet==='Vegan'?"Plant-powered week, let's go! 🌱":diet==='Non-vegetarian'?"Got it — protein incoming 🍗":"Veggie goodness 🥬"},
+  {key:'serv', q:"How many plates am I cooking for?",
+   mount:'serv', required:false,
+   summary:()=>servings+(servings>1?' people':' person'),
+   quip:()=>servings>=5?"A feast for the whole crew! 🍽️":servings===1?"Solo dining, cozy 🕯️":"Perfect, noted 📝"},
+  {key:'cui', q:"Craving any particular cuisines? Pick one or blend a few — or let me surprise you ✨",
+   mount:'cui', required:false,
+   summary:()=>[...selectedCuisines].join(' & ')||'Surprise me',
+   quip:()=>{
+     if(selectedCuisines.size>=2)return "A fusion week — adventurous! 🌍";
+     if(selectedCuisines.has('Hyderabadi'))return "Hyderabadi? Now we're talking 🍛";
+     if(selectedCuisines.size===0)return "Surprise it is — trust me 😏";
+     return "Delicious direction 🌶️";
+   }},
+  {key:'all', q:"Last thing — anything you avoid or are allergic to? I'll steer clear.",
+   mount:'all', required:false,
+   summary:()=>[...selectedAllergies].join(', ')||'No allergies',
+   quip:()=>selectedAllergies.size?"Noted — I'll keep those out 🚫":"No restrictions, full freedom! 🙌"}
+];
+
+function startChat(){
+  if(chatStarted)return;
+  chatStarted=true;
+  chatStep=0;
+  renderProgress();
+  askStep();
+}
+
+function renderProgress(){
+  const p=document.getElementById('chatProgress');
+  p.innerHTML=CHAT_STEPS.map((s,i)=>`<span class="pdot ${i<chatStep?'done':i===chatStep?'active':''}"></span>`).join('');
+}
+
+function addBotBubble(text,cls){
+  const row=document.createElement('div');
+  row.className='chat-row bot';
+  row.innerHTML=`<div class="chat-avatar">${MASCOT_SVG}</div><div class="bubble ${cls||'bot'}">${text}</div>`;
+  chatStream().appendChild(row);
+  scrollChat();
+  return row;
+}
+function addUserBubble(text){
+  const row=document.createElement('div');
+  row.className='chat-row user';
+  row.innerHTML=`<div class="bubble user">${text}</div>`;
+  chatStream().appendChild(row);
+  scrollChat();
+}
+function addTyping(){
+  const row=document.createElement('div');
+  row.className='chat-row bot';
+  row.id='typingRow';
+  row.innerHTML=`<div class="chat-avatar">${MASCOT_SVG}</div><div class="bubble bot"><span class="typing"><span></span><span></span><span></span></span></div>`;
+  chatStream().appendChild(row);
+  scrollChat();
+}
+function removeTyping(){const t=document.getElementById('typingRow');if(t)t.remove();}
+
+function scrollChat(){
+  setTimeout(()=>{
+    const last=chatStream().lastElementChild;
+    if(last)last.scrollIntoView({behavior:'smooth',block:'center'});
+  },60);
+}
+
+// Mount the relevant existing picker into the chat input host by MOVING its DOM node.
+function mountPicker(which){
+  const host=chatHost();
+  host.innerHTML='';
+  const card=document.createElement('div');
+  card.className='chat-input-card';
+  let node;
+  if(which==='ing'){
+    node=buildIngBlock();
+  }else if(which==='left'){
+    node=buildLeftBlock();
+  }else if(which==='mood'){
+    node=document.querySelector('#formCard .chips#moodChips').parentElement; // field.full
+  }else if(which==='diet'){
+    node=document.querySelector('#formCard #dietSeg').parentElement;
+  }else if(which==='serv'){
+    node=document.querySelector('#formCard .stepper').parentElement;
+  }else if(which==='cui'){
+    node=document.querySelector('#formCard #cuisineGrid').parentElement;
+  }else if(which==='all'){
+    node=document.querySelector('#formCard #allergyChips').parentElement;
+  }
+  if(node){card.appendChild(node);}
+  // actions
+  const actions=document.createElement('div');
+  actions.className='chat-actions';
+  const step=CHAT_STEPS[chatStep];
+  if(!step.required){
+    const skip=document.createElement('button');
+    skip.className='chat-btn skip';skip.textContent='Skip';
+    skip.onclick=()=>advance(true);
+    actions.appendChild(skip);
+  }
+  const next=document.createElement('button');
+  next.className='chat-btn next';
+  next.textContent=(chatStep===CHAT_STEPS.length-1)?"Cook my week! ✦":"Next →";
+  next.onclick=()=>advance(false);
+  actions.appendChild(next);
+  card.appendChild(actions);
+  host.appendChild(card);
+  host.scrollIntoView&&scrollChat();
+}
+
+// For ingredients/leftovers we move the whole field (label head + box + suggestions)
+function buildIngBlock(){return document.querySelector('#formCard #ingBox').closest('.field');}
+function buildLeftBlock(){return document.querySelector('#formCard #leftBox').closest('.field');}
+
+function askStep(){
+  const step=CHAT_STEPS[chatStep];
+  renderProgress();
+  chatHost().innerHTML='';
+  addTyping();
+  setTimeout(()=>{
+    removeTyping();
+    addBotBubble(step.q);
+    setTimeout(()=>mountPicker(step.mount),250);
+  },650);
+}
+
+function advance(skipped){
+  const step=CHAT_STEPS[chatStep];
+  // validation for required steps
+  if(step.required && step.key==='ing' && ingList.length===0){
+    // gentle nudge
+    flashNudge();
+    return;
+  }
+  // echo the user's answer
+  const ans=skipped?'(skip)':step.summary();
+  addUserBubble(ans&&ans.length?ans:'—');
+  // clear the input host (return the node back to the hidden form so it persists)
+  returnPicker(step.mount);
+  // quip
+  const quip=step.quip();
+  setTimeout(()=>{
+    addTyping();
+    setTimeout(()=>{
+      removeTyping();
+      if(quip)addBotBubble(quip,'quip');
+      chatStep++;
+      renderProgress();
+      if(chatStep<CHAT_STEPS.length){
+        setTimeout(askStep,500);
+      }else{
+        finishChat();
+      }
+    },600);
+  },200);
+}
+
+// move the picker node back into the hidden form so its state/handlers persist
+function returnPicker(which){
+  const host=chatHost();
+  const card=host.querySelector('.chat-input-card');
+  if(!card)return;
+  const grid=document.querySelector('#formCard .form-grid');
+  // the first child of the card is the moved field/node
+  const moved=card.firstElementChild;
+  if(moved&&grid){grid.appendChild(moved);}
+  host.innerHTML='';
+}
+
+function flashNudge(){
+  const host=chatHost();
+  const existing=host.querySelector('.chat-nudge');
+  if(existing)return;
+  const n=document.createElement('div');
+  n.className='chat-nudge';
+  n.style.cssText='color:var(--berry);font-size:.82rem;font-weight:700;text-align:center;margin-top:.5rem;animation:chatIn .3s;';
+  n.textContent='Add at least one ingredient so I have something to cook with! 🥄';
+  host.querySelector('.chat-input-card').appendChild(n);
+  setTimeout(()=>{if(n)n.remove();},2600);
+}
+
+function finishChat(){
+  addTyping();
+  setTimeout(()=>{
+    removeTyping();
+    addBotBubble("Perfect — I've got everything! Let me cook up your week… 🍲✨");
+    document.getElementById('chatRestart').style.display='block';
+    setTimeout(()=>{ generatePlan(); },900);
+  },700);
+}
+
+function restartChat(){
+  // reset everything and rebuild the conversation
+  ingList=[];leftList=[];
+  selectedMoods=new Set(['Cozy']);
+  diet='Vegetarian';servings=2;
+  selectedCuisines=new Set();selectedAllergies=new Set();
+  document.getElementById('servingsCount').textContent='2';
+  renderChips(ingList,'ingChips','removeIng');renderChips(leftList,'leftChips','removeLeft');
+  renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');
+  renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');
+  if(typeof renderCuisine==='function')renderCuisine();
+  if(typeof renderAllergies==='function')renderAllergies();
+  document.querySelectorAll('#moodChips .chip').forEach(c=>{c.classList.toggle('on', selectedMoods.has(c.dataset.mood));});
+  document.querySelectorAll('#dietSeg button').forEach(b=>b.classList.toggle('on',b.dataset.diet===diet));
+  chatStream().innerHTML='';
+  chatHost().innerHTML='';
+  document.getElementById('chatRestart').style.display='none';
+  document.getElementById('resultSection').style.display='none';
+  document.getElementById('loadingSection').style.display='none';
+  document.getElementById('chatSection').style.display='block';
+  chatStarted=false;chatStep=0;
+  window.scrollTo({top:0,behavior:'smooth'});
+  startChat();
+}
+
+// kick off the chat on load
+startChat();
+
+
 /* ── LOADING MESSAGES ── */
 const LOAD_MSGS=['Reading your kitchen…','Tasting ideas…','Balancing the week…','Rescuing those leftovers…','Plating it up…'];
 let loadTimer=null;
@@ -601,7 +941,7 @@ async function generatePlan(){
   };
   lastInputs=inputs;
   clearError();
-  document.getElementById('formCard').style.display='none';
+  document.getElementById('chatSection').style.display='none';
   document.getElementById('loadingSection').style.display='block';
   document.getElementById('resultSection').style.display='none';
   startLoading();
@@ -663,8 +1003,9 @@ async function generatePlan(){
   }catch(err){
     stopLoading();
     document.getElementById('loadingSection').style.display='none';
-    document.getElementById('formCard').style.display='block';
-    showError("Mealody couldn't compose a menu just now. Please try again in a moment.");
+    document.getElementById('chatSection').style.display='block';
+    document.getElementById('chatRestart').style.display='block';
+    addBotBubble("Hmm, my kitchen hiccuped 😅 Tap \"Start over\" and let's try again!","quip");
     console.error(err);
   }
 }
@@ -922,8 +1263,7 @@ function resetPlanner(){
 
   clearError();
   document.getElementById('resultSection').style.display='none';
-  document.getElementById('formCard').style.display='block';
-  window.scrollTo({top:0,behavior:'smooth'});
+  restartChat();
 }
 
 function toggleTheme(){
