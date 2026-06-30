@@ -268,6 +268,27 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   .week-actions{flex-direction:column;align-items:stretch;}
   .act-btn{justify-content:center;}
 }
+@media(max-width:560px){
+  .wrap{padding:0 1.1rem;}
+  /* ingredient suggestion + cuisine grids: comfy tap targets */
+  .sug-items{grid-template-columns:repeat(auto-fill,minmax(86px,1fr));}
+  .cuisine-grid{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));}
+  /* input row stacks */
+  .input-row{flex-direction:column;}
+  .generate{width:100%;justify-content:center;}
+  /* masthead wraps so the toggle doesn't crowd the tagline */
+  .mast-right{gap:.6rem;}
+  .tagline{font-size:.62rem;}
+  /* day name + progress sizing */
+  .day-name{font-size:1.25rem;}
+  .week-title{font-size:1.6rem;}
+}
+@media(max-width:380px){
+  .hero h1{font-size:2.2rem;}
+  .sug-items{grid-template-columns:repeat(3,1fr);}
+  .cuisine-grid{grid-template-columns:repeat(3,1fr);}
+  .chip,.al-chip{font-size:.8rem;padding:.45rem .85rem;}
+}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 
