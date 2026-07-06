@@ -224,7 +224,7 @@ header{padding:1.5rem 0;}
 .day{margin-bottom:2.5rem;animation:dayup .5s var(--bounce);}
 @keyframes dayup{from{opacity:0;transform:translateY(20px) scale(.98);}to{opacity:1;transform:none;}}
 .day-label{display:flex;align-items:center;gap:.85rem;margin-bottom:1rem;}
-.day-name{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;background:var(--grape);color:#fff;padding:.3rem 1.1rem;border-radius:99px;transform:rotate(-1.5deg);}
+.day-name{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;background:var(--berry);color:#fff;padding:.3rem 1.1rem;border-radius:99px;transform:rotate(-1.5deg);}
 .day-sub{font-size:.8rem;color:var(--tang);font-weight:600;font-style:italic;transition:opacity .3s;}
 .meals{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
 .meal{background:var(--card);border:2.5px solid var(--ink);border-radius:18px;padding:1.3rem;display:flex;flex-direction:column;gap:.6rem;transition:all .2s var(--bounce);position:relative;overflow:hidden;box-shadow:5px 5px 0 var(--line);}
@@ -298,11 +298,33 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-wrap{max-width:680px;margin:0 auto;padding:.5rem 0 2rem;min-height:60vh;}
 .chat-stream{display:flex;flex-direction:column;gap:1.1rem;}
 /* a row holds mascot + bubble (assistant) or just bubble (user) */
-.chat-row{display:flex;align-items:flex-end;gap:.7rem;animation:chatIn .4s var(--bounce) both;}
+.chat-row{display:flex;align-items:flex-end;gap:.7rem;animation:chatPop .55s var(--bounce) both;}
 .chat-row.user{flex-direction:row-reverse;}
-@keyframes chatIn{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:none;}}
+/* food validation confirm UI */
+.food-confirm{margin-top:.85rem;padding:.85rem 1rem;border-radius:14px;background:var(--cream);border:2px dashed var(--grape);animation:chatPop .4s var(--bounce) both;}
+.food-confirm.reject{border-color:var(--berry);}
+.fc-q{font-size:.86rem;font-weight:600;color:var(--ink);margin-bottom:.6rem;line-height:1.4;}
+.fc-you{color:var(--faint);font-weight:500;font-size:.78rem;}
+.fc-btns{display:flex;gap:.5rem;flex-wrap:wrap;}
+.fc-btns button{font-family:inherit;font-size:.8rem;font-weight:700;padding:.45rem 1rem;border-radius:99px;border:2px solid var(--ink);cursor:pointer;transition:all .18s var(--bounce);}
+.fc-yes{background:var(--lime);color:#fff;box-shadow:0 3px 0 #2ea355;}
+.fc-no{background:var(--card);color:var(--soft);box-shadow:0 3px 0 var(--line);}
+.fc-btns button:hover{transform:translateY(-2px);}
+.fc-btns button:active{transform:translateY(1px);}
+.food-checking{margin-top:.6rem;font-size:.8rem;font-weight:600;color:var(--grape);font-style:italic;animation:pulse 1s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+@keyframes chatPop{0%{opacity:0;transform:translateY(18px) scale(.7) rotate(-3deg);}55%{opacity:1;transform:translateY(-4px) scale(1.06) rotate(1.5deg);}75%{transform:translateY(0) scale(.98) rotate(-1deg);}100%{opacity:1;transform:none;}}
+/* the bubble itself gets a little wiggle-in on the text */
+.chat-row .bubble{animation:bubbleWiggle .5s var(--bounce) both;}
+@keyframes bubbleWiggle{0%{transform:scale(.85);}60%{transform:scale(1.04);}100%{transform:scale(1);}}
+/* mascot bounces a bit harder when a new bot line lands */
+.chat-row.bot .chat-avatar{animation:mascPopIn .6s var(--bounce) both;}
+@keyframes mascPopIn{0%{transform:scale(0) rotate(-20deg);}60%{transform:scale(1.2) rotate(8deg);}100%{transform:scale(1) rotate(0);}}
 /* mascot avatar */
 .chat-avatar{width:46px;height:46px;flex-shrink:0;align-self:flex-end;}
+.chat-row.greeting .chat-avatar{width:64px;height:64px;animation:mascWave 1.2s var(--bounce);}
+@keyframes mascWave{0%,100%{transform:rotate(0);}25%{transform:rotate(-14deg);}50%{transform:rotate(10deg);}75%{transform:rotate(-6deg);}}
+.chat-row.greeting .bubble{font-size:1.02rem;}
 .chat-row.user .chat-avatar{display:none;}
 /* bubbles */
 .bubble{padding:.85rem 1.1rem;border-radius:20px;font-size:.95rem;line-height:1.5;max-width:78%;position:relative;}
@@ -316,8 +338,8 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .typing span:nth-child(3){animation-delay:.4s;}
 @keyframes typedot{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-6px);opacity:1;}}
 /* the interactive answer area under the latest question */
-.chat-input-area{margin-top:.4rem;animation:chatIn .4s var(--bounce) both;}
-.chat-input-card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:1.1rem;box-shadow:4px 4px 0 var(--grape);}
+.chat-input-area{margin-top:.4rem;animation:chatPop .5s var(--bounce) both;}
+.chat-input-card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:1.1rem;box-shadow:4px 4px 0 var(--grape);animation:chatPop .5s var(--bounce) both;}
 /* next / skip buttons */
 .chat-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem;flex-wrap:wrap;}
 .chat-btn{font-family:inherit;font-size:.9rem;font-weight:700;padding:.6rem 1.4rem;border-radius:99px;border:2px solid var(--ink);cursor:pointer;transition:all .2s var(--bounce);}
@@ -328,10 +350,24 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-btn.skip:hover{transform:translateY(-2px);}
 .chat-btn:disabled{opacity:.45;cursor:not-allowed;}
 /* progress dots */
-.chat-progress{display:flex;gap:.4rem;justify-content:center;margin:0 auto 1.4rem;}
-.chat-progress .pdot{width:8px;height:8px;border-radius:50%;background:var(--line);transition:all .3s var(--bounce);}
-.chat-progress .pdot.done{background:var(--lime);}
-.chat-progress .pdot.active{background:var(--grape);transform:scale(1.4);}
+.chat-progress{display:flex;gap:.15rem;justify-content:center;align-items:center;margin:0 auto 1.6rem;flex-wrap:wrap;max-width:100%;}
+.pstep{display:flex;flex-direction:column;align-items:center;gap:.25rem;opacity:.5;transition:all .35s var(--bounce);}
+.pstep-ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;background:var(--card);border:2px solid var(--line);transition:all .35s var(--bounce);}
+.pstep-lbl{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--faint);}
+.pstep.todo{opacity:.45;}
+.pstep.active{opacity:1;transform:translateY(-2px);}
+.pstep.active .pstep-ic{border-color:var(--grape);background:var(--grape);box-shadow:0 4px 0 var(--grape-dim);animation:stepBounce 1.4s var(--bounce) infinite;}
+.pstep.active .pstep-lbl{color:var(--grape);}
+.pstep.done{opacity:1;}
+.pstep.done .pstep-ic{border-color:var(--lime);background:var(--lime);color:#fff;}
+.pstep.done .pstep-lbl{color:var(--lime);}
+@keyframes stepBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.pstep-link{width:12px;height:2px;background:var(--line);border-radius:2px;flex-shrink:0;}
+@media(max-width:560px){
+  .pstep-lbl{display:none;}
+  .pstep-ic{width:28px;height:28px;font-size:.85rem;}
+  .pstep-link{width:6px;}
+}
 /* restart link */
 .chat-restart{text-align:center;margin-top:1.5rem;}
 .chat-restart button{background:none;border:none;color:var(--faint);font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;text-decoration:underline;}
@@ -557,14 +593,15 @@ function renderAllergies(){
   add.onclick=()=>showAllergyInput(add);
   alWrap.appendChild(add);
 }
+function addAllergen(name){name=name.trim();if(name)selectedAllergies.add(name);renderAllergies();}
 function showAllergyInput(trigger){
   const inp=document.createElement('input');
   inp.className='al-input';inp.placeholder='Type & Enter';
   inp.onkeydown=e=>{
-    if(e.key==='Enter'){const v=e.target.value.trim();if(v)selectedAllergies.add(v);renderAllergies();}
+    if(e.key==='Enter'){const v=e.target.value.trim();renderAllergies();if(v)smartAddTerm(v,'allergen',addAllergen);}
     else if(e.key==='Escape'){renderAllergies();}
   };
-  inp.onblur=()=>{const v=inp.value.trim();if(v)selectedAllergies.add(v);renderAllergies();};
+  inp.onblur=()=>{const v=inp.value.trim();if(v){renderAllergies();smartAddTerm(v,'allergen',addAllergen);}};
   trigger.replaceWith(inp);inp.focus();
 }
 renderAllergies();
@@ -616,7 +653,7 @@ function addIng(name){
 }
 function removeIng(i){ingList.splice(i,1);renderChips(ingList,'ingChips','removeIng');renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');}
 function ingKey(e){
-  if(e.key==='Enter'){e.preventDefault();addIng(e.target.value);e.target.value='';}
+  if(e.key==='Enter'){e.preventDefault();const v=e.target.value;e.target.value='';if(v.trim())smartAddTerm(v,'ingredient',addIng);}
   else if(e.key==='Backspace'&&!e.target.value&&ingList.length){removeIng(ingList.length-1);}
 }
 
@@ -631,7 +668,7 @@ function addLeft(name){
 }
 function removeLeft(i){leftList.splice(i,1);renderChips(leftList,'leftChips','removeLeft');renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');}
 function leftKey(e){
-  if(e.key==='Enter'){e.preventDefault();addLeft(e.target.value);e.target.value='';}
+  if(e.key==='Enter'){e.preventDefault();const v=e.target.value;e.target.value='';if(v.trim())smartAddTerm(v,'leftover dish',addLeft);}
   else if(e.key==='Backspace'&&!e.target.value&&leftList.length){removeLeft(leftList.length-1);}
 }
 
@@ -642,6 +679,77 @@ renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');
 /* ============================================================
    CONVERSATIONAL CHAT FLOW  (drives input, reuses existing pickers + state)
    ============================================================ */
+
+/* ── AI INGREDIENT / FOOD VALIDATION (checks spelling + gibberish) ── */
+async function validateFoodTerm(term,kind){
+  // kind: 'ingredient' | 'leftover dish' | 'allergen'
+  const prompt=`You are a food term checker. A user typed "${term}" as a ${kind}.
+Decide one of:
+- "ok": it's already a valid, correctly-spelled ${kind} (a real food/dish/allergen).
+- "correct": it's a real ${kind} but misspelled — provide the correct spelling.
+- "invalid": it's gibberish or not a food/${kind} at all.
+Respond ONLY with strict JSON, no markdown:
+{"status":"ok|correct|invalid","suggestion":"corrected term or empty","reason":"very short"}`;
+  try{
+    const res=await callAI(prompt);
+    if(res&&res.status)return res;
+  }catch(e){}
+  // if the check fails for any reason, fall back to accepting the term
+  return {status:'ok',suggestion:'',reason:''};
+}
+
+// Shows a friendly inline confirm inside the current chat input card
+function askFoodConfirm(original,suggestion,onYes,onNo){
+  const card=document.querySelector('#chatInputHost .chat-input-card');
+  const holder=document.createElement('div');
+  holder.className='food-confirm';
+  holder.innerHTML=`<div class="fc-q">🤔 Did you mean <b>${suggestion}</b>? <span class="fc-you">(you typed "${original}")</span></div>
+    <div class="fc-btns">
+      <button class="fc-yes">Yes, ${suggestion}</button>
+      <button class="fc-no">No, keep "${original}"</button>
+    </div>`;
+  (card||chatHost()).appendChild(holder);
+  holder.querySelector('.fc-yes').onclick=()=>{holder.remove();onYes();};
+  holder.querySelector('.fc-no').onclick=()=>{holder.remove();onNo();};
+  scrollChat();
+}
+function askFoodReject(original,reason,onKeep){
+  const card=document.querySelector('#chatInputHost .chat-input-card');
+  const holder=document.createElement('div');
+  holder.className='food-confirm reject';
+  holder.innerHTML=`<div class="fc-q">🧐 Hmm, "<b>${original}</b>" doesn't look like a food I know. ${reason?'<span class="fc-you">('+reason+')</span>':''}</div>
+    <div class="fc-btns">
+      <button class="fc-no">Remove it</button>
+      <button class="fc-yes">Add it anyway</button>
+    </div>`;
+  (card||chatHost()).appendChild(holder);
+  holder.querySelector('.fc-yes').onclick=()=>{holder.remove();onKeep();};
+  holder.querySelector('.fc-no').onclick=()=>{holder.remove();};
+  scrollChat();
+}
+
+// Wrap a typed term: validate, then add / correct / ask
+async function smartAddTerm(term,kind,addFn){
+  term=term.trim();if(!term)return;
+  // quick local shortcut: if it matches a known suggestion, skip the AI call
+  const known=[...ING_SUGGEST,...LEFT_SUGGEST].flatMap(c=>c.items||[]).map(x=>x.toLowerCase());
+  const commonAllergens=['nuts','dairy','gluten','shellfish','eggs','soy','fish','sesame','peanuts','wheat','milk'];
+  if(known.includes(term.toLowerCase())||commonAllergens.includes(term.toLowerCase())){addFn(term);return;}
+  // show a tiny checking hint
+  const card=document.querySelector('#chatInputHost .chat-input-card');
+  let hint;
+  if(card){hint=document.createElement('div');hint.className='food-checking';hint.textContent='🔎 checking…';card.appendChild(hint);}
+  const v=await validateFoodTerm(term,kind);
+  if(hint)hint.remove();
+  if(v.status==='ok'){addFn(term);}
+  else if(v.status==='correct'&&v.suggestion){
+    askFoodConfirm(term,v.suggestion,()=>addFn(v.suggestion),()=>addFn(term));
+  }else if(v.status==='invalid'){
+    askFoodReject(term,v.reason,()=>addFn(term));
+  }else{addFn(term);}
+}
+
+
 const MASCOT_SVG=`<svg class="masc" viewBox="0 0 60 60" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
   <g class="masc-body">
     <!-- chef hat -->
@@ -666,7 +774,7 @@ const chatHost=()=>document.getElementById('chatInputHost');
 
 // The ordered conversation. Each step: a question + which picker to mount + a quip generator.
 const CHAT_STEPS=[
-  {key:'ing', q:"Hey, I'm Mealody! 👩‍🍳 Let's build your week together. First up — what's in your kitchen right now?",
+  {key:'ing', icon:'🧺', label:'Kitchen', q:"Hey, I'm Mealody! 👩‍🍳 Let's build your week together. First up — what's in your kitchen right now?",
    mount:'ing', required:true,
    summary:()=>ingList.length?ingList.join(', '):'',
    quip:()=>{
@@ -677,11 +785,11 @@ const CHAT_STEPS=[
      if(ingList.some(i=>/paneer|tofu/i.test(i)))return "Paneer/tofu — solid choice 👌";
      return "Great start — I can work with these! ✨";
    }},
-  {key:'left', q:"Any leftovers we should rescue before they go sad in the fridge? ♻️ (totally fine to skip)",
+  {key:'left', icon:'♻️', label:'Leftovers', q:"Any leftovers we should rescue before they go sad in the fridge? ♻️ (totally fine to skip)",
    mount:'left', required:false,
    summary:()=>leftList.length?leftList.join(', '):'No leftovers',
    quip:()=>leftList.length?"Rescuing leftovers? You're my kind of person ♻️":"All fresh it is! 🥬"},
-  {key:'mood', q:"What's the vibe this week? Pick whatever feels right.",
+  {key:'mood', icon:'✨', label:'Vibe', q:"What's the vibe this week? Pick whatever feels right.",
    mount:'mood', required:false,
    summary:()=>[...selectedMoods].join(', ')||'No strong vibe',
    quip:()=>{
@@ -690,15 +798,15 @@ const CHAT_STEPS=[
      if(selectedMoods.has('Lazy / low-effort'))return "Low effort, big flavor. My specialty 😴";
      return "Love that energy 💫";
    }},
-  {key:'diet', q:"What are we eating — veg, non-veg, or vegan?",
+  {key:'diet', icon:'🥗', label:'Diet', q:"What are we eating — veg, non-veg, or vegan?",
    mount:'diet', required:false,
    summary:()=>diet,
    quip:()=>diet==='Vegan'?"Plant-powered week, let's go! 🌱":diet==='Non-vegetarian'?"Got it — protein incoming 🍗":"Veggie goodness 🥬"},
-  {key:'serv', q:"How many plates am I cooking for?",
+  {key:'serv', icon:'🍽️', label:'Plates', q:"How many plates am I cooking for?",
    mount:'serv', required:false,
    summary:()=>servings+(servings>1?' people':' person'),
    quip:()=>servings>=5?"A feast for the whole crew! 🍽️":servings===1?"Solo dining, cozy 🕯️":"Perfect, noted 📝"},
-  {key:'cui', q:"Craving any particular cuisines? Pick one or blend a few — or let me surprise you ✨",
+  {key:'cui', icon:'🌍', label:'Cuisine', q:"Craving any particular cuisines? Pick one or blend a few — or let me surprise you ✨",
    mount:'cui', required:false,
    summary:()=>[...selectedCuisines].join(' & ')||'Surprise me',
    quip:()=>{
@@ -707,7 +815,7 @@ const CHAT_STEPS=[
      if(selectedCuisines.size===0)return "Surprise it is — trust me 😏";
      return "Delicious direction 🌶️";
    }},
-  {key:'all', q:"Last thing — anything you avoid or are allergic to? I'll steer clear.",
+  {key:'all', icon:'🚫', label:'Avoid', q:"Last thing — anything you avoid or are allergic to? I'll steer clear.",
    mount:'all', required:false,
    summary:()=>[...selectedAllergies].join(', ')||'No allergies',
    quip:()=>selectedAllergies.size?"Noted — I'll keep those out 🚫":"No restrictions, full freedom! 🙌"}
@@ -723,12 +831,15 @@ function startChat(){
 
 function renderProgress(){
   const p=document.getElementById('chatProgress');
-  p.innerHTML=CHAT_STEPS.map((s,i)=>`<span class="pdot ${i<chatStep?'done':i===chatStep?'active':''}"></span>`).join('');
+  p.innerHTML=CHAT_STEPS.map((s,i)=>{
+    const state=i<chatStep?'done':i===chatStep?'active':'todo';
+    return `<div class="pstep ${state}"><div class="pstep-ic">${state==='done'?'✓':s.icon}</div><div class="pstep-lbl">${s.label}</div></div>`;
+  }).join('<div class="pstep-link"></div>');
 }
 
-function addBotBubble(text,cls){
+function addBotBubble(text,cls,rowClass){
   const row=document.createElement('div');
-  row.className='chat-row bot';
+  row.className='chat-row bot'+(rowClass?' '+rowClass:'');
   row.innerHTML=`<div class="chat-avatar">${MASCOT_SVG}</div><div class="bubble ${cls||'bot'}">${text}</div>`;
   chatStream().appendChild(row);
   scrollChat();
@@ -812,7 +923,7 @@ function askStep(){
   addTyping();
   setTimeout(()=>{
     removeTyping();
-    addBotBubble(step.q);
+    addBotBubble(step.q, 'bot', chatStep===0?'greeting':'');
     setTimeout(()=>mountPicker(step.mount),250);
   },650);
 }
@@ -866,7 +977,7 @@ function flashNudge(){
   if(existing)return;
   const n=document.createElement('div');
   n.className='chat-nudge';
-  n.style.cssText='color:var(--berry);font-size:.82rem;font-weight:700;text-align:center;margin-top:.5rem;animation:chatIn .3s;';
+  n.style.cssText='color:var(--berry);font-size:.82rem;font-weight:700;text-align:center;margin-top:.5rem;animation:chatPop .4s var(--bounce);';
   n.textContent='Add at least one ingredient so I have something to cook with! 🥄';
   host.querySelector('.chat-input-card').appendChild(n);
   setTimeout(()=>{if(n)n.remove();},2600);
