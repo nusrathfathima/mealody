@@ -118,8 +118,17 @@ header{padding:1.5rem 0;}
 .clear-all.hidden{display:none;}
 
 /* suggestion categories */
-.suggest-cats{margin-top:.85rem;display:flex;flex-direction:column;gap:1rem;}
-.sug-cat{display:flex;flex-direction:column;gap:.55rem;}
+.suggest-cats{margin-top:.85rem;display:flex;flex-direction:column;gap:.55rem;}
+.sug-cat{display:flex;flex-direction:column;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);}
+.sug-cat-head{display:flex;align-items:center;justify-content:space-between;width:100%;padding:.65rem .85rem;background:none;border:none;cursor:pointer;font-family:inherit;transition:background .18s;}
+.sug-cat-head:hover{background:var(--cream);}
+.sug-cat-meta{display:flex;align-items:center;gap:.5rem;}
+.sug-count{background:var(--grape);color:#fff;font-size:.66rem;font-weight:800;min-width:18px;height:18px;border-radius:99px;display:flex;align-items:center;justify-content:center;padding:0 .3rem;}
+.sug-caret{font-size:.7rem;color:var(--faint);transition:transform .28s var(--bounce);}
+.sug-cat.open .sug-caret{transform:rotate(180deg);}
+/* collapse/expand the items */
+.sug-cat .sug-items{max-height:0;overflow:hidden;padding:0 .85rem;opacity:0;transition:max-height .32s var(--ease),opacity .25s,padding .32s;}
+.sug-cat.open .sug-items{max-height:420px;opacity:1;padding:.15rem .85rem .85rem;}
 .sug-cat-name{font-family:'Fraunces',serif;font-size:.95rem;font-weight:700;text-transform:none;letter-spacing:0;display:inline-flex;align-items:center;gap:.45rem;}
 .cat-protein .sug-cat-name{color:var(--berry);}
 .cat-veggie .sug-cat-name{color:#2ea355;}
@@ -298,7 +307,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-wrap{max-width:680px;margin:0 auto;padding:.5rem 0 2rem;min-height:60vh;}
 .chat-stream{display:flex;flex-direction:column;gap:1.1rem;}
 /* a row holds mascot + bubble (assistant) or just bubble (user) */
-.chat-row{display:flex;align-items:flex-end;gap:.7rem;animation:chatPop .55s var(--bounce) both;}
+.chat-row{display:flex;align-items:flex-end;gap:.7rem;animation:chatPop .4s var(--ease) both;}
 .chat-row.user{flex-direction:row-reverse;}
 /* food validation confirm UI */
 .food-confirm{margin-top:.85rem;padding:.85rem 1rem;border-radius:14px;background:var(--cream);border:2px dashed var(--grape);animation:chatPop .4s var(--bounce) both;}
@@ -313,13 +322,11 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .fc-btns button:active{transform:translateY(1px);}
 .food-checking{margin-top:.6rem;font-size:.8rem;font-weight:600;color:var(--grape);font-style:italic;animation:pulse 1s ease-in-out infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
-@keyframes chatPop{0%{opacity:0;transform:translateY(18px) scale(.7) rotate(-3deg);}55%{opacity:1;transform:translateY(-4px) scale(1.06) rotate(1.5deg);}75%{transform:translateY(0) scale(.98) rotate(-1deg);}100%{opacity:1;transform:none;}}
-/* the bubble itself gets a little wiggle-in on the text */
-.chat-row .bubble{animation:bubbleWiggle .5s var(--bounce) both;}
-@keyframes bubbleWiggle{0%{transform:scale(.85);}60%{transform:scale(1.04);}100%{transform:scale(1);}}
-/* mascot bounces a bit harder when a new bot line lands */
-.chat-row.bot .chat-avatar{animation:mascPopIn .6s var(--bounce) both;}
-@keyframes mascPopIn{0%{transform:scale(0) rotate(-20deg);}60%{transform:scale(1.2) rotate(8deg);}100%{transform:scale(1) rotate(0);}}
+.inline-masc{display:inline-block;width:26px;height:26px;vertical-align:middle;margin:0 2px;}
+@keyframes chatPop{0%{opacity:0;transform:translateY(10px) scale(.96);}60%{opacity:1;transform:translateY(-2px) scale(1.01);}100%{opacity:1;transform:none;}}
+/* mascot does one gentle pop when a bot line lands (kept subtle) */
+.chat-row.bot .chat-avatar{animation:mascPopIn .45s var(--bounce) both;}
+@keyframes mascPopIn{0%{transform:scale(.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
 /* mascot avatar */
 .chat-avatar{width:46px;height:46px;flex-shrink:0;align-self:flex-end;}
 .chat-row.greeting .chat-avatar{width:64px;height:64px;animation:mascWave 1.2s var(--bounce);}
@@ -338,8 +345,8 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .typing span:nth-child(3){animation-delay:.4s;}
 @keyframes typedot{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-6px);opacity:1;}}
 /* the interactive answer area under the latest question */
-.chat-input-area{margin-top:.4rem;animation:chatPop .5s var(--bounce) both;}
-.chat-input-card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:1.1rem;box-shadow:4px 4px 0 var(--grape);animation:chatPop .5s var(--bounce) both;}
+.chat-input-area{margin-top:.4rem;animation:chatPop .35s var(--ease) both;}
+.chat-input-card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:1.1rem;box-shadow:4px 4px 0 var(--grape);animation:chatPop .35s var(--ease) both;}
 /* next / skip buttons */
 .chat-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem;flex-wrap:wrap;}
 .chat-btn{font-family:inherit;font-size:.9rem;font-weight:700;padding:.6rem 1.4rem;border-radius:99px;border:2px solid var(--ink);cursor:pointer;transition:all .2s var(--bounce);}
@@ -350,6 +357,11 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-btn.skip:hover{transform:translateY(-2px);}
 .chat-btn:disabled{opacity:.45;cursor:not-allowed;}
 /* progress dots */
+/* fun decorative banner */
+.chat-fun-banner{text-align:center;margin:0 auto 1.1rem;}
+.cfb-emojis{font-size:1.05rem;letter-spacing:.25rem;opacity:.85;animation:cfbFloat 4s ease-in-out infinite;}
+@keyframes cfbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+.cfb-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--soft);margin-top:.35rem;}
 .chat-progress{display:flex;gap:.15rem;justify-content:center;align-items:center;margin:0 auto 1.6rem;flex-wrap:wrap;max-width:100%;}
 .pstep{display:flex;flex-direction:column;align-items:center;gap:.25rem;opacity:.5;transition:all .35s var(--bounce);}
 .pstep-ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;background:var(--card);border:2px solid var(--line);transition:all .35s var(--bounce);}
@@ -409,6 +421,10 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 
 <section class="planner" id="chatSection">
   <div class="wrap">
+    <div class="chat-fun-banner">
+      <div class="cfb-emojis">🥕 🍅 🧄 🌶️ 🧅 🥦 🍋 🫑</div>
+      <div class="cfb-title">Let's plan your delicious week</div>
+    </div>
     <div class="chat-progress" id="chatProgress"></div>
     <div class="chat-wrap">
       <div class="chat-stream" id="chatStream"></div>
@@ -633,13 +649,29 @@ function clearLeft(){leftList=[];renderChips(leftList,'leftChips','removeLeft');
 function renderSuggest(data,containerId,list,addFn){
   const c=document.getElementById(containerId);
   const lower=list.map(x=>x.toLowerCase());
-  c.innerHTML=data.map(cat=>`
-    <div class="sug-cat ${cat.cls}">
-      <span class="sug-cat-name"><span class="cdot"></span>${cat.name}</span>
+  // remember which category is open (default: first)
+  if(c.dataset.open===undefined)c.dataset.open='0';
+  const openIdx=parseInt(c.dataset.open);
+  c.innerHTML=data.map((cat,i)=>{
+    const count=cat.items.filter(it=>lower.includes(it.toLowerCase())).length;
+    return `
+    <div class="sug-cat ${cat.cls} ${i===openIdx?'open':''}">
+      <button type="button" class="sug-cat-head" onclick="toggleSugCat('${containerId}',${i})">
+        <span class="sug-cat-name"><span class="cdot"></span>${cat.name}</span>
+        <span class="sug-cat-meta">${count?`<span class="sug-count">${count}</span>`:''}<span class="sug-caret">▾</span></span>
+      </button>
       <div class="sug-items">
         ${cat.items.map(it=>`<button class="sug ${lower.includes(it.toLowerCase())?'added':''}" onclick="${addFn}('${it.replace(/'/g,"\\'")}')">${it}</button>`).join('')}
       </div>
-    </div>`).join('');
+    </div>`;}).join('');
+}
+function toggleSugCat(containerId,i){
+  const c=document.getElementById(containerId);
+  const cur=parseInt(c.dataset.open);
+  c.dataset.open = (cur===i? '-1' : String(i));   // click open one -> closes others; click same -> collapse
+  // re-render preserving list state
+  if(containerId==='ingSuggest')renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');
+  else renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');
 }
 
 /* ingredients */
@@ -699,8 +731,9 @@ Respond ONLY with strict JSON, no markdown:
 }
 
 // Shows a friendly inline confirm inside the current chat input card
-function askFoodConfirm(original,suggestion,onYes,onNo){
-  const card=document.querySelector('#chatInputHost .chat-input-card');
+function askFoodConfirm(original,suggestion,onYes,onNo,kind){
+  clearFoodPopups();
+  const anchor=foodConfirmAnchor(kind);
   const holder=document.createElement('div');
   holder.className='food-confirm';
   holder.innerHTML=`<div class="fc-q">🤔 Did you mean <b>${suggestion}</b>? <span class="fc-you">(you typed "${original}")</span></div>
@@ -708,13 +741,13 @@ function askFoodConfirm(original,suggestion,onYes,onNo){
       <button class="fc-yes">Yes, ${suggestion}</button>
       <button class="fc-no">No, keep "${original}"</button>
     </div>`;
-  (card||chatHost()).appendChild(holder);
+  insertAfter(holder,anchor);
   holder.querySelector('.fc-yes').onclick=()=>{holder.remove();onYes();};
   holder.querySelector('.fc-no').onclick=()=>{holder.remove();onNo();};
-  scrollChat();
 }
-function askFoodReject(original,reason,onKeep){
-  const card=document.querySelector('#chatInputHost .chat-input-card');
+function askFoodReject(original,reason,onKeep,kind){
+  clearFoodPopups();
+  const anchor=foodConfirmAnchor(kind);
   const holder=document.createElement('div');
   holder.className='food-confirm reject';
   holder.innerHTML=`<div class="fc-q">🧐 Hmm, "<b>${original}</b>" doesn't look like a food I know. ${reason?'<span class="fc-you">('+reason+')</span>':''}</div>
@@ -722,33 +755,45 @@ function askFoodReject(original,reason,onKeep){
       <button class="fc-no">Remove it</button>
       <button class="fc-yes">Add it anyway</button>
     </div>`;
-  (card||chatHost()).appendChild(holder);
+  insertAfter(holder,anchor);
   holder.querySelector('.fc-yes').onclick=()=>{holder.remove();onKeep();};
   holder.querySelector('.fc-no').onclick=()=>{holder.remove();};
-  scrollChat();
 }
+function clearFoodPopups(){document.querySelectorAll('#chatInputHost .food-confirm,#chatInputHost .food-checking').forEach(n=>n.remove());}
 
 // Wrap a typed term: validate, then add / correct / ask
 async function smartAddTerm(term,kind,addFn){
   term=term.trim();if(!term)return;
+  clearFoodPopups();
   // quick local shortcut: if it matches a known suggestion, skip the AI call
   const known=[...ING_SUGGEST,...LEFT_SUGGEST].flatMap(c=>c.items||[]).map(x=>x.toLowerCase());
   const commonAllergens=['nuts','dairy','gluten','shellfish','eggs','soy','fish','sesame','peanuts','wheat','milk'];
   if(known.includes(term.toLowerCase())||commonAllergens.includes(term.toLowerCase())){addFn(term);return;}
-  // show a tiny checking hint
-  const card=document.querySelector('#chatInputHost .chat-input-card');
-  let hint;
-  if(card){hint=document.createElement('div');hint.className='food-checking';hint.textContent='🔎 checking…';card.appendChild(hint);}
+  // show a tiny checking hint right under the input
+  const anchor=foodConfirmAnchor(kind);
+  const hint=document.createElement('div');hint.className='food-checking';hint.textContent='🔎 checking…';
+  insertAfter(hint,anchor);
   const v=await validateFoodTerm(term,kind);
-  if(hint)hint.remove();
+  hint.remove();
   if(v.status==='ok'){addFn(term);}
   else if(v.status==='correct'&&v.suggestion){
-    askFoodConfirm(term,v.suggestion,()=>addFn(v.suggestion),()=>addFn(term));
+    askFoodConfirm(term,v.suggestion,()=>addFn(v.suggestion),()=>addFn(term),kind);
   }else if(v.status==='invalid'){
-    askFoodReject(term,v.reason,()=>addFn(term));
+    askFoodReject(term,v.reason,()=>addFn(term),kind);
   }else{addFn(term);}
 }
 
+
+
+// find where to place the validation popup — right below the input the user is typing in
+function foodConfirmAnchor(kind){
+  if(kind==='ingredient'){const b=document.querySelector('#chatInputHost #ingBox');if(b)return b;}
+  if(kind==='leftover dish'){const b=document.querySelector('#chatInputHost #leftBox');if(b)return b;}
+  if(kind==='allergen'){const b=document.querySelector('#chatInputHost .allergy-chips');if(b)return b;}
+  const card=document.querySelector('#chatInputHost .chat-input-card');
+  return card||chatHost();
+}
+function insertAfter(newNode,refNode){refNode.parentNode.insertBefore(newNode,refNode.nextSibling);}
 
 const MASCOT_SVG=`<svg class="masc" viewBox="0 0 60 60" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
   <g class="masc-body">
@@ -774,7 +819,7 @@ const chatHost=()=>document.getElementById('chatInputHost');
 
 // The ordered conversation. Each step: a question + which picker to mount + a quip generator.
 const CHAT_STEPS=[
-  {key:'ing', icon:'🧺', label:'Kitchen', q:"Hey, I'm Mealody! 👩‍🍳 Let's build your week together. First up — what's in your kitchen right now?",
+  {key:'ing', icon:'🧺', label:'Kitchen', q:"Hey, I'm Mealody! <span class='inline-masc'>"+MASCOT_SVG+"</span> Let's build your week together. First up — what's in your kitchen right now?",
    mount:'ing', required:true,
    summary:()=>ingList.length?ingList.join(', '):'',
    quip:()=>{
