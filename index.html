@@ -26,6 +26,9 @@
   --bounce:cubic-bezier(.34,1.56,.64,1);
   --ease:cubic-bezier(.4,0,.2,1);
 }
+[data-theme="dark"] .bubble.bot{border-color:#4a4370;box-shadow:3px 3px 0 rgba(0,0,0,.3);}
+[data-theme="dark"] .bubble.quip{color:#2d2240;border-color:#2d2240;}
+[data-theme="dark"] .bubble.user{color:#fff;}
 [data-theme="dark"]{
   --cream:#1c1830;
   --ink:#f3eeff;
@@ -341,9 +344,12 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-row.user .chat-avatar{display:none;}
 /* bubbles */
 .bubble{padding:.85rem 1.1rem;border-radius:20px;font-size:.95rem;line-height:1.5;max-width:78%;position:relative;}
-.bubble.bot{background:var(--card);border:2px solid var(--ink);border-bottom-left-radius:6px;box-shadow:3px 3px 0 var(--line);color:var(--ink);}
+.bubble.bot{background:var(--card);border:2px solid var(--ink);border-bottom-left-radius:6px;box-shadow:3px 3px 0 var(--line);color:var(--ink);transition:background .5s ease,color .5s ease,border-color .5s ease;}
+/* the active question glows with a site-color gradient */
+.bubble.active-q{background:linear-gradient(120deg,var(--berry),var(--grape));color:#fff;border-color:#2d2240;box-shadow:3px 3px 0 rgba(0,0,0,.18);}
+.bubble.active-q .inline-masc{filter:drop-shadow(0 0 2px rgba(255,255,255,.4));}
 .bubble.user{background:var(--grape);color:#fff;border:2px solid var(--grape);border-bottom-right-radius:6px;box-shadow:3px 3px 0 var(--grape-dim);font-weight:600;}
-.bubble.quip{background:var(--sun);color:var(--ink);border:2px solid var(--ink);border-bottom-left-radius:6px;box-shadow:3px 3px 0 var(--line);font-weight:600;}
+.bubble.quip{background:var(--sun);color:#2d2240;border:2px solid #2d2240;border-bottom-left-radius:6px;box-shadow:3px 3px 0 rgba(0,0,0,.15);font-weight:600;}
 /* typing indicator */
 .typing{display:inline-flex;gap:4px;padding:.2rem 0;}
 .typing span{width:8px;height:8px;border-radius:50%;background:var(--faint);animation:typedot 1.2s infinite;}
@@ -364,16 +370,16 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-btn:disabled{opacity:.45;cursor:not-allowed;}
 /* progress dots */
 /* welcome screen */
-.chat-welcome{text-align:center;padding:2.5rem 1rem 3rem;max-width:520px;margin:0 auto;animation:chatPop .5s var(--ease) both;}
-.cw-mascot{width:110px;height:110px;margin:0 auto .5rem;animation:cwFloat 3.5s ease-in-out infinite;}
+.chat-welcome{text-align:center;padding:1rem 1rem 1.5rem;max-width:540px;margin:0 auto;min-height:calc(100vh - 140px);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:chatPop .5s var(--ease) both;}
+.cw-mascot{width:88px;height:88px;margin:0 auto -.6rem;animation:cwFloat 3.5s ease-in-out infinite;}
 @keyframes cwFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-8px) rotate(2deg);}}
-.cw-emojis{font-size:1.4rem;letter-spacing:.4rem;margin-bottom:1rem;opacity:.9;}
-.cw-title{font-family:'Fraunces',serif;font-size:clamp(1.8rem,5vw,2.6rem);font-weight:700;line-height:1.1;margin-bottom:.85rem;color:var(--ink);}
-.cw-sub{font-size:1.02rem;color:var(--soft);line-height:1.6;margin-bottom:1.8rem;max-width:420px;margin-left:auto;margin-right:auto;}
+.cw-emojis{font-size:1.2rem;letter-spacing:.3rem;margin-bottom:.35rem;opacity:.9;}
+.cw-title{font-family:'Fraunces',serif;font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:700;line-height:1.08;margin-bottom:.5rem;color:var(--ink);}
+.cw-sub{font-size:.98rem;color:var(--soft);line-height:1.45;margin-bottom:1.2rem;max-width:340px;margin-left:auto;margin-right:auto;}
 .cw-btn{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;padding:1rem 2.6rem;background:var(--tang);color:#fff;border:3px solid var(--ink);border-radius:99px;cursor:pointer;transition:all .2s var(--bounce);box-shadow:0 6px 0 var(--tang-dim);}
 .cw-btn:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 9px 0 var(--tang-dim);}
 .cw-btn:active{transform:translateY(3px);box-shadow:0 3px 0 var(--tang-dim);}
-.cw-hint{font-size:.78rem;color:var(--faint);margin-top:1.1rem;font-weight:600;}
+.cw-hint{font-size:.76rem;color:var(--faint);margin-top:.9rem;font-weight:600;}
 /* fun decorative banner */
 .chat-fun-banner{text-align:center;margin:0 auto 1.1rem;}
 .cfb-emojis{font-size:1.05rem;letter-spacing:.25rem;opacity:.85;animation:cfbFloat 4s ease-in-out infinite;}
@@ -655,9 +661,9 @@ function stepServings(d){servings=Math.max(1,Math.min(12,servings+d));document.g
 
 /* ── INGREDIENT / LEFTOVER TAG PICKERS ── */
 const ING_SUGGEST=[
-  {name:'Proteins',cls:'cat-protein',items:['Chicken','Lamb / Mutton','Eggs','Paneer','Tofu','Lentils','Chickpeas','Fish','Beef','Beans','Yogurt']},
-  {name:'Veggies',cls:'cat-veggie',items:['Spinach','Tomatoes','Onions','Potatoes','Bell peppers','Carrots','Broccoli','Mushrooms','Zucchini','Cauliflower']},
-  {name:'Carbs',cls:'cat-carb',items:['Rice','Wheat','Pasta','Bread','Quinoa','Oats','Noodles','Tortillas']},
+  {name:'Proteins',cls:'cat-protein',items:['Chicken','Lamb / Mutton','Eggs','Paneer','Tofu','Lentils','Chickpeas','Fish','Beef','Beans','Yogurt','+ Other']},
+  {name:'Veggies',cls:'cat-veggie',items:['Spinach','Tomatoes','Onions','Potatoes','Bell peppers','Carrots','Broccoli','Mushrooms','Zucchini','Cauliflower','+ Other']},
+  {name:'Carbs',cls:'cat-carb',items:['Rice','Wheat','Pasta','Bread','Quinoa','Oats','Noodles','Tortillas','+ Other']},
   {name:'Extras',cls:'cat-extra',items:['Garlic','Ginger','Cheese','Butter','Coconut milk','Olive oil','Lemon','+ Other']}
 ];
 const LEFT_SUGGEST=[
@@ -866,7 +872,7 @@ const MASCOT_SVG=`<svg class="masc" viewBox="0 0 60 60" width="100%" height="100
   </g>
 </svg>`;
 
-let chatStep=0, chatStarted=false;
+let chatStep=0, chatStarted=false, activeQBubble=null;
 const chatStream=()=>document.getElementById('chatStream');
 const chatHost=()=>document.getElementById('chatInputHost');
 
@@ -921,10 +927,10 @@ const CHAT_STEPS=[
 
 // Fun rotating welcome greetings (surprise!)
 const WELCOME_GREETINGS=[
-  {t:"Hungry? Let's fix that. 🍲",s:"I'm Mealody — your kitchen buddy. Tell me what you've got, and I'll plan a whole week of meals just for you."},
-  {t:"What's cooking, good looking? 😋",s:"I'm Mealody! Answer a few fun questions and I'll whip up a personalized week of breakfasts, lunches & dinners."},
-  {t:"Let's turn your fridge into a feast! 🥘",s:"Hi, I'm Mealody. A few quick taps and you'll have a delicious week planned around exactly what you love."},
-  {t:"Ready to eat well this week? ✨",s:"I'm Mealody, your friendly meal-planning sidekick. Let's build a week that fits your cravings, mood & pantry."}
+  {t:"Hungry? Let's fix that. 🍲",s:"I'm Mealody, your kitchen buddy — I'll plan your whole week of meals."},
+  {t:"What's cooking, good looking? 😋",s:"I'm Mealody! A few fun questions and your week is planned."},
+  {t:"Let's turn your fridge into a feast! 🥘",s:"Hi, I'm Mealody — a few taps and dinner's sorted all week."},
+  {t:"Ready to eat well this week? ✨",s:"I'm Mealody, your meal-planning sidekick. Let's build your week."}
 ];
 function setupWelcome(){
   const g=WELCOME_GREETINGS[Math.floor(Math.random()*WELCOME_GREETINGS.length)];
@@ -1044,7 +1050,11 @@ function askStep(){
   addTyping();
   setTimeout(()=>{
     removeTyping();
-    addBotBubble(step.q, 'bot', chatStep===0?'greeting':'');
+    const qb=addBotBubble(step.q, 'bot', chatStep===0?'greeting':'');
+    // mark this question bubble as the active one (gradient)
+    const bub=qb.querySelector('.bubble');
+    if(bub)bub.classList.add('active-q');
+    activeQBubble=bub;
     setTimeout(()=>mountPicker(step.mount),250);
   },650);
 }
@@ -1057,6 +1067,8 @@ function advance(skipped){
     flashNudge();
     return;
   }
+  // the current question settles to light
+  if(activeQBubble){activeQBubble.classList.remove('active-q');activeQBubble=null;}
   // echo the user's answer
   const ans=skipped?'(skip)':step.summary();
   addUserBubble(ans&&ans.length?ans:'—');
