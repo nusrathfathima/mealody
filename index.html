@@ -46,6 +46,7 @@
   --sky:#5ccdf0;
 }
 html{scroll-behavior:smooth;}
+html,body{max-width:100%;overflow-x:hidden;}
 body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;position:relative;transition:background .3s,color .3s;}
 /* floating background blobs */
 body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(60px);opacity:.4;pointer-events:none;z-index:0;}
@@ -302,12 +303,35 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   /* day name + progress sizing */
   .day-name{font-size:1.25rem;}
   .week-title{font-size:1.6rem;}
+  /* masthead: keep 3-col but shrink name so it doesn't crowd the logo */
+  .mast-name{font-size:.8rem;}
+  .logo{font-size:1.45rem;}
+  /* chat bubbles a touch wider, avatar smaller */
+  .bubble{max-width:84%;font-size:.9rem;}
+  .chat-avatar{width:38px;height:38px;}
+  /* welcome fits smaller screens */
+  .cw-mascot{width:74px;height:74px;}
+  .cw-btn{font-size:1.05rem;padding:.85rem 2rem;}
+  /* week action buttons full width, comfy */
+  .week-actions-bottom{flex-direction:column;align-items:stretch;}
+  .week-actions-bottom .act-btn{justify-content:center;}
+  /* input card breathing room + reachable actions */
+  .chat-input-card{padding:.9rem;}
+  .chat-input-card>.field{max-height:44vh;}
 }
 @media(max-width:380px){
   .hero h1{font-size:2.2rem;}
   .sug-items{grid-template-columns:repeat(3,1fr);}
   .cuisine-grid{grid-template-columns:repeat(3,1fr);}
   .chip,.al-chip{font-size:.8rem;padding:.45rem .85rem;}
+  .mast-name{font-size:.72rem;}
+  .logo{font-size:1.3rem;}
+  .cw-mascot{width:66px;height:66px;}
+  .hero p{font-size:.9rem;}
+  .bubble{font-size:.88rem;}
+  .pstep-ic{width:26px;height:26px;font-size:.8rem;}
+  /* poster/print/startover stack cleanly */
+  .week-actions-bottom .act-btn{width:100%;}
 }
 /* ============ CONVERSATIONAL CHAT FLOW ============ */
 .chat-wrap{max-width:680px;margin:0 auto;padding:.5rem 0 2rem;min-height:60vh;}
