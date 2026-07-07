@@ -425,8 +425,29 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 }
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+
+/* ===== PRINT: one day per page ===== */
+@media print{
+  /* hide everything except the week result */
+  header, .hero, #chatSection, #loadingSection, .chat-fun-banner,
+  .week-actions, .week-progress, .theme-toggle, footer, body::before, body::after{display:none!important;}
+  body{background:#fff!important;color:#000!important;}
+  .result{display:block!important;padding:0!important;}
+  .week-head{box-shadow:none!important;border:none!important;text-align:center;margin-bottom:1rem!important;page-break-after:always;break-after:page;}
+  /* each day on its own page */
+  .day{page-break-after:always;break-after:page;padding:1.5rem 0!important;margin:0!important;}
+  .day:last-of-type{page-break-after:auto;break-after:auto;}
+  .meals{grid-template-columns:1fr!important;gap:1rem!important;}
+  .meal{border:1.5px solid #333!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid;}
+  .day-name{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .meal::before{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .meal-regen,.day-retry{display:none!important;}
+  @page{margin:1.5cm;}
+}
+
 </style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -1401,6 +1422,7 @@ function renderShell(head,inputs){
     <div class="week-actions week-actions-bottom">
       <button class="act-btn" onclick="resetPlanner()">← Start over</button>
       <button class="act-btn primary" onclick="window.print()">🖨 Print / Save PDF</button>
+      <button class="act-btn primary" onclick="saveWeekPoster()" id="posterBtn">📸 Save as image</button>
     </div>`;
   el.innerHTML=html;
   const rs=document.getElementById('resultSection');
@@ -1532,6 +1554,83 @@ function toggleTheme(){
     var b=document.getElementById('themeToggle');if(b)b.textContent='☀️';
   }
 })();
+
+
+/* ============================================================
+   SAVE AS POSTER IMAGE  (designed shareable PNG of the week)
+   ============================================================ */
+async function saveWeekPoster(){
+  if(!currentPlan||!currentPlan.days||!currentPlan.days.length){return;}
+  const btn=document.getElementById('posterBtn');
+  const orig=btn.textContent;
+  btn.textContent='📸 Creating…';btn.disabled=true;
+  try{
+    if(typeof html2canvas==='undefined'){alert('Image library still loading — please try again in a second.');btn.textContent=orig;btn.disabled=false;return;}
+    const poster=buildPosterNode();
+    document.body.appendChild(poster);
+    const canvas=await html2canvas(poster,{scale:2,backgroundColor:null,useCORS:true,logging:false});
+    document.body.removeChild(poster);
+    const link=document.createElement('a');
+    link.download='mealody-week.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+    btn.textContent='✓ Saved!';
+    setTimeout(()=>{btn.textContent=orig;btn.disabled=false;},1800);
+  }catch(e){
+    console.error(e);
+    btn.textContent=orig;btn.disabled=false;
+    alert('Could not create the image. Please try again.');
+  }
+}
+
+// Build an off-screen, nicely designed poster node from currentPlan
+function buildPosterNode(){
+  const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+  const cream=isDark?'#1c1830':'#fff8ee';
+  const ink=isDark?'#f3eeff':'#2d2240';
+  const soft=isDark?'#b3a9c9':'#6b5d7a';
+  const card=isDark?'#262040':'#ffffff';
+  const line=isDark?'#3a3356':'#ffe0c2';
+  const slotColors=['#ff7a3c','#3fc56b','#7c5cff'];
+  const wrap=document.createElement('div');
+  wrap.style.cssText=`position:fixed;left:-9999px;top:0;width:820px;padding:44px 40px 52px;background:
+    radial-gradient(circle at 88% -6%,rgba(124,92,255,.16),transparent 46%),
+    radial-gradient(circle at -8% 108%,rgba(255,79,129,.16),transparent 48%),
+    ${cream};font-family:'Plus Jakarta Sans','Inter',sans-serif;box-sizing:border-box;`;
+  // header
+  const days=currentPlan.days.filter(d=>d&&!d.error);
+  wrap.innerHTML=`
+    <div style="text-align:center;margin-bottom:30px;">
+      <div style="font-family:'Fraunces',serif;font-size:30px;font-weight:700;color:#7c5cff;">Mealody<span style="color:#ff7a3c;">.</span></div>
+      <div style="display:inline-block;margin-top:12px;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#fff;background:#ff4f81;padding:6px 16px;border-radius:99px;">Your Week</div>
+      <div style="font-family:'Fraunces',serif;font-size:26px;font-weight:700;color:${ink};margin-top:14px;line-height:1.15;">${currentPlan.theme||'A Delicious Week'}</div>
+      ${currentPlan.note?`<div style="font-size:13px;color:${soft};max-width:560px;margin:10px auto 0;line-height:1.5;">${currentPlan.note}</div>`:''}
+    </div>`;
+  // days grid
+  const grid=document.createElement('div');
+  grid.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:16px;';
+  days.forEach((d)=>{
+    const slots=[['Breakfast',d.breakfast],['Lunch',d.lunch],['Dinner',d.dinner]];
+    const dayCard=document.createElement('div');
+    dayCard.style.cssText=`background:${card};border:2px solid ${ink};border-radius:16px;padding:16px 16px 18px;box-shadow:4px 4px 0 ${line};`;
+    dayCard.innerHTML=`<div style="font-family:'Fraunces',serif;font-size:17px;font-weight:700;color:#fff;background:#ff4f81;display:inline-block;padding:3px 14px;border-radius:99px;margin-bottom:12px;">${d.day||''}</div>`+
+      slots.map((s,i)=>{
+        const m=s[1]||{};
+        return `<div style="margin-bottom:${i<2?'11px':'0'};padding-left:11px;border-left:4px solid ${slotColors[i]};">
+          <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:${slotColors[i]};">${s[0]}</div>
+          <div style="font-family:'Fraunces',serif;font-size:14px;font-weight:600;color:${ink};line-height:1.25;margin-top:1px;">${m.name||'—'}</div>
+        </div>`;
+      }).join('');
+    grid.appendChild(dayCard);
+  });
+  wrap.appendChild(grid);
+  // footer
+  const foot=document.createElement('div');
+  foot.style.cssText=`text-align:center;margin-top:26px;font-size:12px;color:${soft};font-weight:600;`;
+  foot.innerHTML='Planned with 💜 by Mealody · mealody.nusrathfathima.com';
+  wrap.appendChild(foot);
+  return wrap;
+}
 
 function showError(msg){document.getElementById('errorBox').innerHTML=`<div class="error">${msg}</div>`;}
 function clearError(){document.getElementById('errorBox').innerHTML='';}
