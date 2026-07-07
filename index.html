@@ -359,6 +359,9 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 /* the interactive answer area under the latest question */
 .chat-input-area{margin-top:.4rem;animation:chatPop .35s var(--ease) both;}
 .chat-input-card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:1.1rem;box-shadow:4px 4px 0 var(--grape);animation:chatPop .35s var(--ease) both;}
+/* keep the picker within view; only the picker scrolls if it's really tall, actions stay visible */
+.chat-input-card>.field{max-height:46vh;overflow-y:auto;overflow-x:hidden;}
+.chat-actions{position:sticky;bottom:0;background:var(--card);padding-top:.6rem;}
 /* next / skip buttons */
 .chat-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem;flex-wrap:wrap;}
 .chat-btn{font-family:inherit;font-size:.9rem;font-weight:700;padding:.6rem 1.4rem;border-radius:99px;border:2px solid var(--ink);cursor:pointer;transition:all .2s var(--bounce);}
@@ -438,7 +441,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 <section class="hero">
   <div class="wrap">
     <h1>What's cooking,<br/><em>exactly</em> for you?</h1>
-    <p>Tell me what's in your kitchen and how you're feeling — I'll plan your whole week of meals around it.</p>
+    <p>Tell Mealody what's in your kitchen and how you're feeling. It plans a full week of breakfast, lunch, and dinner — built around your ingredients, your mood, and last night's leftovers.</p>
   </div>
 </section>
 
@@ -990,6 +993,15 @@ function scrollChat(){
     if(last)last.scrollIntoView({behavior:'smooth',block:'center'});
   },60);
 }
+// Scroll so the active question bubble sits near the top -> maximum room for the picker below
+function scrollQuestionToTop(){
+  setTimeout(()=>{
+    if(!activeQBubble)return;
+    const row=activeQBubble.closest('.chat-row')||activeQBubble;
+    const y=row.getBoundingClientRect().top+window.pageYOffset-16;
+    window.scrollTo({top:y,behavior:'smooth'});
+  },120);
+}
 
 // Mount the relevant existing picker into the chat input host by MOVING its DOM node.
 function mountPicker(which){
@@ -1031,7 +1043,7 @@ function mountPicker(which){
   actions.appendChild(next);
   card.appendChild(actions);
   host.appendChild(card);
-  host.scrollIntoView&&scrollChat();
+  scrollQuestionToTop();
 }
 
 // For ingredients/leftovers we move the whole field (label head + box + suggestions)
