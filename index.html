@@ -75,13 +75,13 @@ header{padding:1.5rem 0;}
 .tagline{font-size:.72rem;color:#fff;background:var(--berry);text-transform:uppercase;letter-spacing:.14em;padding:.4rem .9rem;border-radius:99px;font-weight:700;transform:rotate(-2deg);box-shadow:0 4px 0 rgba(255,79,129,.3);}
 
 /* HERO */
-.hero{text-align:center;padding:2.5rem 0 3rem;position:relative;}
+.hero{text-align:center;padding:1.5rem 0 .5rem;position:relative;}
 .hero-eyebrow{display:inline-block;font-size:.74rem;color:var(--grape);background:var(--card);border:2px solid var(--grape);text-transform:uppercase;letter-spacing:.14em;font-weight:700;margin-bottom:1.5rem;padding:.45rem 1.1rem;border-radius:99px;transform:rotate(-1.5deg);animation:popin .5s var(--bounce);box-shadow:0 4px 0 rgba(124,92,255,.25);}
-.hero h1{font-family:'Fraunces',serif;font-size:clamp(2.6rem,6.5vw,4.6rem);font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:1.5rem;}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:700;line-height:1;letter-spacing:-.02em;margin-bottom:1rem;}
 .hero h1 em{font-style:normal;color:var(--tang);display:inline-block;position:relative;animation:bobble 2.5s ease-in-out infinite;}
 .hero h1 em::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:5px;background:var(--sun);border-radius:99px;transform:rotate(-1deg);}
 @keyframes bobble{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-8px) rotate(1deg);}}
-.hero p{font-size:1.05rem;color:var(--soft);max-width:540px;margin:0 auto;line-height:1.7;}
+.hero p{font-size:1rem;color:var(--soft);max-width:460px;margin:0 auto;line-height:1.55;}
 @keyframes popin{from{opacity:0;transform:scale(.8) rotate(-1.5deg);}to{opacity:1;transform:scale(1) rotate(-1.5deg);}}
 
 /* PLANNER FORM */
@@ -370,10 +370,10 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-btn:disabled{opacity:.45;cursor:not-allowed;}
 /* progress dots */
 /* welcome screen */
-.chat-welcome{text-align:center;padding:1rem 1rem 1.5rem;max-width:540px;margin:0 auto;min-height:calc(100vh - 140px);display:flex;flex-direction:column;align-items:center;justify-content:center;animation:chatPop .5s var(--ease) both;}
-.cw-mascot{width:88px;height:88px;margin:0 auto -.6rem;animation:cwFloat 3.5s ease-in-out infinite;}
+.chat-welcome{text-align:center;padding:.5rem 1rem 1.5rem;max-width:540px;margin:0 auto;display:flex;flex-direction:column;align-items:center;animation:chatPop .5s var(--ease) both;}
+.cw-mascot{width:82px;height:82px;margin:.3rem auto -.4rem;animation:cwFloat 3.5s ease-in-out infinite;}
 @keyframes cwFloat{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(-8px) rotate(2deg);}}
-.cw-emojis{font-size:1.2rem;letter-spacing:.3rem;margin-bottom:.35rem;opacity:.9;}
+.cw-emojis{font-size:1.15rem;letter-spacing:.3rem;margin-bottom:.9rem;opacity:.9;}
 .cw-title{font-family:'Fraunces',serif;font-size:clamp(1.7rem,4.5vw,2.4rem);font-weight:700;line-height:1.08;margin-bottom:.5rem;color:var(--ink);}
 .cw-sub{font-size:.98rem;color:var(--soft);line-height:1.45;margin-bottom:1.2rem;max-width:340px;margin-left:auto;margin-right:auto;}
 .cw-btn{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;padding:1rem 2.6rem;background:var(--tang);color:#fff;border:3px solid var(--ink);border-radius:99px;cursor:pointer;transition:all .2s var(--bounce);box-shadow:0 6px 0 var(--tang-dim);}
@@ -438,7 +438,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 <section class="hero">
   <div class="wrap">
     <h1>What's cooking,<br/><em>exactly</em> for you?</h1>
-    <p>Tell Mealody what's in your kitchen and how you're feeling. It plans a full week of breakfast, lunch, and dinner — built around your ingredients, your mood, and last night's leftovers.</p>
+    <p>Tell me what's in your kitchen and how you're feeling — I'll plan your whole week of meals around it.</p>
   </div>
 </section>
 
@@ -448,8 +448,6 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
     <div class="chat-welcome" id="chatWelcome">
       <div class="cw-mascot" id="cwMascot"></div>
       <div class="cw-emojis">🍳 🥘 🍲 🥗 🍛</div>
-      <h2 class="cw-title" id="cwTitle"></h2>
-      <p class="cw-sub" id="cwSub"></p>
       <button class="cw-btn" id="cwBtn" onclick="beginChat()">Let's cook! 🍽️</button>
       <div class="cw-hint">Takes about a minute · 7 quick questions</div>
     </div>
@@ -933,9 +931,6 @@ const WELCOME_GREETINGS=[
   {t:"Ready to eat well this week? ✨",s:"I'm Mealody, your meal-planning sidekick. Let's build your week."}
 ];
 function setupWelcome(){
-  const g=WELCOME_GREETINGS[Math.floor(Math.random()*WELCOME_GREETINGS.length)];
-  document.getElementById('cwTitle').textContent=g.t;
-  document.getElementById('cwSub').textContent=g.s;
   document.getElementById('cwMascot').innerHTML=MASCOT_SVG;
 }
 function beginChat(){
