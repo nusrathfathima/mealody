@@ -64,7 +64,7 @@ header{padding:1.5rem 0;}
 .masthead{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;}
 .mast-name{font-family:'Fraunces',serif;font-size:.95rem;font-weight:600;color:var(--ink);text-decoration:none;justify-self:start;transition:color .2s;}
 .mast-name:hover{color:var(--grape);}
-.masthead .logo{justify-self:center;}
+.masthead .logo{justify-self:center;text-decoration:none;cursor:pointer;}
 .masthead .theme-toggle{justify-self:end;}
 .mast-right{display:flex;align-items:center;gap:1rem;}
 .theme-toggle{width:42px;height:42px;border-radius:50%;border:2px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.05rem;transition:all .2s var(--bounce);box-shadow:0 3px 0 var(--line);}
@@ -317,7 +317,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   .week-actions-bottom .act-btn{justify-content:center;}
   /* input card breathing room + reachable actions */
   .chat-input-card{padding:.9rem;}
-  .chat-input-card>.field{max-height:44vh;}
+
 }
 @media(max-width:380px){
   .hero h1{font-size:2.2rem;}
@@ -384,7 +384,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-input-area{margin-top:.4rem;animation:chatPop .35s var(--ease) both;}
 .chat-input-card{background:var(--card);border:2px solid var(--ink);border-radius:18px;padding:1.1rem;box-shadow:4px 4px 0 var(--grape);animation:chatPop .35s var(--ease) both;}
 /* keep the picker within view; only the picker scrolls if it's really tall, actions stay visible */
-.chat-input-card>.field{max-height:46vh;overflow-y:auto;overflow-x:hidden;}
+.chat-input-card>.field{overflow:visible;}
 .chat-actions{position:sticky;bottom:0;background:var(--card);padding-top:.6rem;}
 /* next / skip buttons */
 .chat-actions{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem;flex-wrap:wrap;}
@@ -394,6 +394,8 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .chat-btn.next:active{transform:translateY(2px);box-shadow:0 2px 0 var(--tang-dim);}
 .chat-btn.skip{background:var(--card);color:var(--soft);box-shadow:0 3px 0 var(--line);}
 .chat-btn.skip:hover{transform:translateY(-2px);}
+.chat-btn.back{background:var(--card);color:var(--soft);box-shadow:0 3px 0 var(--line);}
+.chat-btn.back:hover{transform:translateY(-2px);color:var(--grape);}
 .chat-btn:disabled{opacity:.45;cursor:not-allowed;}
 /* progress dots */
 /* welcome screen */
@@ -477,8 +479,8 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 
 <header>
   <div class="wrap masthead">
-    <a href="https://nusrathfathima.com" class="mast-name">Nusrath Fathima</a>
-    <div class="logo">Mealody<span class="dot">.</span></div>
+    <a href="https://nusrathfathima.com" class="mast-name" target="_blank" rel="noopener">Nusrath Fathima</a>
+    <a href="#" class="logo" onclick="mealodyHome();return false;">Mealody<span class="dot">.</span></a>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
   </div>
 </header>
@@ -497,7 +499,6 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
       <div class="cw-mascot" id="cwMascot"></div>
       <div class="cw-emojis">🍳 🥘 🍲 🥗 🍛</div>
       <button class="cw-btn" id="cwBtn" onclick="beginChat()">Let's cook! 🍽️</button>
-      <div class="cw-hint">Takes about a minute · 7 quick questions</div>
     </div>
     <!-- Chat (hidden until begun) -->
     <div class="chat-main" id="chatMain" style="display:none;">
@@ -600,7 +601,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 
 <footer>
   <div class="wrap">
-    Built by <a href="https://nusrathfathima.com">Nusrath Fathima</a> · Powered by AI
+    Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
 
@@ -1075,11 +1076,11 @@ function mountPicker(which){
   const actions=document.createElement('div');
   actions.className='chat-actions';
   const step=CHAT_STEPS[chatStep];
-  if(!step.required){
-    const skip=document.createElement('button');
-    skip.className='chat-btn skip';skip.textContent='Skip';
-    skip.onclick=()=>advance(true);
-    actions.appendChild(skip);
+  if(chatStep>0){
+    const back=document.createElement('button');
+    back.className='chat-btn back';back.textContent='← Back';
+    back.onclick=()=>goBack();
+    actions.appendChild(back);
   }
   const next=document.createElement('button');
   next.className='chat-btn next';
@@ -1111,6 +1112,40 @@ function askStep(){
   },650);
 }
 
+function goBack(){
+  if(chatStep<=0)return;
+  // return the current step's picker to the hidden form
+  returnPicker(CHAT_STEPS[chatStep].mount);
+  chatHost().innerHTML='';
+  // step back
+  chatStep--;
+  // remove chat bubbles belonging to the current (now-previous) exchange:
+  // we strip from the end until we've removed the previous question's block.
+  // Simplest robust approach: rebuild the stream up to the target step.
+  rebuildChatUpTo(chatStep);
+  renderProgress();
+  askStep();
+}
+// Rebuild the visible conversation to just before question `idx` is asked
+function rebuildChatUpTo(idx){
+  const stream=chatStream();
+  stream.innerHTML='';
+  // re-echo each completed step's question + the user's stored answer + quip
+  for(let i=0;i<idx;i++){
+    const s=CHAT_STEPS[i];
+    // question bubble (no active gradient; it's answered)
+    const q=document.createElement('div');
+    q.className='chat-row bot'+(i===0?' greeting':'');
+    q.innerHTML=`<div class="chat-avatar">${MASCOT_SVG}</div><div class="bubble bot">${s.q}</div>`;
+    stream.appendChild(q);
+    // user's answer
+    const ans=s.summary&&s.summary();
+    const u=document.createElement('div');
+    u.className='chat-row user';
+    u.innerHTML=`<div class="bubble user">${ans&&ans.length?ans:'—'}</div>`;
+    stream.appendChild(u);
+  }
+}
 function advance(skipped){
   const step=CHAT_STEPS[chatStep];
   // validation for required steps
@@ -1178,6 +1213,11 @@ function finishChat(){
   },700);
 }
 
+function mealodyHome(){
+  // return to the welcome/banner (fresh start)
+  if(typeof restartChat==='function'){restartChat();}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
 function restartChat(){
   // reset everything and rebuild the conversation
   ingList=[];leftList=[];
