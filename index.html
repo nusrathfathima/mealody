@@ -1634,11 +1634,34 @@ async function saveWeekPoster(){
     document.body.appendChild(poster);
     const canvas=await html2canvas(poster,{scale:2,backgroundColor:null,useCORS:true,logging:false});
     document.body.removeChild(poster);
-    const link=document.createElement('a');
-    link.download='mealody-week.png';
-    link.href=canvas.toDataURL('image/png');
-    link.click();
-    btn.textContent='✓ Saved!';
+
+    // Convert to a blob (works better than data URLs on mobile)
+    const blob=await new Promise(res=>canvas.toBlob(res,'image/png'));
+    const file=new File([blob],'mealody-week.png',{type:'image/png'});
+
+    // On mobile, the download attribute is ignored — use the Web Share API so the
+    // user can save to Photos / share. Fall back to a normal download on desktop.
+    const canShareFile = navigator.canShare && navigator.canShare({files:[file]});
+    if(canShareFile){
+      try{
+        await navigator.share({files:[file],title:'My Mealody week',text:'My meal plan from Mealody 🍲'});
+        btn.textContent='✓ Shared!';
+      }catch(shareErr){
+        // user cancelled the share sheet — not an error
+        btn.textContent=orig;btn.disabled=false;return;
+      }
+    }else{
+      // Desktop / browsers without file share: download via object URL
+      const url=URL.createObjectURL(blob);
+      const link=document.createElement('a');
+      link.download='mealody-week.png';
+      link.href=url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(()=>URL.revokeObjectURL(url),4000);
+      btn.textContent='✓ Saved!';
+    }
     setTimeout(()=>{btn.textContent=orig;btn.disabled=false;},1800);
   }catch(e){
     console.error(e);
