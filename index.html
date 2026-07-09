@@ -1345,7 +1345,15 @@ async function generatePlan(){
     document.getElementById('loadingSection').style.display='none';
     document.getElementById('chatSection').style.display='block';
     document.getElementById('chatRestart').style.display='block';
-    addBotBubble("Hmm, my kitchen hiccuped 😅 Tap \"Start over\" and let's try again!","quip");
+    // Friendly, specific messages. 429 / budget limits get a gentle "taking a break" note.
+    const status=err&&err.status;
+    if(status===429||status===529){
+      addBotBubble("Whew! 😅 My kitchen's a little overwhelmed right now — lots of meals cooking at once. Give me a few minutes to catch my breath, then tap \"Start over\" to try again. 🍲","quip");
+    }else if(status===402||status===403){
+      addBotBubble("Aw, my pantry's run empty for now! 🧺 Mealody's taking a short break — please check back a little later. Thanks for cooking with me! 💜","quip");
+    }else{
+      addBotBubble("Hmm, my kitchen hiccuped 😅 Tap \"Start over\" and let's try again in a moment!","quip");
+    }
     console.error(err);
   }
 }
@@ -1405,7 +1413,7 @@ async function callAI(prompt){
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({prompt})
     });
-    if(!res.ok)throw new Error("backend "+res.status);
+    if(!res.ok){const e=new Error("backend "+res.status);e.status=res.status;throw e;}
     data=await res.json();
   }catch(e){
     // Preview fallback (no backend present)
