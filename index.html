@@ -460,6 +460,39 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   .chat-input-card{padding:.9rem;}
 }
 
+/* ===== RECIPE SHEET (tap a meal card) ===== */
+.rsheet-backdrop{position:fixed;inset:0;background:rgba(45,34,64,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);z-index:900;opacity:0;pointer-events:none;transition:opacity .25s var(--ease);}
+.rsheet-backdrop.open{opacity:1;pointer-events:auto;}
+.rsheet{position:fixed;z-index:901;left:50%;top:50%;transform:translate(-50%,-46%) scale(.96);width:min(640px,calc(100vw - 2rem));max-height:85vh;display:flex;flex-direction:column;background:var(--card);border:3px solid var(--ink);border-radius:var(--r);box-shadow:10px 10px 0 var(--rs-mc,var(--grape));opacity:0;pointer-events:none;transition:opacity .25s var(--ease),transform .3s var(--bounce);overflow:hidden;}
+.rsheet.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1);}
+.rsheet-head{padding:1.5rem 1.5rem 1rem;border-bottom:2px dashed var(--line);position:relative;flex-shrink:0;}
+.rsheet-head::before{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:var(--rs-mc,var(--grape));}
+.rsheet-slot{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#fff;background:var(--rs-mc,var(--grape));padding:.2rem .6rem;border-radius:99px;width:fit-content;margin:.35rem 0 .5rem;}
+.rsheet-title{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:700;line-height:1.2;padding-right:2.4rem;}
+.rsheet-meta{font-size:.82rem;color:var(--soft);margin-top:.3rem;}
+.rsheet-close{position:absolute;top:1.15rem;right:1.1rem;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--sun);color:var(--ink);cursor:pointer;font-size:.9rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:transform .2s var(--bounce);z-index:2;}
+.rsheet-close:hover{transform:rotate(90deg) scale(1.08);}
+.rsheet-body{padding:1.2rem 1.5rem 1.6rem;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.rsheet-sec{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;margin:1.2rem 0 .6rem;display:flex;align-items:center;gap:.45rem;}
+.rsheet-sec:first-child{margin-top:0;}
+.rsheet-ings{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.1rem .9rem;}
+.rsheet-ing{font-size:.86rem;color:var(--ink);padding:.4rem 0;border-bottom:2px dashed var(--line);display:flex;gap:.5rem;align-items:baseline;}
+.rsheet-ing::before{content:"•";color:var(--rs-mc,var(--grape));font-weight:800;}
+.rsheet-steps{list-style:none;display:flex;flex-direction:column;gap:.75rem;counter-reset:rstep;}
+.rsheet-step{display:flex;gap:.7rem;font-size:.88rem;line-height:1.55;color:var(--ink);}
+.rsheet-step::before{counter-increment:rstep;content:counter(rstep);flex-shrink:0;width:24px;height:24px;border-radius:50%;border:2px solid var(--ink);background:var(--rs-mc,var(--grape));color:#fff;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:.15rem;}
+.rsheet-placeholder{background:var(--cream);border:2px dashed var(--line);border-radius:var(--r-sm);padding:1rem 1.1rem;font-size:.85rem;color:var(--soft);line-height:1.55;}
+.meal[onclick]{cursor:pointer;}
+.meal-tap{font-size:.72rem;font-weight:700;color:var(--mc,var(--grape));margin-top:.1rem;}
+body.rsheet-open{overflow:hidden;}
+@media(max-width:560px){
+  .rsheet{left:0;right:0;bottom:0;top:auto;width:100%;max-height:88vh;transform:translateY(103%);border-radius:var(--r) var(--r) 0 0;border-bottom:none;box-shadow:0 -6px 0 var(--rs-mc,var(--grape));}
+  .rsheet.open{transform:translateY(0);}
+  .rsheet::after{content:"";position:absolute;top:.65rem;left:50%;transform:translateX(-50%);width:44px;height:5px;border-radius:99px;background:var(--line);opacity:.9;}
+  .rsheet-head{padding-top:1.7rem;}
+  .rsheet-body{padding:1rem 1.15rem 1.4rem;}
+}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
 /* ===== PRINT: one day per page ===== */
@@ -477,7 +510,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   .meal{border:1.5px solid #333!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid;}
   .day-name{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .meal::before{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .meal-regen,.day-retry{display:none!important;}
+  .meal-regen,.day-retry,.meal-tap,.rsheet-backdrop,.rsheet{display:none!important;}
   @page{margin:1.5cm;}
 }
 
@@ -614,6 +647,18 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
     Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
+
+<!-- ===== RECIPE SHEET (opens when a meal card is tapped) ===== -->
+<div class="rsheet-backdrop" id="rsheetBackdrop" onclick="closeRecipeSheet()"></div>
+<div class="rsheet" id="rsheet" role="dialog" aria-modal="true" aria-labelledby="rsheetTitle">
+  <div class="rsheet-head">
+    <button class="rsheet-close" onclick="closeRecipeSheet()" aria-label="Close recipe">✕</button>
+    <div class="rsheet-slot" id="rsheetSlot"></div>
+    <div class="rsheet-title" id="rsheetTitle"></div>
+    <div class="rsheet-meta" id="rsheetMeta"></div>
+  </div>
+  <div class="rsheet-body" id="rsheetBody"></div>
+</div>
 
 <script>
 /* ── STATE ── */
@@ -1562,14 +1607,53 @@ Respond ONLY with valid JSON, no markdown: {"breakfast":{"name":"","why":"","ing
 }
 
 function mealCard(m,slot,dayIdx,slotKey){
-  return `<div class="meal" id="meal-${dayIdx}-${slotKey}">
-    <button class="meal-regen" onclick="regenMeal(${dayIdx},'${slotKey}')" title="Swap this meal">↻</button>
+  return `<div class="meal" id="meal-${dayIdx}-${slotKey}" onclick="openRecipeSheet(${dayIdx},'${slotKey}')">
+    <button class="meal-regen" onclick="event.stopPropagation();regenMeal(${dayIdx},'${slotKey}')" title="Swap this meal">↻</button>
     <span class="meal-slot">${slot}</span>
     <div class="meal-name">${m.name}</div>
     <div class="meal-why">${m.why}</div>
     <div class="meal-ingredients">${m.ingredients}</div>
+    <div class="meal-tap">📖 Tap for recipe</div>
   </div>`;
 }
+
+/* ── RECIPE SHEET (Step 1: UI shell — real recipe generation arrives in Step 2) ── */
+const SLOT_COLORS={breakfast:'var(--tang)',lunch:'var(--lime)',dinner:'var(--grape)'};
+let rsheetFor=null;
+
+function openRecipeSheet(dayIdx,slotKey){
+  const day=currentPlan&&currentPlan.days&&currentPlan.days[dayIdx];
+  if(!day||day.error||!day[slotKey])return;
+  const m=day[slotKey];
+  rsheetFor={dayIdx,slotKey};
+  const sheet=document.getElementById('rsheet');
+  sheet.style.setProperty('--rs-mc',SLOT_COLORS[slotKey]||'var(--grape)');
+  document.getElementById('rsheetSlot').textContent=slotKey.charAt(0).toUpperCase()+slotKey.slice(1);
+  document.getElementById('rsheetTitle').textContent=m.name;
+  document.getElementById('rsheetMeta').textContent=`${day.day}${m.why?' · '+m.why:''}`;
+  renderRecipeBody(m);
+  document.getElementById('rsheetBackdrop').classList.add('open');
+  sheet.classList.add('open');
+  document.body.classList.add('rsheet-open');
+  document.getElementById('rsheetBody').scrollTop=0;
+}
+
+function renderRecipeBody(m){
+  const ings=(m.ingredients||'').split(',').map(s=>s.trim()).filter(Boolean);
+  document.getElementById('rsheetBody').innerHTML=`
+    <div class="rsheet-sec">🧺 Key ingredients</div>
+    <div class="rsheet-ings">${ings.map(i=>`<div class="rsheet-ing">${i}</div>`).join('')}</div>
+    <div class="rsheet-sec">👩‍🍳 Steps</div>
+    <div class="rsheet-placeholder">The full recipe — measured ingredients, numbered steps, timing and a chef's tip — gets cooked up right here in the next build step. For now, admire the plating! 🍽️</div>`;
+}
+
+function closeRecipeSheet(){
+  rsheetFor=null;
+  document.getElementById('rsheetBackdrop').classList.remove('open');
+  document.getElementById('rsheet').classList.remove('open');
+  document.body.classList.remove('rsheet-open');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&rsheetFor)closeRecipeSheet();});
 
 /* ── REGENERATE ONE MEAL ── */
 async function regenMeal(dayIdx,slotKey){
