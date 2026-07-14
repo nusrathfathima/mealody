@@ -9,10 +9,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt } = req.body || {};
+    const { prompt, maxTokens } = req.body || {};
     if (!prompt || typeof prompt !== "string") {
       return res.status(400).json({ error: "Missing prompt" });
     }
+
+    // Clients may request a bigger output budget (recipes need more room than
+    // meal plans), but we CLAMP it server-side so nobody hitting this endpoint
+    // directly can demand huge outputs on your API key.
+    const mt = Math.min(Math.max(parseInt(maxTokens, 10) || 1600, 256), 3000);
 
     // The secret key lives in an environment variable on Vercel — never in code.
     const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -29,7 +34,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5",
-        max_tokens: 1600,
+        max_tokens: mt,
         messages: [{ role: "user", content: prompt }]
       })
     });

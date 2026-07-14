@@ -483,7 +483,13 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .rsheet-step::before{counter-increment:rstep;content:counter(rstep);flex-shrink:0;width:24px;height:24px;border-radius:50%;border:2px solid var(--ink);background:var(--rs-mc,var(--grape));color:#fff;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:.15rem;}
 .rsheet-placeholder{background:var(--cream);border:2px dashed var(--line);border-radius:var(--r-sm);padding:1rem 1.1rem;font-size:.85rem;color:var(--soft);line-height:1.55;}
 .meal[onclick]{cursor:pointer;}
-.meal-tap{font-size:.72rem;font-weight:700;color:var(--mc,var(--grape));margin-top:.1rem;}
+.meal-tap{font-size:.72rem;font-weight:700;color:var(--mc,var(--grape));margin-top:.1rem;transition:all .2s var(--bounce);}
+.meal:hover .meal-tap{color:var(--ink);transform:translateX(4px);}
+.rsheet-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem;}
+.rsheet-badge{font-size:.74rem;font-weight:700;color:var(--ink);background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.25rem .7rem;}
+.rsheet-tip{background:var(--cream);border:2px dashed var(--rs-mc,var(--grape));border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.85rem;color:var(--ink);line-height:1.55;}
+.rsheet-loading{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:2.2rem 1rem;text-align:center;}
+.rsheet-pot{font-size:2.2rem;animation:potbounce 1.2s var(--bounce) infinite;}
 body.rsheet-open{overflow:hidden;}
 @media(max-width:560px){
   .rsheet{left:0;right:0;bottom:0;top:auto;width:100%;max-height:88vh;transform:translateY(103%);border-radius:var(--r) var(--r) 0 0;border-bottom:none;box-shadow:0 -6px 0 var(--rs-mc,var(--grape));}
@@ -1393,6 +1399,9 @@ async function generatePlan(){
       if(!currentPlan.days[i]){currentPlan.days[i]={day:DAYS[i],error:true};renderDayError(DAYS[i],i);}
     }
     hideProgress();
+    // if the user already opened a recipe while days were still cooking,
+    // sweep the queue again so late-arriving days get their recipes too
+    if(recipeQueueStarted)runRecipeQueue();
 
     // STEP 3: build the shopping list from everything generated
   }catch(err){
@@ -1457,7 +1466,7 @@ Respond ONLY with valid JSON, no markdown, with one entry per requested day in o
 {"days":[${days.map(d=>'{"breakfast":{"name":"","why":"","ingredients":""},"lunch":{"name":"","why":"","ingredients":""},"dinner":{"name":"","why":"","ingredients":""}}').join(',')}]}`;
 }
 
-async function callAI(prompt){
+async function callAI(prompt,maxTokens){
   // When deployed (on Vercel), call YOUR serverless function which keeps the API key secret.
   // When running inside the Claude preview, that endpoint doesn't exist, so fall back to a
   // direct call (which only works in the preview environment).
@@ -1466,7 +1475,7 @@ async function callAI(prompt){
     const res=await fetch("/api/generate",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({prompt})
+      body:JSON.stringify(maxTokens?{prompt,maxTokens}:{prompt})
     });
     if(!res.ok){const e=new Error("backend "+res.status);e.status=res.status;throw e;}
     data=await res.json();
@@ -1475,7 +1484,7 @@ async function callAI(prompt){
     const res=await fetch("https://api.anthropic.com/v1/messages",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:1600,messages:[{role:"user",content:prompt}]})
+      body:JSON.stringify({model:"claude-haiku-4-5",max_tokens:maxTokens||1600,messages:[{role:"user",content:prompt}]})
     });
     data=await res.json();
   }
@@ -1617,7 +1626,14 @@ function mealCard(m,slot,dayIdx,slotKey){
   </div>`;
 }
 
-/* ── RECIPE SHEET (Step 1: UI shell — real recipe generation arrives in Step 2) ── */
+/* ── RECIPE SHEET + GENERATION (Step 2) ──
+   Recipes are generated with a "first-intent" strategy:
+   nothing is generated until the user first taps a meal card.
+   That tap fetches its own recipe immediately (priority), and
+   kicks off a background queue that fills in the rest of the
+   week, 2 days (6 recipes) per API call. Every recipe is also
+   cached in localStorage keyed by dish+servings+diet, so repeat
+   dishes across plans cost nothing. */
 const SLOT_COLORS={breakfast:'var(--tang)',lunch:'var(--lime)',dinner:'var(--grape)'};
 let rsheetFor=null;
 
@@ -1631,7 +1647,11 @@ function openRecipeSheet(dayIdx,slotKey){
   document.getElementById('rsheetSlot').textContent=slotKey.charAt(0).toUpperCase()+slotKey.slice(1);
   document.getElementById('rsheetTitle').textContent=m.name;
   document.getElementById('rsheetMeta').textContent=`${day.day}${m.why?' · '+m.why:''}`;
+  // cached from a previous plan? use it for free
+  if(!m.recipe){const c=cacheGetRecipe(m.name);if(c){m.recipe=c;markRecipeReady(dayIdx,slotKey);}}
   renderRecipeBody(m);
+  if(!m.recipe){fetchRecipeFor(dayIdx,slotKey);}   // priority: tapped meal first
+  ensureRecipeQueue();                              // then the rest of the week in background
   document.getElementById('rsheetBackdrop').classList.add('open');
   sheet.classList.add('open');
   document.body.classList.add('rsheet-open');
@@ -1639,12 +1659,34 @@ function openRecipeSheet(dayIdx,slotKey){
 }
 
 function renderRecipeBody(m){
-  const ings=(m.ingredients||'').split(',').map(s=>s.trim()).filter(Boolean);
-  document.getElementById('rsheetBody').innerHTML=`
-    <div class="rsheet-sec">🧺 Key ingredients</div>
-    <div class="rsheet-ings">${ings.map(i=>`<div class="rsheet-ing">${i}</div>`).join('')}</div>
-    <div class="rsheet-sec">👩‍🍳 Steps</div>
-    <div class="rsheet-placeholder">The full recipe — measured ingredients, numbered steps, timing and a chef's tip — gets cooked up right here in the next build step. For now, admire the plating! 🍽️</div>`;
+  const body=document.getElementById('rsheetBody');
+  if(m.recipe){
+    const r=m.recipe;
+    body.innerHTML=`
+      <div class="rsheet-badges">
+        ${r.time?`<span class="rsheet-badge">⏱️ ${r.time}</span>`:''}
+        <span class="rsheet-badge">🍽️ Serves ${lastInputs?lastInputs.servings:'?'}</span>
+      </div>
+      <div class="rsheet-sec">🧺 Ingredients</div>
+      <div class="rsheet-ings">${(r.ing||[]).map(i=>`<div class="rsheet-ing">${i}</div>`).join('')}</div>
+      <div class="rsheet-sec">👩‍🍳 Steps</div>
+      <ol class="rsheet-steps">${(r.steps||[]).map(s=>`<li class="rsheet-step">${s}</li>`).join('')}</ol>
+      ${r.tip?`<div class="rsheet-sec">💡 Chef's tip</div><div class="rsheet-tip">${r.tip}</div>`:''}`;
+  }else{
+    body.innerHTML=`<div class="rsheet-loading"><div class="rsheet-pot">🍳</div><div class="skel-msg">${randomFunny()}</div></div>`;
+  }
+}
+
+function renderRecipeError(dayIdx,slotKey){
+  document.getElementById('rsheetBody').innerHTML=
+    `<div class="rsheet-placeholder" style="text-align:center;cursor:pointer" onclick="retryRecipe(${dayIdx},'${slotKey}')">
+       😅 The recipe slipped off the counter.<br/><b>Tap to try again</b>
+     </div>`;
+}
+function retryRecipe(dayIdx,slotKey){
+  const m=currentPlan.days[dayIdx][slotKey];
+  renderRecipeBody(m);            // shows loading state
+  fetchRecipeFor(dayIdx,slotKey);
 }
 
 function closeRecipeSheet(){
@@ -1654,6 +1696,129 @@ function closeRecipeSheet(){
   document.body.classList.remove('rsheet-open');
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&rsheetFor)closeRecipeSheet();});
+
+/* mark a card as having its recipe ready */
+function markRecipeReady(dayIdx,slotKey){
+  const card=document.getElementById(`meal-${dayIdx}-${slotKey}`);
+  if(!card)return;
+  const t=card.querySelector('.meal-tap');
+  if(t)t.textContent='📖 Recipe ready ✓';
+}
+
+/* ── RECIPE CACHE (localStorage, keyed by dish + servings + diet) ── */
+function recipeCacheKey(name){
+  const s=lastInputs?lastInputs.servings:'',d=lastInputs?lastInputs.diet:'';
+  return (String(name).trim()+'|'+s+'|'+d).toLowerCase();
+}
+function cacheGetRecipe(name){
+  try{
+    const c=JSON.parse(localStorage.getItem('mealody.recipeCache')||'{}');
+    const hit=c[recipeCacheKey(name)];
+    return hit?hit.r:null;
+  }catch(e){return null;}
+}
+function cachePutRecipe(name,recipe){
+  try{
+    const c=JSON.parse(localStorage.getItem('mealody.recipeCache')||'{}');
+    const keys=Object.keys(c);
+    if(keys.length>=80)delete c[keys[0]];   // simple size cap: drop oldest entry
+    c[recipeCacheKey(name)]={r:recipe,t:Date.now()};
+    localStorage.setItem('mealody.recipeCache',JSON.stringify(c));
+  }catch(e){/* storage full or blocked — recipes just won't cache */}
+}
+
+/* ── PRIORITY FETCH: one recipe, right now (for the tapped meal) ── */
+async function fetchRecipeFor(dayIdx,slotKey){
+  const day=currentPlan&&currentPlan.days&&currentPlan.days[dayIdx];
+  if(!day||day.error)return;
+  const m=day[slotKey];
+  if(!m||m.recipe||m.recipeLoading)return;
+  m.recipeLoading=true;
+  try{
+    const r=await callAI(singleRecipePrompt(m),900);
+    if(r&&r.steps){
+      m.recipe=r;cachePutRecipe(m.name,r);markRecipeReady(dayIdx,slotKey);
+      if(rsheetFor&&rsheetFor.dayIdx===dayIdx&&rsheetFor.slotKey===slotKey)renderRecipeBody(m);
+    }
+  }catch(e){
+    console.error('recipe fetch failed',e);
+    if(rsheetFor&&rsheetFor.dayIdx===dayIdx&&rsheetFor.slotKey===slotKey)renderRecipeError(dayIdx,slotKey);
+  }finally{m.recipeLoading=false;}
+}
+
+/* ── BACKGROUND QUEUE: fills the rest of the week, 2 days per call ── */
+let recipeQueueStarted=false,recipeQueueRunning=false,recipeQueueRerun=false;
+function ensureRecipeQueue(){
+  if(recipeQueueStarted)return;
+  recipeQueueStarted=true;
+  runRecipeQueue();
+}
+async function runRecipeQueue(){
+  if(recipeQueueRunning){recipeQueueRerun=true;return;}
+  recipeQueueRunning=true;
+  do{
+    recipeQueueRerun=false;
+    const pairs=[[0,1],[2,3],[4,5],[6]];
+    for(const pair of pairs){
+      const items=[];
+      pair.forEach(di=>{
+        const d=currentPlan&&currentPlan.days&&currentPlan.days[di];
+        if(!d||d.error)return;
+        ['breakfast','lunch','dinner'].forEach(s=>{
+          const m=d[s];
+          if(!m||m.recipe||m.recipeLoading)return;
+          const c=cacheGetRecipe(m.name);
+          if(c){m.recipe=c;markRecipeReady(di,s);return;}
+          items.push({di,s,m});
+        });
+      });
+      if(!items.length)continue;
+      items.forEach(it=>it.m.recipeLoading=true);
+      try{
+        const res=await callAI(batchRecipePrompt(items),2600);
+        (res.recipes||[]).forEach((r,i)=>{
+          const it=items[i];
+          if(it&&r&&r.steps){
+            it.m.recipe=r;cachePutRecipe(it.m.name,r);markRecipeReady(it.di,it.s);
+            if(rsheetFor&&rsheetFor.dayIdx===it.di&&rsheetFor.slotKey===it.s)renderRecipeBody(it.m);
+          }
+        });
+      }catch(e){console.error('recipe batch failed',e);/* meals stay lazy — a tap will fetch them */}
+      items.forEach(it=>it.m.recipeLoading=false);
+      await new Promise(r=>setTimeout(r,400));   // small gap between calls, gentle on rate limits
+    }
+  }while(recipeQueueRerun);
+  recipeQueueRunning=false;
+}
+
+/* ── RECIPE PROMPTS (compact by design: output tokens are the expensive part) ── */
+function recipeRules(){
+  const inp=lastInputs;
+  return `Rules for EVERY recipe (keep them tight):
+- "time": total time like "25 min"
+- "ing": ingredients as "item – quantity" strings scaled to ${inp.servings} servings, max 10 items
+- "steps": max 8 steps, each ONE short plain sentence
+- "tip": ONE short practical tip
+- everyday language, no filler, no greetings`;
+}
+function singleRecipePrompt(m){
+  const inp=lastInputs;
+  return `You are Mealody, a friendly home cook writing a SHORT, clear recipe.
+Dish: ${m.name}. Servings: ${inp.servings}. Diet: ${inp.diet}. Strictly avoid: ${inp.allergies||'none'}.
+${recipeRules()}
+Respond ONLY with valid JSON, no markdown: {"time":"","ing":[""],"steps":[""],"tip":""}`;
+}
+function batchRecipePrompt(items){
+  const inp=lastInputs;
+  const list=items.map((it,i)=>`${i+1}. ${it.m.name} (${DAYS[it.di]} ${it.s})`).join('\n');
+  return `You are Mealody, a friendly home cook writing SHORT, clear recipes.
+Servings: ${inp.servings}. Diet: ${inp.diet}. Strictly avoid: ${inp.allergies||'none'}.
+Write one recipe for EACH dish below, in this exact order:
+${list}
+${recipeRules()}
+Respond ONLY with valid JSON, no markdown, with exactly ${items.length} recipes in the given order:
+{"recipes":[{"time":"","ing":[""],"steps":[""],"tip":""}]}`;
+}
 
 /* ── REGENERATE ONE MEAL ── */
 async function regenMeal(dayIdx,slotKey){
@@ -1668,8 +1833,12 @@ Respond ONLY with valid JSON, no markdown: {"name":"","why":"","ingredients":""}
   try{
     const data=await callAI(prompt);
     currentPlan.days[dayIdx][slotKey]=data;
+    // the swapped-in dish might already be in the recipe cache — free win
+    const cached=cacheGetRecipe(data.name);
+    if(cached)data.recipe=cached;
     const slotLabel=slotKey.charAt(0).toUpperCase()+slotKey.slice(1);
     card.outerHTML=mealCard(data,slotLabel,dayIdx,slotKey);
+    if(data.recipe)markRecipeReady(dayIdx,slotKey);
   }catch(err){
     card.classList.remove('regenerating');
     console.error(err);
@@ -1681,6 +1850,9 @@ window.addEventListener('beforeunload',function(){window.scrollTo(0,0);});
 window.addEventListener('load',function(){window.scrollTo(0,0);});
 
 function resetPlanner(){
+  // reset recipe engine for the next plan
+  recipeQueueStarted=false;recipeQueueRerun=false;
+  closeRecipeSheet();
   // clear all selections for a fresh start
   ingList=[];leftList=[];
   renderChips(ingList,'ingChips','removeIng');
