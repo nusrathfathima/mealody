@@ -499,6 +499,54 @@ body.rsheet-open{overflow:hidden;}
   .rsheet-body{padding:1rem 1.15rem 1.4rem;}
 }
 
+/* ===== HEADER ICON BUTTONS ===== */
+.mast-icon{width:38px;height:38px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s var(--bounce);box-shadow:0 3px 0 var(--line);}
+.mast-icon:hover{transform:translateY(-2px) rotate(-6deg);}
+.masthead .mast-right{justify-self:end;}
+@media(max-width:380px){.mast-icon{width:32px;height:32px;font-size:.85rem;}.theme-toggle{width:36px;height:36px;}.mast-right{gap:.4rem;}}
+
+/* ===== RECIPE SHEET ACTION BUTTONS ===== */
+.rsheet-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.3rem;}
+.rs-act{flex:1;min-width:128px;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:99px;padding:.6rem .9rem;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;box-shadow:0 3px 0 var(--line);transition:all .15s var(--bounce);}
+.rs-act:hover{transform:translateY(-2px);}
+.rs-act.on{background:var(--grape);color:#fff;}
+
+/* ===== PANES (My Dishes / Groceries / Export) reuse the rsheet look ===== */
+.mpane{z-index:881;}
+.mpane-b{z-index:880;}
+.dl-item{display:flex;align-items:center;gap:.7rem;border:2px solid var(--line);border-radius:var(--r-sm);padding:.7rem .9rem;margin-bottom:.6rem;background:var(--cream);}
+.dl-info{flex:1;cursor:pointer;min-width:0;}
+.dl-name{font-weight:800;font-size:.95rem;}
+.dl-meta{font-size:.74rem;color:var(--soft);margin-top:.15rem;}
+.dl-btn{width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s var(--bounce);}
+.dl-btn:hover{transform:scale(1.12);}
+.dl-empty{text-align:center;color:var(--soft);font-size:.9rem;padding:2rem 1rem;line-height:1.6;}
+.g-item{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:2px dashed var(--line);cursor:pointer;user-select:none;}
+.g-box{width:20px;height:20px;border:2px solid var(--ink);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:var(--card);}
+.g-item.done .g-box{background:var(--lime);}
+.g-item.done .g-box::after{content:"✓";}
+.g-item.done .g-name{text-decoration:line-through;color:var(--soft);}
+.g-name{flex:1;font-size:.9rem;}
+.g-qty{font-size:.78rem;color:var(--soft);}
+.g-actions{display:flex;gap:.6rem;margin-top:1.1rem;}
+.g-actions .rs-act{min-width:0;}
+
+/* ===== EXPORT CHOOSER ===== */
+.exp-opt{display:block;width:100%;text-align:left;border:2px solid var(--ink);background:var(--cream);border-radius:var(--r-sm);padding:1rem 1.1rem;margin-bottom:.7rem;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:0 3px 0 var(--line);transition:transform .15s var(--bounce);}
+.exp-opt:hover{transform:translateY(-2px);}
+.exp-opt b{display:block;font-size:1rem;margin-bottom:.15rem;}
+.exp-opt span{font-size:.8rem;color:var(--soft);}
+.exp-day{display:flex;align-items:center;gap:.6rem;padding:.4rem 0;cursor:pointer;font-size:.9rem;font-weight:600;}
+.exp-prog{font-size:.85rem;color:var(--soft);margin-top:.9rem;text-align:center;line-height:1.5;}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,150%);background:var(--ink);color:var(--card);border-radius:99px;padding:.7rem 1.3rem;font-size:.86rem;font-weight:700;z-index:950;transition:transform .35s var(--bounce);box-shadow:0 4px 0 rgba(0,0,0,.25);max-width:92vw;text-align:center;pointer-events:none;}
+.toast.show{transform:translate(-50%,0);}
+
+/* ===== PRINT HELPERS (hidden on screen) ===== */
+#rprint{display:none;}
+.meal-recipe-print{display:none;}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
 /* ===== PRINT: one day per page ===== */
@@ -516,7 +564,24 @@ body.rsheet-open{overflow:hidden;}
   .meal{border:1.5px solid #333!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid;}
   .day-name{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .meal::before{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .meal-regen,.day-retry,.meal-tap,.rsheet-backdrop,.rsheet{display:none!important;}
+  .meal-regen,.day-retry,.meal-tap,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast{display:none!important;}
+  /* per-meal recipes injected for "Plan + recipes" export */
+  .meal-recipe-print{display:block!important;font-size:9pt;line-height:1.45;border-top:1px dashed #999;margin-top:6pt;padding-top:6pt;}
+  .meal-recipe-print .mrp-t{font-weight:700;margin-bottom:3pt;}
+  .meal-recipe-print .mrp-ing{margin-bottom:4pt;color:#333;}
+  .meal-recipe-print ol{margin:0 0 4pt 14pt;padding:0;}
+  .meal-recipe-print li{margin-bottom:2pt;}
+  .meal-recipe-print .mrp-tip{font-style:italic;color:#333;}
+  .meal.has-rprint{break-inside:auto;page-break-inside:auto;}
+  /* single-recipe print mode: hide the week, show only the recipe page */
+  body.printing-recipe .result{display:none!important;}
+  body.printing-recipe #rprint{display:block!important;padding:24pt;font-size:11pt;line-height:1.55;}
+  #rprint h1{font-size:20pt;margin:0 0 4pt;}
+  #rprint .rp-meta{color:#444;margin-bottom:14pt;}
+  #rprint h2{font-size:13pt;margin:12pt 0 6pt;}
+  #rprint ul,#rprint ol{margin:0 0 8pt 16pt;padding:0;}
+  #rprint li{margin-bottom:3pt;}
+  #rprint .rp-tip{border:1px dashed #666;padding:8pt 10pt;border-radius:6pt;font-style:italic;}
   @page{margin:1.5cm;}
 }
 
@@ -530,7 +595,11 @@ body.rsheet-open{overflow:hidden;}
   <div class="wrap masthead">
     <a href="https://nusrathfathima.com" class="mast-name" target="_blank" rel="noopener">Nusrath Fathima</a>
     <a href="#" class="logo" onclick="mealodyHome();return false;">Mealody<span class="dot">.</span></a>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
+    <div class="mast-right">
+      <button class="mast-icon" onclick="openMyDishes()" aria-label="My Dishes" title="My Dishes">🍲</button>
+      <button class="mast-icon" onclick="openGroceries()" aria-label="Groceries" title="Groceries">🛒</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
+    </div>
   </div>
 </header>
 
@@ -653,6 +722,42 @@ body.rsheet-open{overflow:hidden;}
     Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
+
+<!-- ===== MY DISHES PANE ===== -->
+<div class="rsheet-backdrop mpane-b" id="dishesBackdrop" onclick="closeMyDishes()"></div>
+<div class="rsheet mpane" id="dishesPane" role="dialog" aria-modal="true" style="--rs-mc:var(--grape)">
+  <div class="rsheet-head">
+    <button class="rsheet-close" onclick="closeMyDishes()" aria-label="Close">✕</button>
+    <div class="rsheet-title">🍲 My Dishes</div>
+    <div class="rsheet-meta">Your saved favorites — tap one to open its recipe</div>
+  </div>
+  <div class="rsheet-body" id="dishesBody"></div>
+</div>
+
+<!-- ===== GROCERIES PANE ===== -->
+<div class="rsheet-backdrop mpane-b" id="grocBackdrop" onclick="closeGroceries()"></div>
+<div class="rsheet mpane" id="grocPane" role="dialog" aria-modal="true" style="--rs-mc:var(--lime)">
+  <div class="rsheet-head">
+    <button class="rsheet-close" onclick="closeGroceries()" aria-label="Close">✕</button>
+    <div class="rsheet-title">🛒 Groceries</div>
+    <div class="rsheet-meta">Builds up as you add ingredients from recipes — sticks around between plans</div>
+  </div>
+  <div class="rsheet-body" id="grocBody"></div>
+</div>
+
+<!-- ===== EXPORT CHOOSER ===== -->
+<div class="rsheet-backdrop mpane-b" id="exportBackdrop" onclick="closeExportChooser()"></div>
+<div class="rsheet mpane" id="exportPane" role="dialog" aria-modal="true" style="--rs-mc:var(--tang)">
+  <div class="rsheet-head">
+    <button class="rsheet-close" onclick="closeExportChooser()" aria-label="Close">✕</button>
+    <div class="rsheet-title">🖨️ Download PDF</div>
+    <div class="rsheet-meta">Choose what to include</div>
+  </div>
+  <div class="rsheet-body" id="exportBody"></div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
 
 <!-- ===== RECIPE SHEET (opens when a meal card is tapped) ===== -->
 <div class="rsheet-backdrop" id="rsheetBackdrop" onclick="closeRecipeSheet()"></div>
@@ -1402,6 +1507,8 @@ async function generatePlan(){
     // if the user already opened a recipe while days were still cooking,
     // sweep the queue again so late-arriving days get their recipes too
     if(recipeQueueStarted)runRecipeQueue();
+    // gentle one-time hint that meal cards are tappable (skipped once they've tapped)
+    showRecipeNudge();
 
     // STEP 3: build the shopping list from everything generated
   }catch(err){
@@ -1557,7 +1664,7 @@ function renderShell(head,inputs){
   html+=`</div>
     <div class="week-actions week-actions-bottom">
       <button class="act-btn" onclick="resetPlanner()">← Start over</button>
-      <button class="act-btn primary" onclick="window.print()">🖨 Print / Save PDF</button>
+      <button class="act-btn primary" onclick="openExportChooser()">🖨 Print / Save PDF</button>
       <button class="act-btn primary" onclick="saveWeekPoster()" id="posterBtn">📸 Save as image</button>
     </div>`;
   el.innerHTML=html;
@@ -1635,13 +1742,15 @@ function mealCard(m,slot,dayIdx,slotKey){
    cached in localStorage keyed by dish+servings+diet, so repeat
    dishes across plans cost nothing. */
 const SLOT_COLORS={breakfast:'var(--tang)',lunch:'var(--lime)',dinner:'var(--grape)'};
-let rsheetFor=null;
+let rsheetFor=null,rsheetMeal=null,rsheetCtx=null;
 
 function openRecipeSheet(dayIdx,slotKey){
   const day=currentPlan&&currentPlan.days&&currentPlan.days[dayIdx];
   if(!day||day.error||!day[slotKey])return;
   const m=day[slotKey];
   rsheetFor={dayIdx,slotKey};
+  rsheetMeal=m;rsheetCtx={mode:'plan',dayIdx,slotKey};
+  try{localStorage.setItem('mealody.recipeTapped','1');}catch(e){}
   const sheet=document.getElementById('rsheet');
   sheet.style.setProperty('--rs-mc',SLOT_COLORS[slotKey]||'var(--grape)');
   document.getElementById('rsheetSlot').textContent=slotKey.charAt(0).toUpperCase()+slotKey.slice(1);
@@ -1662,16 +1771,26 @@ function renderRecipeBody(m){
   const body=document.getElementById('rsheetBody');
   if(m.recipe){
     const r=m.recipe;
+    const serves=m.serves||(lastInputs?lastInputs.servings:'?');
+    const saved=isDishSaved(m.name);
+    const actions=(rsheetCtx&&rsheetCtx.mode==='saved')
+      ?`<button class="rs-act" onclick="grocFromSheet(this)">🛒 Add to groceries</button>
+        <button class="rs-act" onclick="printRecipeFromSheet()">🖨️ Recipe PDF</button>
+        <button class="rs-act" onclick="removeSavedFromSheet()">🗑️ Remove</button>`
+      :`<button class="rs-act ${saved?'on':''}" onclick="toggleSaveFromSheet(this)">${saved?'♥ Saved ✓':'♥ Save dish'}</button>
+        <button class="rs-act" onclick="grocFromSheet(this)">🛒 Groceries</button>
+        <button class="rs-act" onclick="printRecipeFromSheet()">🖨️ Recipe PDF</button>`;
     body.innerHTML=`
       <div class="rsheet-badges">
         ${r.time?`<span class="rsheet-badge">⏱️ ${r.time}</span>`:''}
-        <span class="rsheet-badge">🍽️ Serves ${lastInputs?lastInputs.servings:'?'}</span>
+        <span class="rsheet-badge">🍽️ Serves ${serves}</span>
       </div>
       <div class="rsheet-sec">🧺 Ingredients</div>
       <div class="rsheet-ings">${(r.ing||[]).map(i=>`<div class="rsheet-ing">${i}</div>`).join('')}</div>
       <div class="rsheet-sec">👩‍🍳 Steps</div>
       <ol class="rsheet-steps">${(r.steps||[]).map(s=>`<li class="rsheet-step">${s}</li>`).join('')}</ol>
-      ${r.tip?`<div class="rsheet-sec">💡 Chef's tip</div><div class="rsheet-tip">${r.tip}</div>`:''}`;
+      ${r.tip?`<div class="rsheet-sec">💡 Chef's tip</div><div class="rsheet-tip">${r.tip}</div>`:''}
+      <div class="rsheet-actions">${actions}</div>`;
   }else{
     body.innerHTML=`<div class="rsheet-loading"><div class="rsheet-pot">🍳</div><div class="skel-msg">${randomFunny()}</div></div>`;
   }
@@ -1690,12 +1809,16 @@ function retryRecipe(dayIdx,slotKey){
 }
 
 function closeRecipeSheet(){
-  rsheetFor=null;
+  rsheetFor=null;rsheetMeal=null;rsheetCtx=null;
   document.getElementById('rsheetBackdrop').classList.remove('open');
   document.getElementById('rsheet').classList.remove('open');
   document.body.classList.remove('rsheet-open');
 }
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&rsheetFor)closeRecipeSheet();});
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;
+  if(rsheetFor||rsheetMeal){closeRecipeSheet();return;}
+  closeMyDishes();closeGroceries();closeExportChooser();
+});
 
 /* mark a card as having its recipe ready */
 function markRecipeReady(dayIdx,slotKey){
@@ -1751,6 +1874,7 @@ let recipeQueueStarted=false,recipeQueueRunning=false,recipeQueueRerun=false;
 function ensureRecipeQueue(){
   if(recipeQueueStarted)return;
   recipeQueueStarted=true;
+  track('recipe_first_tap');
   runRecipeQueue();
 }
 async function runRecipeQueue(){
@@ -1819,6 +1943,333 @@ ${recipeRules()}
 Respond ONLY with valid JSON, no markdown, with exactly ${items.length} recipes in the given order:
 {"recipes":[{"time":"","ing":[""],"steps":[""],"tip":""}]}`;
 }
+
+/* ── ANALYTICS HELPER (safe no-op if gtag is blocked) ── */
+function track(ev,params){try{if(typeof gtag==='function')gtag('event',ev,params||{});}catch(e){}}
+
+/* ── TOAST ── */
+let toastTimer=null;
+function showToast(msg,ms){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),ms||5000);
+}
+function showRecipeNudge(){
+  try{if(localStorage.getItem('mealody.recipeTapped'))return;}catch(e){}
+  showToast('Tap any meal to see its full recipe 📖',6000);
+}
+
+/* ══════════ STEP 3-4: MY DISHES (saved dish pool, localStorage) ══════════ */
+function loadDishes(){try{return JSON.parse(localStorage.getItem('mealody.myDishes')||'[]');}catch(e){return[];}}
+function saveDishes(a){try{localStorage.setItem('mealody.myDishes',JSON.stringify(a));}catch(e){}}
+function isDishSaved(name){return loadDishes().some(d=>String(d.name).toLowerCase()===String(name).toLowerCase());}
+
+function toggleSaveFromSheet(btn){
+  if(!rsheetMeal)return;
+  const m=rsheetMeal,dishes=loadDishes();
+  const i=dishes.findIndex(d=>String(d.name).toLowerCase()===String(m.name).toLowerCase());
+  if(i>=0){
+    dishes.splice(i,1);saveDishes(dishes);
+    btn.classList.remove('on');btn.textContent='♥ Save dish';
+  }else{
+    dishes.unshift({
+      id:Date.now(),name:m.name,why:m.why||'',ingredients:m.ingredients||'',
+      recipe:m.recipe||null,slot:(rsheetCtx&&rsheetCtx.slotKey)||'dinner',
+      servings:lastInputs?lastInputs.servings:'',diet:lastInputs?lastInputs.diet:'',
+      savedAt:Date.now()
+    });
+    saveDishes(dishes);
+    btn.classList.add('on');btn.textContent='♥ Saved ✓';
+    track('dish_saved');
+  }
+  renderDishList(); // keep the pane fresh if it's open behind the sheet
+}
+
+function openMyDishes(){
+  closeGroceries();closeExportChooser();
+  renderDishList();
+  document.getElementById('dishesBackdrop').classList.add('open');
+  document.getElementById('dishesPane').classList.add('open');
+}
+function closeMyDishes(){
+  document.getElementById('dishesBackdrop').classList.remove('open');
+  document.getElementById('dishesPane').classList.remove('open');
+}
+function renderDishList(){
+  const body=document.getElementById('dishesBody');
+  const dishes=loadDishes();
+  if(!dishes.length){
+    body.innerHTML=`<div class="dl-empty">No saved dishes yet.<br/>Plan a week, open a recipe, and tap <b>♥ Save dish</b> — your favorites will live here. 🍲</div>`;
+    return;
+  }
+  body.innerHTML=dishes.map(d=>{
+    const date=new Date(d.savedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    const slot=d.slot?d.slot.charAt(0).toUpperCase()+d.slot.slice(1):'';
+    return `<div class="dl-item">
+      <div class="dl-info" onclick="openSavedDish(${d.id})">
+        <div class="dl-name">${d.name}</div>
+        <div class="dl-meta">${slot}${d.servings?` · serves ${d.servings}`:''} · saved ${date}</div>
+      </div>
+      <div class="dl-btns" style="display:flex;gap:.4rem;">
+        <button class="dl-btn" onclick="grocFromSaved(${d.id},this)" title="Add ingredients to groceries">🛒</button>
+        <button class="dl-btn" onclick="removeDish(${d.id})" title="Remove">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function removeDish(id){
+  saveDishes(loadDishes().filter(d=>d.id!==id));
+  renderDishList();
+}
+function openSavedDish(id){
+  const d=loadDishes().find(x=>x.id===id);
+  if(!d)return;
+  rsheetFor=null;
+  rsheetMeal={name:d.name,why:d.why,ingredients:d.ingredients,recipe:d.recipe,serves:d.servings};
+  rsheetCtx={mode:'saved',id:d.id};
+  const sheet=document.getElementById('rsheet');
+  sheet.style.setProperty('--rs-mc',SLOT_COLORS[d.slot]||'var(--grape)');
+  document.getElementById('rsheetSlot').textContent=d.slot?d.slot.charAt(0).toUpperCase()+d.slot.slice(1):'Dish';
+  document.getElementById('rsheetTitle').textContent=d.name;
+  document.getElementById('rsheetMeta').textContent=`Saved dish${d.why?' · '+d.why:''}`;
+  if(rsheetMeal.recipe){renderRecipeBody(rsheetMeal);}
+  else{
+    document.getElementById('rsheetBody').innerHTML=
+      `<div class="rsheet-placeholder">This dish was saved without a recipe. Key ingredients: ${d.ingredients||'—'}</div>
+       <div class="rsheet-actions">
+         <button class="rs-act" onclick="grocFromSheet(this)">🛒 Add to groceries</button>
+         <button class="rs-act" onclick="removeSavedFromSheet()">🗑️ Remove</button>
+       </div>`;
+  }
+  document.getElementById('rsheetBackdrop').classList.add('open');
+  sheet.classList.add('open');
+  document.body.classList.add('rsheet-open');
+  document.getElementById('rsheetBody').scrollTop=0;
+}
+function removeSavedFromSheet(){
+  if(!rsheetCtx||rsheetCtx.mode!=='saved')return;
+  removeDish(rsheetCtx.id);
+  closeRecipeSheet();
+}
+
+/* ══════════ STEP 6: GROCERIES (persistent list, localStorage) ══════════ */
+function loadGroc(){try{return JSON.parse(localStorage.getItem('mealody.groceries')||'[]');}catch(e){return[];}}
+function saveGroc(a){try{localStorage.setItem('mealody.groceries',JSON.stringify(a));}catch(e){}}
+
+function addIngsToGroceries(ings){
+  const g=loadGroc();let added=0;
+  (ings||[]).forEach(line=>{
+    const parts=String(line).split(/\s+[–—-]\s+/);
+    const item=(parts[0]||String(line)).trim();
+    const qty=(parts.slice(1).join(' ')||'').trim();
+    if(!item)return;
+    const ex=g.find(x=>x.item.toLowerCase()===item.toLowerCase()&&!x.checked);
+    if(ex){
+      if(qty&&ex.qty&&ex.qty!==qty&&!ex.qty.includes(qty))ex.qty+=' + '+qty;
+      else if(qty&&!ex.qty)ex.qty=qty;
+    }else{
+      g.push({id:Date.now()+Math.random(),item,qty,checked:false});added++;
+    }
+  });
+  saveGroc(g);renderGrocList();
+  return added;
+}
+function grocFromSheet(btn){
+  if(!rsheetMeal)return;
+  const ings=(rsheetMeal.recipe&&rsheetMeal.recipe.ing&&rsheetMeal.recipe.ing.length)
+    ?rsheetMeal.recipe.ing
+    :String(rsheetMeal.ingredients||'').split(',').map(s=>s.trim()).filter(Boolean);
+  addIngsToGroceries(ings);
+  const old=btn.textContent;btn.textContent='🛒 Added ✓';
+  setTimeout(()=>{btn.textContent=old;},1600);
+  track('groceries_added');
+}
+function grocFromSaved(id,btn){
+  const d=loadDishes().find(x=>x.id===id);
+  if(!d)return;
+  const ings=(d.recipe&&d.recipe.ing&&d.recipe.ing.length)
+    ?d.recipe.ing
+    :String(d.ingredients||'').split(',').map(s=>s.trim()).filter(Boolean);
+  addIngsToGroceries(ings);
+  btn.textContent='✓';setTimeout(()=>{btn.textContent='🛒';},1600);
+  track('groceries_added');
+}
+function openGroceries(){
+  closeMyDishes();closeExportChooser();
+  renderGrocList();
+  document.getElementById('grocBackdrop').classList.add('open');
+  document.getElementById('grocPane').classList.add('open');
+}
+function closeGroceries(){
+  document.getElementById('grocBackdrop').classList.remove('open');
+  document.getElementById('grocPane').classList.remove('open');
+}
+function renderGrocList(){
+  const body=document.getElementById('grocBody');
+  if(!body)return;
+  const g=loadGroc();
+  if(!g.length){
+    body.innerHTML=`<div class="dl-empty">Your grocery list is empty.<br/>Open any recipe and tap <b>🛒 Groceries</b> to drop its ingredients in here. 🥕</div>`;
+    return;
+  }
+  body.innerHTML=g.map(x=>`
+    <div class="g-item ${x.checked?'done':''}" onclick="toggleGrocItem('${x.id}')">
+      <span class="g-box"></span>
+      <span class="g-name">${x.item}</span>
+      ${x.qty?`<span class="g-qty">${x.qty}</span>`:''}
+    </div>`).join('')+
+    `<div class="g-actions">
+      <button class="rs-act" onclick="clearCheckedGroc()">Clear checked</button>
+      <button class="rs-act" onclick="clearAllGroc()">Clear all</button>
+    </div>`;
+}
+function toggleGrocItem(id){
+  const g=loadGroc();
+  const x=g.find(i=>String(i.id)===String(id));
+  if(x){x.checked=!x.checked;saveGroc(g);renderGrocList();}
+}
+function clearCheckedGroc(){
+  saveGroc(loadGroc().filter(i=>!i.checked));renderGrocList();
+}
+function clearAllGroc(){
+  if(!confirm('Clear the whole grocery list?'))return;
+  saveGroc([]);renderGrocList();
+}
+
+/* ══════════ STEP 5: EXPORT CHOOSER + SELECTIVE RECIPE PDF ══════════ */
+function openExportChooser(){
+  if(!currentPlan)return;
+  closeMyDishes();closeGroceries();
+  document.getElementById('exportBody').innerHTML=`
+    <button class="exp-opt" onclick="exportPlanOnly()">
+      <b>📋 Plan only</b><span>The week at a glance — instant, no extra generation</span>
+    </button>
+    <button class="exp-opt" onclick="showExportDays()">
+      <b>📖 Plan + recipes</b><span>Full recipes for the days you pick</span>
+    </button>`;
+  document.getElementById('exportBackdrop').classList.add('open');
+  document.getElementById('exportPane').classList.add('open');
+}
+function closeExportChooser(){
+  document.getElementById('exportBackdrop').classList.remove('open');
+  document.getElementById('exportPane').classList.remove('open');
+}
+function exportPlanOnly(){
+  closeExportChooser();
+  track('export_pdf',{mode:'plan_only'});
+  setTimeout(()=>window.print(),150);
+}
+function showExportDays(){
+  const rows=DAYS.map((day,di)=>{
+    const d=currentPlan.days[di];
+    if(!d||d.error)return `<label class="exp-day" style="opacity:.45"><input type="checkbox" disabled> ${day} — couldn't cook 😅</label>`;
+    return `<label class="exp-day"><input type="checkbox" class="exp-day-cb" value="${di}" checked> ${day}</label>`;
+  }).join('');
+  document.getElementById('exportBody').innerHTML=`
+    <div style="font-weight:700;margin-bottom:.5rem;">Include full recipes for:</div>
+    ${rows}
+    <div class="rsheet-actions">
+      <button class="rs-act" onclick="openExportChooser()">← Back</button>
+      <button class="rs-act on" id="expGoBtn" onclick="exportWithRecipes()">Generate & download</button>
+    </div>
+    <div class="exp-prog" id="expProg"></div>`;
+}
+async function exportWithRecipes(){
+  const sel=Array.from(document.querySelectorAll('.exp-day-cb:checked')).map(cb=>parseInt(cb.value,10));
+  if(!sel.length){document.getElementById('expProg').textContent='Pick at least one day 🙂';return;}
+  const btn=document.getElementById('expGoBtn');btn.disabled=true;btn.style.opacity=.6;
+  const prog=document.getElementById('expProg');
+  try{
+    await ensureRecipesForDays(sel,(done,total)=>{
+      prog.textContent=`Writing your recipes… ${done} of ${total} 📝`;
+    });
+    prog.textContent='Building your PDF… 🖨️';
+    injectPrintRecipes(sel);
+    track('export_pdf',{mode:'plan_recipes',days:sel.length});
+    closeExportChooser();
+    setTimeout(()=>window.print(),200);
+  }catch(e){
+    console.error('export recipes failed',e);
+    prog.innerHTML='😅 The kitchen hit a snag while writing recipes.<br/>Give it a second and tap <b>Generate & download</b> again.';
+    btn.disabled=false;btn.style.opacity=1;
+  }
+}
+async function ensureRecipesForDays(sel,onProg){
+  const chunks=[];
+  for(let i=0;i<sel.length;i+=2)chunks.push(sel.slice(i,i+2));
+  let done=0;
+  for(const pair of chunks){
+    const items=[];
+    pair.forEach(di=>{
+      const d=currentPlan.days[di];
+      if(!d||d.error)return;
+      ['breakfast','lunch','dinner'].forEach(s=>{
+        const m=d[s];
+        if(!m||m.recipe)return;
+        const c=cacheGetRecipe(m.name);
+        if(c){m.recipe=c;markRecipeReady(di,s);return;}
+        items.push({di,s,m});
+      });
+    });
+    if(items.length){
+      const res=await callAI(batchRecipePrompt(items),2600);
+      (res.recipes||[]).forEach((r,i)=>{
+        const it=items[i];
+        if(it&&r&&r.steps){it.m.recipe=r;cachePutRecipe(it.m.name,r);markRecipeReady(it.di,it.s);}
+      });
+    }
+    done++;if(onProg)onProg(done,chunks.length);
+  }
+}
+function injectPrintRecipes(sel){
+  sel.forEach(di=>{
+    const d=currentPlan.days[di];
+    if(!d||d.error)return;
+    ['breakfast','lunch','dinner'].forEach(s=>{
+      const m=d[s];
+      if(!m||!m.recipe)return;
+      const card=document.getElementById(`meal-${di}-${s}`);
+      if(!card)return;
+      const r=m.recipe;
+      const div=document.createElement('div');
+      div.className='meal-recipe-print';
+      div.innerHTML=`
+        <div class="mrp-t">${r.time?`⏱ ${r.time} · `:''}Serves ${lastInputs?lastInputs.servings:'?'}</div>
+        <div class="mrp-ing">${(r.ing||[]).join(' · ')}</div>
+        <ol>${(r.steps||[]).map(st=>`<li>${st}</li>`).join('')}</ol>
+        ${r.tip?`<div class="mrp-tip">💡 ${r.tip}</div>`:''}`;
+      card.appendChild(div);
+      card.classList.add('has-rprint');
+    });
+  });
+}
+/* single-recipe print from the sheet */
+function printRecipeFromSheet(){
+  if(!rsheetMeal||!rsheetMeal.recipe)return;
+  const m=rsheetMeal,r=m.recipe;
+  const serves=m.serves||(lastInputs?lastInputs.servings:'?');
+  let rp=document.getElementById('rprint');
+  if(!rp){rp=document.createElement('div');rp.id='rprint';document.body.appendChild(rp);}
+  rp.innerHTML=`
+    <h1>${m.name}</h1>
+    <div class="rp-meta">${r.time?`⏱ ${r.time} · `:''}Serves ${serves} · Made with Mealody</div>
+    <h2>Ingredients</h2>
+    <ul>${(r.ing||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
+    <h2>Steps</h2>
+    <ol>${(r.steps||[]).map(s=>`<li>${s}</li>`).join('')}</ol>
+    ${r.tip?`<div class="rp-tip">💡 ${r.tip}</div>`:''}`;
+  document.body.classList.add('printing-recipe');
+  track('export_pdf',{mode:'single_recipe'});
+  setTimeout(()=>window.print(),100);
+}
+/* clean up any injected print content after every print (fires on cancel too) */
+window.addEventListener('afterprint',function(){
+  document.querySelectorAll('.meal-recipe-print').forEach(n=>n.remove());
+  document.querySelectorAll('.has-rprint').forEach(n=>n.classList.remove('has-rprint'));
+  document.body.classList.remove('printing-recipe');
+  const rp=document.getElementById('rprint');if(rp)rp.remove();
+});
 
 /* ── REGENERATE ONE MEAL ── */
 async function regenMeal(dayIdx,slotKey){
