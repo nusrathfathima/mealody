@@ -483,8 +483,8 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .rsheet-step::before{counter-increment:rstep;content:counter(rstep);flex-shrink:0;width:24px;height:24px;border-radius:50%;border:2px solid var(--ink);background:var(--rs-mc,var(--grape));color:#fff;font-size:.72rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:.15rem;}
 .rsheet-placeholder{background:var(--cream);border:2px dashed var(--line);border-radius:var(--r-sm);padding:1rem 1.1rem;font-size:.85rem;color:var(--soft);line-height:1.55;}
 .meal[onclick]{cursor:pointer;}
-.meal-tap{font-size:.72rem;font-weight:700;color:var(--mc,var(--grape));margin-top:.1rem;transition:all .2s var(--bounce);}
-.meal:hover .meal-tap{color:var(--ink);transform:translateX(4px);}
+.meal-tap{font-size:.72rem;font-weight:700;color:var(--mc,var(--grape));margin-top:.1rem;width:fit-content;transition:all .2s var(--bounce);}
+.meal-tap:hover{color:var(--ink);transform:translateX(4px);}
 .rsheet-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem;}
 .rsheet-badge{font-size:.74rem;font-weight:700;color:var(--ink);background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.25rem .7rem;}
 .rsheet-tip{background:var(--cream);border:2px dashed var(--rs-mc,var(--grape));border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.85rem;color:var(--ink);line-height:1.55;}
@@ -501,6 +501,7 @@ body.rsheet-open{overflow:hidden;}
 
 /* ===== HEADER ICON BUTTONS ===== */
 .mast-icon{width:38px;height:38px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s var(--bounce);box-shadow:0 3px 0 var(--line);}
+.mast-icon svg{display:block;flex-shrink:0;}
 .mast-icon:hover{transform:translateY(-2px) rotate(-6deg);}
 .masthead .mast-right{justify-self:end;}
 @media(max-width:380px){.mast-icon{width:32px;height:32px;font-size:.85rem;}.theme-toggle{width:36px;height:36px;}.mast-right{gap:.4rem;}}
@@ -540,8 +541,8 @@ body.rsheet-open{overflow:hidden;}
 .exp-prog{font-size:.85rem;color:var(--soft);margin-top:.9rem;text-align:center;line-height:1.5;}
 
 /* ===== TOAST ===== */
-.toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,150%);background:var(--ink);color:var(--card);border-radius:99px;padding:.7rem 1.3rem;font-size:.86rem;font-weight:700;z-index:950;transition:transform .35s var(--bounce);box-shadow:0 4px 0 rgba(0,0,0,.25);max-width:92vw;text-align:center;pointer-events:none;}
-.toast.show{transform:translate(-50%,0);}
+.toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,calc(100% + 2rem));opacity:0;visibility:hidden;background:var(--ink);color:var(--card);border-radius:99px;padding:.7rem 1.3rem;font-size:.86rem;font-weight:700;z-index:950;transition:transform .35s var(--bounce),opacity .3s ease,visibility .3s;box-shadow:0 4px 0 rgba(0,0,0,.25);max-width:92vw;text-align:center;pointer-events:none;}
+.toast.show{transform:translate(-50%,0);opacity:1;visibility:visible;}
 
 /* ===== PRINT HELPERS (hidden on screen) ===== */
 #rprint{display:none;}
@@ -596,9 +597,9 @@ body.rsheet-open{overflow:hidden;}
     <a href="https://nusrathfathima.com" class="mast-name" target="_blank" rel="noopener">Nusrath Fathima</a>
     <a href="#" class="logo" onclick="mealodyHome();return false;">Mealody<span class="dot">.</span></a>
     <div class="mast-right">
-      <button class="mast-icon" onclick="openMyDishes()" aria-label="My Dishes" title="My Dishes">🍲</button>
-      <button class="mast-icon" onclick="openGroceries()" aria-label="Groceries" title="Groceries">🛒</button>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">🌙</button>
+      <button class="mast-icon" onclick="openMyDishes()" aria-label="Dishes" title="Dishes"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.8"/><circle cx="12" cy="12" r="6.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.1"/><path d="M8.7 10.2 C8.7 7.9 12 7.9 12 10 C12 7.9 15.3 7.9 15.3 10.2 C15.3 12.5 12 15.1 12 15.1 C12 15.1 8.7 12.5 8.7 10.2 Z" fill="var(--berry)"/></svg></button>
+      <button class="mast-icon" onclick="openGroceries()" aria-label="Grocery" title="Grocery">🛒</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Dark mode" title="Dark mode">🌙</button>
     </div>
   </div>
 </header>
@@ -1553,13 +1554,18 @@ Constraints:
 - Cuisine(s): ${inp.cuisine||'your choice / mixed'}${inp.cuisine&&inp.cuisine.includes(' & ')?' — blend these across the week, mixing days between them':''}
 - Strictly avoid: ${inp.allergies||'none'}
 
+PROTEINS — HARD RULE:
+- The ONLY meats/seafood you may use are ones the user explicitly listed in their available ingredients above.
+- NEVER introduce any other meat or seafood (no pork, lamb, beef, mutton, fish, shrimp, etc.) that the user did not list — not even for variety.
+- For variety, rotate between the user's listed proteins and vegetarian meals (legumes, paneer, dairy, vegetables) instead of adding new meats.
+
 CRITICAL — VARIETY:
 - Every single meal across all these days must be a DIFFERENT dish. No repeats — not within these days, and NOT matching the already-used list above.
 - This applies per slot too: breakfasts must all differ from each other, lunches must all differ, dinners must all differ.
 - BREAKFASTS especially must vary a lot — do NOT use eggs (or any single ingredient) as the base for more than ONE breakfast. Rotate across different breakfast styles (grains, breads, fruit, dairy, regional breakfasts, etc.).
 - Do not lean on the same hero ingredient repeatedly across the week; spread the available ingredients around.
 - Do NOT repeat the same dish under different names (e.g. "Palak Paneer" and "Spinach Paneer" are the SAME dish — never do that).
-- Vary proteins, cooking styles and flavors day to day so the week feels different.
+- Vary cooking styles and flavors day to day so the week feels different (while respecting the protein rule above).
 
 NAMING — keep it simple:
 - Use everyday dish names ordinary people instantly recognize and can read easily.
@@ -2278,6 +2284,7 @@ async function regenMeal(dayIdx,slotKey){
   const day=currentPlan.days[dayIdx];
   const prompt=`You are Mealody, a private chef. Suggest ONE alternative ${slotKey} for ${day.day} that fits this week's theme "${currentPlan.theme}" and mood "${lastInputs.moods}".
 Diet: ${lastInputs.diet}. Servings: ${lastInputs.servings}. Available ingredients: ${lastInputs.ingredients}. Avoid: ${lastInputs.allergies||'none'}.
+PROTEIN RULE: only use meats/seafood the user listed in their available ingredients — NEVER introduce other meats (no pork, lamb, beef, fish, etc. unless listed). Vegetarian alternatives are fine.
 It must be different from "${day[slotKey].name}". Use a SIMPLE, everyday dish name people instantly recognize — avoid fancy or hard-to-read names.
 Keep it tight: "why" max 6 words, "ingredients" max 5 items comma separated.
 Respond ONLY with valid JSON, no markdown: {"name":"","why":"","ingredients":""}`;
