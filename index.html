@@ -548,6 +548,62 @@ body.rsheet-open{overflow:hidden;}
 #rprint{display:none;}
 .meal-recipe-print{display:none;}
 
+/* ===== FULL PAGE VIEWS (My Dishes / Groceries) ===== */
+.page{display:none;padding:2.5rem 0 4rem;}
+.page.on{display:block;}
+.page-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.6rem;flex-wrap:wrap;}
+.page-back{border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:99px;padding:.5rem 1rem;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;box-shadow:0 3px 0 var(--line);transition:transform .15s var(--bounce);}
+.page-back:hover{transform:translateX(-3px);}
+.page-title{font-family:'Fraunces',serif;font-size:2rem;font-weight:700;line-height:1.1;}
+.page-sub{color:var(--soft);font-size:.92rem;margin-top:.2rem;}
+.tabs{display:flex;gap:.5rem;border-bottom:3px solid var(--line);margin-bottom:1.5rem;flex-wrap:wrap;}
+.tab{border:none;background:none;font-family:inherit;font-weight:800;font-size:.95rem;color:var(--soft);padding:.7rem 1.1rem;cursor:pointer;border-radius:var(--r-sm) var(--r-sm) 0 0;position:relative;transition:color .2s var(--ease);}
+.tab:hover{color:var(--ink);}
+.tab.on{color:var(--ink);background:var(--card);}
+.tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;background:var(--grape);}
+.tab .cnt{font-size:.75rem;background:var(--line);color:var(--ink);border-radius:99px;padding:.1rem .45rem;margin-left:.35rem;}
+.dish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+.dish-card{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:1.1rem 1.2rem;box-shadow:5px 5px 0 var(--line);display:flex;flex-direction:column;gap:.5rem;transition:transform .18s var(--bounce);position:relative;}
+.dish-card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--grape);}
+.dish-card.picked{box-shadow:5px 5px 0 var(--berry);}
+.dish-card h4{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;line-height:1.25;padding-right:2rem;cursor:pointer;}
+.dish-note{font-size:.84rem;color:var(--soft);line-height:1.5;}
+.dish-tags{display:flex;gap:.4rem;flex-wrap:wrap;}
+.dish-tag{font-size:.7rem;font-weight:700;background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.15rem .55rem;color:var(--soft);}
+.dish-row{display:flex;gap:.45rem;margin-top:auto;padding-top:.5rem;flex-wrap:wrap;}
+.dish-mini{border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:99px;padding:.35rem .7rem;font-family:inherit;font-weight:800;font-size:.75rem;cursor:pointer;transition:transform .15s var(--bounce);}
+.dish-mini:hover{transform:translateY(-2px);}
+.dish-mini.on{background:var(--berry);color:#fff;border-color:var(--berry);}
+.dish-pick{position:absolute;top:.8rem;right:.9rem;width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .18s var(--bounce);}
+.dish-pick.on{background:var(--berry);border-color:var(--berry);color:#fff;transform:scale(1.08);}
+.page-empty{text-align:center;color:var(--soft);padding:3rem 1rem;line-height:1.7;border:3px dashed var(--line);border-radius:var(--r);}
+.page-empty b{color:var(--ink);}
+.add-dish-card{background:var(--cream);border:3px dashed var(--line);border-radius:var(--r);padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.6rem;min-height:150px;justify-content:center;align-items:center;cursor:pointer;transition:all .18s var(--bounce);color:var(--soft);font-weight:800;}
+.add-dish-card:hover{border-color:var(--grape);color:var(--grape);transform:translate(-2px,-2px);}
+.add-dish-card .plus{font-size:1.8rem;line-height:1;}
+.pool-form{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:1.2rem;box-shadow:5px 5px 0 var(--grape);margin-bottom:1.3rem;}
+.pool-form label{display:block;font-weight:800;font-size:.82rem;margin:.6rem 0 .3rem;}
+.pool-form input,.pool-form textarea{width:100%;border:2px solid var(--line);border-radius:var(--r-sm);padding:.65rem .8rem;font-family:inherit;font-size:.9rem;background:var(--cream);color:var(--ink);}
+.pool-form input:focus,.pool-form textarea:focus{outline:none;border-color:var(--grape);}
+.pool-form textarea{resize:vertical;min-height:62px;}
+.pool-actions{display:flex;gap:.6rem;margin-top:.9rem;flex-wrap:wrap;}
+.mix-bar{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:.9rem 1.1rem;box-shadow:5px 5px 0 var(--berry);display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-bottom:1.3rem;}
+.mix-bar b{font-size:.95rem;}
+.mix-bar span{font-size:.85rem;color:var(--soft);}
+.pool-pick-list{display:flex;flex-direction:column;gap:.5rem;max-height:260px;overflow-y:auto;margin-bottom:.4rem;}
+.pool-pick{display:flex;align-items:center;gap:.6rem;border:2px solid var(--line);border-radius:var(--r-sm);padding:.55rem .8rem;cursor:pointer;background:var(--cream);transition:all .15s var(--ease);}
+.pool-pick:hover{border-color:var(--grape);}
+.pool-pick.on{border-color:var(--berry);background:var(--card);}
+.pool-pick .pp-box{width:20px;height:20px;border:2px solid var(--ink);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;}
+.pool-pick.on .pp-box{background:var(--berry);color:#fff;border-color:var(--berry);}
+.pool-pick .pp-name{font-size:.88rem;font-weight:700;flex:1;}
+.pool-pick .pp-src{font-size:.7rem;color:var(--soft);}
+@media(max-width:560px){
+  .page{padding:1.6rem 0 3rem;}
+  .page-title{font-size:1.5rem;}
+  .dish-grid{grid-template-columns:1fr;}
+}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 
 /* ===== PRINT: one day per page ===== */
@@ -565,7 +621,7 @@ body.rsheet-open{overflow:hidden;}
   .meal{border:1.5px solid #333!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid;}
   .day-name{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .meal::before{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .meal-regen,.day-retry,.meal-tap,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast{display:none!important;}
+  .meal-regen,.day-retry,.meal-tap,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast,.page{display:none!important;}
   /* per-meal recipes injected for "Plan + recipes" export */
   .meal-recipe-print{display:block!important;font-size:9pt;line-height:1.45;border-top:1px dashed #999;margin-top:6pt;padding-top:6pt;}
   .meal-recipe-print .mrp-t{font-weight:700;margin-bottom:3pt;}
@@ -597,7 +653,7 @@ body.rsheet-open{overflow:hidden;}
     <a href="https://nusrathfathima.com" class="mast-name" target="_blank" rel="noopener">Nusrath Fathima</a>
     <a href="#" class="logo" onclick="mealodyHome();return false;">Mealody<span class="dot">.</span></a>
     <div class="mast-right">
-      <button class="mast-icon" onclick="openMyDishes()" aria-label="Dishes" title="Dishes"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.8"/><circle cx="12" cy="12" r="6.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.1"/><path d="M8.7 10.2 C8.7 7.9 12 7.9 12 10 C12 7.9 15.3 7.9 15.3 10.2 C15.3 12.5 12 15.1 12 15.1 C12 15.1 8.7 12.5 8.7 10.2 Z" fill="var(--berry)"/></svg></button>
+      <button class="mast-icon" onclick="goRoute('#/dishes')" aria-label="Dishes" title="Dishes"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.8"/><circle cx="12" cy="12" r="6.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.1"/><path d="M8.7 10.2 C8.7 7.9 12 7.9 12 10 C12 7.9 15.3 7.9 15.3 10.2 C15.3 12.5 12 15.1 12 15.1 C12 15.1 8.7 12.5 8.7 10.2 Z" fill="var(--berry)"/></svg></button>
       <button class="mast-icon" onclick="openGroceries()" aria-label="Grocery" title="Grocery">🛒</button>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Dark mode" title="Dark mode">🌙</button>
     </div>
@@ -695,6 +751,10 @@ body.rsheet-open{overflow:hidden;}
           <label class="lbl-plum">Allergies / avoid <span class="opt">— tap any that apply</span></label>
           <div class="allergy-chips" id="allergyChips"></div>
         </div>
+        <div class="field full" id="poolField" style="display:none;">
+          <label class="lbl-plum">My dishes <span class="opt">— tap the ones you'd like in this week</span></label>
+          <div class="pool-pick-list" id="poolPickList"></div>
+        </div>
       </div>
 
       <div class="generate-row">
@@ -718,22 +778,27 @@ body.rsheet-open{overflow:hidden;}
   <div class="wrap" id="resultContent"></div>
 </section>
 
+<!-- ===== MY DISHES PAGE ===== -->
+<section class="page" id="dishesPage">
+  <div class="wrap">
+    <div class="page-head">
+      <button class="page-back" onclick="goRoute('')">← Back to planner</button>
+    </div>
+    <div class="page-title">My Dishes</div>
+    <div class="page-sub">Your favorites from planned weeks, plus your own recipes — pick any of them to mix into your next plan.</div>
+    <div class="tabs" style="margin-top:1.4rem;">
+      <button class="tab on" id="tabFav" onclick="switchDishTab('fav')">♥ My Favorites <span class="cnt" id="cntFav">0</span></button>
+      <button class="tab" id="tabPool" onclick="switchDishTab('pool')">🍲 My Pool <span class="cnt" id="cntPool">0</span></button>
+    </div>
+    <div id="dishTabBody"></div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
-
-<!-- ===== MY DISHES PANE ===== -->
-<div class="rsheet-backdrop mpane-b" id="dishesBackdrop" onclick="closeMyDishes()"></div>
-<div class="rsheet mpane" id="dishesPane" role="dialog" aria-modal="true" style="--rs-mc:var(--grape)">
-  <div class="rsheet-head">
-    <button class="rsheet-close" onclick="closeMyDishes()" aria-label="Close">✕</button>
-    <div class="rsheet-title">🍲 My Dishes</div>
-    <div class="rsheet-meta">Your saved favorites — tap one to open its recipe</div>
-  </div>
-  <div class="rsheet-body" id="dishesBody"></div>
-</div>
 
 <!-- ===== GROCERIES PANE ===== -->
 <div class="rsheet-backdrop mpane-b" id="grocBackdrop" onclick="closeGroceries()"></div>
@@ -1091,7 +1156,7 @@ const chatStream=()=>document.getElementById('chatStream');
 const chatHost=()=>document.getElementById('chatInputHost');
 
 // The ordered conversation. Each step: a question + which picker to mount + a quip generator.
-const CHAT_STEPS=[
+const BASE_CHAT_STEPS=[
   {key:'ing', icon:'🧺', label:'Kitchen', q:"Hey, I'm Mealody! <span class='inline-masc'>"+MASCOT_SVG+"</span> Let's build your week together. First up — what's in your kitchen right now?",
    mount:'ing', required:true,
    summary:()=>ingList.length?ingList.join(', '):'',
@@ -1139,6 +1204,38 @@ const CHAT_STEPS=[
    quip:()=>selectedAllergies.size?"Noted — I'll keep those out 🚫":"No restrictions, full freedom! 🙌"}
 ];
 
+// Optional final step — only appears when the user actually has dishes saved.
+const MIX_STEP={key:'mix', icon:'🍲', label:'My dishes', q:"You've got dishes saved in My Dishes — want any of them in this week? 🍲 (tap to pick, or skip)",
+  mount:'pool', required:false,
+  summary:()=>{const p=[...selectedPoolDishes];return p.length?p.join(', '):'None this time';},
+  quip:()=>selectedPoolDishes.size?`Lovely — I'll weave ${selectedPoolDishes.size===1?'it':'them'} in 💜`:"All fresh ideas then! ✨"};
+
+let CHAT_STEPS=BASE_CHAT_STEPS.slice();
+let selectedPoolDishes=new Set();
+
+function rebuildChatSteps(){
+  // pre-tick anything the user picked on the My Dishes page
+  const picked=pickedDishes().map(d=>d.name);
+  selectedPoolDishes=new Set(picked);
+  CHAT_STEPS=allMyDishes().length?BASE_CHAT_STEPS.concat([MIX_STEP]):BASE_CHAT_STEPS.slice();
+}
+function renderPoolPickList(){
+  const host=document.getElementById('poolPickList');
+  if(!host)return;
+  const all=allMyDishes();
+  host.innerHTML=all.length?all.map(d=>`
+    <div class="pool-pick ${selectedPoolDishes.has(d.name)?'on':''}" onclick="togglePoolPick(this,'${String(d.name).replace(/'/g,"\\'")}')">
+      <span class="pp-box">${selectedPoolDishes.has(d.name)?'✓':''}</span>
+      <span class="pp-name">${d.name}</span>
+      <span class="pp-src">${d.src==='pool'?'my pool':'favorite'}</span>
+    </div>`).join('')
+    :`<div style="color:var(--soft);font-size:.86rem;">Nothing saved yet — add dishes from My Dishes.</div>`;
+}
+function togglePoolPick(el,name){
+  if(selectedPoolDishes.has(name)){selectedPoolDishes.delete(name);el.classList.remove('on');el.querySelector('.pp-box').textContent='';}
+  else{selectedPoolDishes.add(name);el.classList.add('on');el.querySelector('.pp-box').textContent='✓';}
+}
+
 // Fun rotating welcome greetings (surprise!)
 const WELCOME_GREETINGS=[
   {t:"Hungry? Let's fix that. 🍲",s:"I'm Mealody, your kitchen buddy — I'll plan your whole week of meals."},
@@ -1163,6 +1260,7 @@ function startChat(){
   if(chatStarted)return;
   chatStarted=true;
   chatStep=0;
+  rebuildChatSteps();
   renderProgress();
   askStep();
 }
@@ -1237,6 +1335,10 @@ function mountPicker(which){
     node=document.querySelector('#formCard #cuisineGrid').parentElement;
   }else if(which==='all'){
     node=document.querySelector('#formCard #allergyChips').parentElement;
+  }else if(which==='pool'){
+    renderPoolPickList();
+    node=document.querySelector('#formCard #poolField');
+    if(node)node.style.display='';
   }
   if(node){card.appendChild(node);}
   // actions
@@ -1354,7 +1456,10 @@ function returnPicker(which){
   const grid=document.querySelector('#formCard .form-grid');
   // the first child of the card is the moved field/node
   const moved=card.firstElementChild;
-  if(moved&&grid){grid.appendChild(moved);}
+  if(moved&&grid){
+    if(moved.id==='poolField')moved.style.display='none';
+    grid.appendChild(moved);
+  }
   host.innerHTML='';
 }
 
@@ -1387,6 +1492,7 @@ function mealodyHome(){
 }
 function restartChat(){
   // reset everything and rebuild the conversation
+  rebuildChatSteps();
   ingList=[];leftList=[];
   selectedMoods=new Set(['Cozy']);
   diet='Vegetarian';servings=2;
@@ -1444,7 +1550,8 @@ async function generatePlan(){
     diet,
     servings,
     cuisine:[...selectedCuisines].join(' & '),
-    allergies:[...selectedAllergies].join(', ')
+    allergies:[...selectedAllergies].join(', '),
+    myDishes:[...selectedPoolDishes]
   };
   lastInputs=inputs;
   clearError();
@@ -1544,6 +1651,11 @@ function weekPrompt(inp,theme,days,usedNames){
 
 Plan these days: ${days.join(', ')}.
 ${usedNames&&usedNames.length?`ALREADY USED THIS WEEK — do NOT use any of these dishes again (and no renamed versions of them): ${usedNames.join(', ')}.`:''}
+${inp.myDishes&&inp.myDishes.length?`
+THE COOK'S OWN DISHES — they saved these and would like them in this week: ${inp.myDishes.filter(n=>!(usedNames||[]).some(u=>String(u).toLowerCase()===String(n).toLowerCase())).join(', ')||'(already placed earlier this week)'}.
+- Place the ones that fit these days naturally (right slot, right diet, right vibe). Use the cook's exact dish name when you do.
+- Spread them across the week — at most one or two in these days. Do NOT force a dish where it doesn't fit; remaining ones can appear in later days.
+- They still count toward the no-repeat rule.`:''}
 
 Constraints:
 - Diet: ${inp.diet}
@@ -1966,11 +2078,64 @@ function showRecipeNudge(){
   showToast('Tap any meal to see its full recipe 📖',6000);
 }
 
-/* ══════════ STEP 3-4: MY DISHES (saved dish pool, localStorage) ══════════ */
+/* ══════════ ROUTING (hash-based pages) ══════════ */
+const MAIN_SECTIONS=['hero','chatSection','formSection','loadingSection','resultSection'];
+let mainDisplayMemo=null;
+
+function goRoute(hash){
+  if(location.hash===hash){route();return;}
+  if(!hash){history.pushState('',document.title,location.pathname+location.search);route();}
+  else location.hash=hash;
+}
+function route(){
+  const h=location.hash||'';
+  const isDishes=h.startsWith('#/dishes');
+  const isGroc=h.startsWith('#/groceries');
+  const onPage=isDishes||isGroc;
+  // remember how the main sections looked before we leave them
+  if(onPage&&!mainDisplayMemo){
+    mainDisplayMemo={};
+    MAIN_SECTIONS.forEach(id=>{const el=document.getElementById(id)||document.querySelector('.'+id);if(el)mainDisplayMemo[id]=el.style.display;});
+  }
+  MAIN_SECTIONS.forEach(id=>{
+    const el=document.getElementById(id)||document.querySelector('.'+id);
+    if(!el)return;
+    if(onPage)el.style.display='none';
+    else if(mainDisplayMemo)el.style.display=mainDisplayMemo[id]||'';
+  });
+  if(!onPage)mainDisplayMemo=null;
+  const dp=document.getElementById('dishesPage');
+  if(dp)dp.classList.toggle('on',isDishes);
+  if(isDishes){renderDishTab();track('page_view',{page:'dishes'});}
+  if(onPage)window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
+}
+window.addEventListener('hashchange',route);
+window.addEventListener('popstate',route);
+
+/* ══════════ MY DISHES PAGE (Favorites + Pool) ══════════ */
+let dishTab='fav';
+function switchDishTab(t){
+  dishTab=t;
+  document.getElementById('tabFav').classList.toggle('on',t==='fav');
+  document.getElementById('tabPool').classList.toggle('on',t==='pool');
+  renderDishTab();
+}
+/* kept for compatibility: the header used to open a pane */
+function openMyDishes(){goRoute('#/dishes');}
+function closeMyDishes(){}
+
+/* ---- storage ---- */
 function loadDishes(){try{return JSON.parse(localStorage.getItem('mealody.myDishes')||'[]');}catch(e){return[];}}
 function saveDishes(a){try{localStorage.setItem('mealody.myDishes',JSON.stringify(a));}catch(e){}}
+function loadPool(){try{return JSON.parse(localStorage.getItem('mealody.myPool')||'[]');}catch(e){return[];}}
+function savePool(a){try{localStorage.setItem('mealody.myPool',JSON.stringify(a));}catch(e){}}
 function isDishSaved(name){return loadDishes().some(d=>String(d.name).toLowerCase()===String(name).toLowerCase());}
+function allMyDishes(){
+  return loadDishes().map(d=>({...d,src:'fav'})).concat(loadPool().map(d=>({...d,src:'pool'})));
+}
+function pickedDishes(){return allMyDishes().filter(d=>d.mix);}
 
+/* ---- save from a plan (unchanged behavior, still used by the recipe sheet) ---- */
 function toggleSaveFromSheet(btn){
   if(!rsheetMeal)return;
   const m=rsheetMeal,dishes=loadDishes();
@@ -1983,69 +2148,172 @@ function toggleSaveFromSheet(btn){
       id:Date.now(),name:m.name,why:m.why||'',ingredients:m.ingredients||'',
       recipe:m.recipe||null,slot:(rsheetCtx&&rsheetCtx.slotKey)||'dinner',
       servings:lastInputs?lastInputs.servings:'',diet:lastInputs?lastInputs.diet:'',
-      savedAt:Date.now()
+      savedAt:Date.now(),mix:false
     });
     saveDishes(dishes);
     btn.classList.add('on');btn.textContent='♥ Saved ✓';
     track('dish_saved');
   }
-  renderDishList(); // keep the pane fresh if it's open behind the sheet
+  renderDishTab();
 }
 
-function openMyDishes(){
-  closeGroceries();closeExportChooser();
-  renderDishList();
-  document.getElementById('dishesBackdrop').classList.add('open');
-  document.getElementById('dishesPane').classList.add('open');
-}
-function closeMyDishes(){
-  document.getElementById('dishesBackdrop').classList.remove('open');
-  document.getElementById('dishesPane').classList.remove('open');
-}
-function renderDishList(){
-  const body=document.getElementById('dishesBody');
-  const dishes=loadDishes();
-  if(!dishes.length){
-    body.innerHTML=`<div class="dl-empty">No saved dishes yet.<br/>Plan a week, open a recipe, and tap <b>♥ Save dish</b> — your favorites will live here. 🍲</div>`;
-    return;
+/* ---- rendering ---- */
+function renderDishTab(){
+  const body=document.getElementById('dishTabBody');
+  if(!body)return;
+  const favs=loadDishes(),pool=loadPool();
+  document.getElementById('cntFav').textContent=favs.length;
+  document.getElementById('cntPool').textContent=pool.length;
+  const picked=pickedDishes().length;
+  const mixBar=picked?`<div class="mix-bar">
+      <b>${picked} dish${picked>1?'es':''} picked for your next plan 🍲</b>
+      <span>Mealody will weave them in where they fit.</span>
+      <button class="dish-mini" onclick="clearPicks()" style="margin-left:auto;">Clear picks</button>
+    </div>`:'';
+  if(dishTab==='fav'){
+    body.innerHTML=mixBar+(favs.length
+      ?`<div class="dish-grid">${favs.map(d=>dishCardHTML(d,'fav')).join('')}</div>`
+      :`<div class="page-empty">No favorites yet.<br/>Plan a week, open any recipe and tap <b>♥ Save dish</b> — it'll land here. 💜</div>`);
+  }else{
+    body.innerHTML=mixBar+
+      `<div id="poolFormHost"></div>
+       <div class="dish-grid">
+         <div class="add-dish-card" onclick="showPoolForm()"><span class="plus">＋</span>Add your own dish</div>
+         ${pool.map(d=>dishCardHTML(d,'pool')).join('')}
+       </div>`+
+      (pool.length?'':`<div class="page-empty" style="margin-top:1.2rem;">Your pool is empty.<br/>Add family recipes, takeaway favorites, anything you cook often — then pick them when planning a week. 🍛</div>`);
   }
-  body.innerHTML=dishes.map(d=>{
-    const date=new Date(d.savedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'});
-    const slot=d.slot?d.slot.charAt(0).toUpperCase()+d.slot.slice(1):'';
-    return `<div class="dl-item">
-      <div class="dl-info" onclick="openSavedDish(${d.id})">
-        <div class="dl-name">${d.name}</div>
-        <div class="dl-meta">${slot}${d.servings?` · serves ${d.servings}`:''} · saved ${date}</div>
-      </div>
-      <div class="dl-btns" style="display:flex;gap:.4rem;">
-        <button class="dl-btn" onclick="grocFromSaved(${d.id},this)" title="Add ingredients to groceries">🛒</button>
-        <button class="dl-btn" onclick="removeDish(${d.id})" title="Remove">✕</button>
-      </div>
-    </div>`;
-  }).join('');
 }
-function removeDish(id){
-  saveDishes(loadDishes().filter(d=>d.id!==id));
-  renderDishList();
+function dishCardHTML(d,src){
+  const tags=[];
+  if(d.recipe)tags.push('📖 Recipe');
+  if(src==='fav'&&d.slot)tags.push(d.slot.charAt(0).toUpperCase()+d.slot.slice(1));
+  if(d.servings)tags.push('Serves '+d.servings);
+  if(src==='pool'&&!d.recipe)tags.push('No recipe yet');
+  return `<div class="dish-card ${d.mix?'picked':''}">
+    <button class="dish-pick ${d.mix?'on':''}" onclick="togglePick('${src}',${d.id})" title="${d.mix?'Picked for next plan':'Use in my next plan'}">${d.mix?'✓':'+'}</button>
+    <h4 onclick="openDishFrom('${src}',${d.id})">${d.name}</h4>
+    ${d.why||d.note?`<div class="dish-note">${d.why||d.note}</div>`:''}
+    ${tags.length?`<div class="dish-tags">${tags.map(t=>`<span class="dish-tag">${t}</span>`).join('')}</div>`:''}
+    <div class="dish-row">
+      ${d.recipe?`<button class="dish-mini" onclick="openDishFrom('${src}',${d.id})">📖 Recipe</button>`
+                :`<button class="dish-mini" onclick="aiFillRecipe('${src}',${d.id},this)">✨ Fill recipe</button>`}
+      <button class="dish-mini" onclick="grocFromStored('${src}',${d.id},this)">🛒 Groceries</button>
+      <button class="dish-mini" onclick="removeStoredDish('${src}',${d.id})">✕</button>
+    </div>
+  </div>`;
 }
-function openSavedDish(id){
-  const d=loadDishes().find(x=>x.id===id);
+function togglePick(src,id){
+  const list=src==='fav'?loadDishes():loadPool();
+  const d=list.find(x=>x.id===id);
+  if(!d)return;
+  d.mix=!d.mix;
+  src==='fav'?saveDishes(list):savePool(list);
+  renderDishTab();
+  if(d.mix)track('dish_picked_for_plan');
+}
+function clearPicks(){
+  const f=loadDishes();f.forEach(d=>d.mix=false);saveDishes(f);
+  const p=loadPool();p.forEach(d=>d.mix=false);savePool(p);
+  renderDishTab();
+}
+function removeStoredDish(src,id){
+  if(src==='fav')saveDishes(loadDishes().filter(d=>d.id!==id));
+  else savePool(loadPool().filter(d=>d.id!==id));
+  renderDishTab();
+}
+function findStored(src,id){
+  return (src==='fav'?loadDishes():loadPool()).find(d=>d.id===id);
+}
+function updateStored(src,id,patch){
+  const list=src==='fav'?loadDishes():loadPool();
+  const d=list.find(x=>x.id===id);
+  if(!d)return null;
+  Object.assign(d,patch);
+  src==='fav'?saveDishes(list):savePool(list);
+  return d;
+}
+
+/* ---- add your own dish (quick add) ---- */
+function showPoolForm(){
+  const host=document.getElementById('poolFormHost');
+  if(!host||host.innerHTML.trim())return;
+  host.innerHTML=`<div class="pool-form">
+    <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;">Add a dish to your pool</div>
+    <label>Dish name</label>
+    <input id="poolName" placeholder="e.g. Amma's tomato rice" maxlength="80"/>
+    <label>Notes <span style="font-weight:400;color:var(--soft);">(optional — why you love it, when you cook it)</span></label>
+    <textarea id="poolNote" placeholder="Sunday comfort food. Uses up leftover rice." maxlength="200"></textarea>
+    <div class="pool-actions">
+      <button class="dish-mini" style="background:var(--grape);color:#fff;border-color:var(--grape);" onclick="addPoolDish(false)">Add dish</button>
+      <button class="dish-mini" onclick="addPoolDish(true)">✨ Add + write recipe</button>
+      <button class="dish-mini" onclick="hidePoolForm()">Cancel</button>
+    </div>
+    <div id="poolFormMsg" style="font-size:.82rem;color:var(--berry);font-weight:700;margin-top:.5rem;"></div>
+  </div>`;
+  document.getElementById('poolName').focus();
+}
+function hidePoolForm(){const h=document.getElementById('poolFormHost');if(h)h.innerHTML='';}
+async function addPoolDish(withRecipe){
+  const nameEl=document.getElementById('poolName');
+  const name=(nameEl.value||'').trim();
+  const note=(document.getElementById('poolNote').value||'').trim();
+  const msg=document.getElementById('poolFormMsg');
+  if(!name){msg.textContent='Give your dish a name first 🙂';nameEl.focus();return;}
+  const pool=loadPool();
+  if(pool.some(d=>d.name.toLowerCase()===name.toLowerCase())){msg.textContent='That dish is already in your pool.';return;}
+  const dish={id:Date.now(),name,note,recipe:null,savedAt:Date.now(),mix:false,own:true};
+  pool.unshift(dish);savePool(pool);
+  track('pool_dish_added',{with_recipe:!!withRecipe});
+  hidePoolForm();renderDishTab();
+  if(withRecipe)aiFillRecipe('pool',dish.id,null);
+}
+async function aiFillRecipe(src,id,btn){
+  const d=findStored(src,id);
+  if(!d||d.recipe)return;
+  const cached=cacheGetRecipe(d.name);
+  if(cached){updateStored(src,id,{recipe:cached});renderDishTab();return;}
+  if(btn){btn.textContent='✨ Writing…';btn.disabled=true;}
+  try{
+    const inp=lastInputs||{servings:d.servings||2,diet:d.diet||'Vegetarian',allergies:''};
+    const r=await callAI(`You are Mealody, a friendly home cook writing a SHORT, clear recipe.
+Dish: ${d.name}.${d.note?` Context from the cook: ${d.note}`:''} Servings: ${inp.servings}. Diet: ${inp.diet}. Strictly avoid: ${inp.allergies||'none'}.
+Rules (keep them tight):
+- "time": total time like "25 min"
+- "ing": ingredients as "item – quantity" strings scaled to ${inp.servings} servings, max 10 items
+- "steps": max 8 steps, each ONE short plain sentence
+- "tip": ONE short practical tip
+- everyday language, no filler, no greetings
+Respond ONLY with valid JSON, no markdown: {"time":"","ing":[""],"steps":[""],"tip":""}`,900);
+    if(r&&r.steps){
+      updateStored(src,id,{recipe:r,servings:d.servings||inp.servings});
+      cachePutRecipe(d.name,r);
+      renderDishTab();
+    }else throw new Error('bad recipe');
+  }catch(e){
+    console.error('ai fill failed',e);
+    renderDishTab();
+    showToast("Couldn't write that recipe just now — tap ✨ to try again 😅");
+  }
+}
+function openDishFrom(src,id){
+  const d=findStored(src,id);
   if(!d)return;
   rsheetFor=null;
-  rsheetMeal={name:d.name,why:d.why,ingredients:d.ingredients,recipe:d.recipe,serves:d.servings};
-  rsheetCtx={mode:'saved',id:d.id};
+  rsheetMeal={name:d.name,why:d.why||d.note||'',ingredients:d.ingredients||'',recipe:d.recipe,serves:d.servings};
+  rsheetCtx={mode:'saved',id:d.id,src};
   const sheet=document.getElementById('rsheet');
   sheet.style.setProperty('--rs-mc',SLOT_COLORS[d.slot]||'var(--grape)');
-  document.getElementById('rsheetSlot').textContent=d.slot?d.slot.charAt(0).toUpperCase()+d.slot.slice(1):'Dish';
+  document.getElementById('rsheetSlot').textContent=src==='pool'?'My dish':(d.slot?d.slot.charAt(0).toUpperCase()+d.slot.slice(1):'Dish');
   document.getElementById('rsheetTitle').textContent=d.name;
-  document.getElementById('rsheetMeta').textContent=`Saved dish${d.why?' · '+d.why:''}`;
+  document.getElementById('rsheetMeta').textContent=(src==='pool'?'From your pool':'Saved favorite')+(d.why||d.note?' · '+(d.why||d.note):'');
   if(rsheetMeal.recipe){renderRecipeBody(rsheetMeal);}
   else{
     document.getElementById('rsheetBody').innerHTML=
-      `<div class="rsheet-placeholder">This dish was saved without a recipe. Key ingredients: ${d.ingredients||'—'}</div>
+      `<div class="rsheet-placeholder">No recipe saved for this one yet.${d.ingredients?`<br/><br/>Key ingredients: ${d.ingredients}`:''}</div>
        <div class="rsheet-actions">
-         <button class="rs-act" onclick="grocFromSheet(this)">🛒 Add to groceries</button>
-         <button class="rs-act" onclick="removeSavedFromSheet()">🗑️ Remove</button>
+         <button class="rs-act on" onclick="aiFillFromSheet()">✨ Write the recipe</button>
+         <button class="rs-act" onclick="closeRecipeSheet()">Close</button>
        </div>`;
   }
   document.getElementById('rsheetBackdrop').classList.add('open');
@@ -2053,11 +2321,36 @@ function openSavedDish(id){
   document.body.classList.add('rsheet-open');
   document.getElementById('rsheetBody').scrollTop=0;
 }
+async function aiFillFromSheet(){
+  if(!rsheetCtx||rsheetCtx.mode!=='saved')return;
+  const {src,id}=rsheetCtx;
+  document.getElementById('rsheetBody').innerHTML=`<div class="rsheet-loading"><div class="rsheet-pot">🍳</div><div class="skel-msg">${randomFunny()}</div></div>`;
+  await aiFillRecipe(src||'pool',id,null);
+  const d=findStored(src||'pool',id);
+  if(d&&d.recipe){rsheetMeal.recipe=d.recipe;renderRecipeBody(rsheetMeal);}
+  else document.getElementById('rsheetBody').innerHTML=`<div class="rsheet-placeholder" style="text-align:center;cursor:pointer" onclick="aiFillFromSheet()">😅 That didn't work — <b>tap to try again</b></div>`;
+}
 function removeSavedFromSheet(){
   if(!rsheetCtx||rsheetCtx.mode!=='saved')return;
-  removeDish(rsheetCtx.id);
+  removeStoredDish(rsheetCtx.src||'fav',rsheetCtx.id);
   closeRecipeSheet();
 }
+function grocFromStored(src,id,btn){
+  const d=findStored(src,id);
+  if(!d)return;
+  const ings=(d.recipe&&d.recipe.ing&&d.recipe.ing.length)
+    ?d.recipe.ing
+    :String(d.ingredients||'').split(',').map(s=>s.trim()).filter(Boolean);
+  if(!ings.length){showToast('No ingredients saved yet — write the recipe first ✨');return;}
+  addIngsToGroceries(ings);
+  if(btn){const o=btn.textContent;btn.textContent='🛒 Added ✓';setTimeout(()=>{btn.textContent=o;},1600);}
+  track('groceries_added');
+}
+/* legacy name kept so older buttons keep working */
+function grocFromSaved(id,btn){grocFromStored('fav',id,btn);}
+function openSavedDish(id){openDishFrom('fav',id);}
+function removeDish(id){removeStoredDish('fav',id);}
+function renderDishList(){renderDishTab();}
 
 /* ══════════ STEP 6: GROCERIES (persistent list, localStorage) ══════════ */
 function loadGroc(){try{return JSON.parse(localStorage.getItem('mealody.groceries')||'[]');}catch(e){return[];}}
@@ -2349,6 +2642,8 @@ function toggleTheme(){
     document.documentElement.setAttribute('data-theme','dark');
     var b=document.getElementById('themeToggle');if(b)b.textContent='☀️';
   }
+  // honor a deep link like nusrathfathima.com/#/dishes on first load
+  if(location.hash&&location.hash.startsWith('#/'))setTimeout(route,0);
 })();
 
 
