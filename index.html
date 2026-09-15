@@ -506,6 +506,26 @@ body.rsheet-open{overflow:hidden;}
 }
 
 /* ===== HEADER ICON BUTTONS ===== */
+/* ===== MOBILE NAV MENU ===== */
+.mast-right{position:relative;}
+.mast-burger{display:none;width:40px;height:40px;border-radius:12px;border:2px solid var(--ink);background:var(--card);cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:4px;box-shadow:0 3px 0 var(--line);transition:background .2s var(--ease),border-color .2s var(--ease);padding:0;}
+.mast-burger span{display:block;width:18px;height:2.5px;background:var(--ink);border-radius:2px;transition:transform .25s var(--bounce),opacity .2s var(--ease);}
+.mast-burger.open{background:var(--grape);border-color:var(--grape);}
+.mast-burger.open span{background:#fff;}
+.mast-burger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.mast-burger.open span:nth-child(2){opacity:0;}
+.mast-burger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+.nav-menu{display:none;position:absolute;top:calc(100% + 10px);right:0;min-width:210px;background:var(--card);border:3px solid var(--ink);border-radius:var(--r);box-shadow:5px 6px 0 var(--grape);padding:.5rem;z-index:940;flex-direction:column;gap:.25rem;}
+.nav-menu.open{display:flex;animation:chatPop .25s var(--bounce);}
+.nav-item{display:flex;align-items:center;gap:.7rem;width:100%;border:none;background:none;font-family:inherit;font-weight:800;font-size:.95rem;color:var(--ink);padding:.7rem .8rem;border-radius:var(--r-sm);cursor:pointer;text-align:left;transition:background .15s var(--ease);}
+.nav-item:hover,.nav-item:active{background:var(--cream);}
+.nav-ic{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
+.nav-ic svg{display:block;}
+@media(max-width:560px){
+  .mast-burger{display:flex;}
+  .mast-icon,.theme-toggle{display:none;}
+}
+
 .mast-icon{width:38px;height:38px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s var(--bounce);box-shadow:0 3px 0 var(--line);}
 .mast-icon svg{display:block;flex-shrink:0;}
 /* playful tooltips for the header buttons */
@@ -753,6 +773,51 @@ body.rsheet-open{overflow:hidden;}
   .page{padding:1.6rem 0 3rem;}
   .page-title{font-size:1.5rem;}
   .dish-grid{grid-template-columns:1fr;}
+  /* Dishes page */
+  .dish-hero{padding:1.1rem;gap:.9rem;box-shadow:5px 5px 0 var(--sun);}
+  .dish-hero-art svg{width:42px;height:42px;}
+  .dish-stats{width:100%;}
+  .dstat{flex:1;min-width:0;padding:.5rem .4rem;}
+  .dstat b{font-size:1.15rem;}
+  .dstat span{font-size:.62rem;}
+  .dish-card{padding:1rem 1.1rem;}
+  .dish-card h4{font-size:1.02rem;}
+  .dish-mini{padding:.45rem .8rem;font-size:.8rem;}      /* comfier tap targets */
+  .dish-row{gap:.4rem;}
+  .dish-close .dc-word{display:none;}                     /* no hover on touch */
+  .pool-form{padding:1rem;}
+  .pb-top{gap:.5rem;}
+  .pb-title{font-size:.92rem;width:100%;}
+  /* Groceries page */
+  .groc-hero{box-shadow:5px 5px 0 var(--lime);}
+  .g-add{flex-direction:column;gap:.5rem;}
+  .g-add input{width:100%;font-size:16px;}                /* 16px stops iOS zooming on focus */
+  .g-add .dish-mini{width:100%;padding:.7rem;}
+  .g-list{padding:.3rem .8rem;}
+  .g-slide{padding:.7rem .1rem;}
+  .g-name{font-size:.92rem;}
+  .g-dots{font-size:1.25rem;padding:.25rem .5rem;}
+  .go-row{gap:.5rem;}
+  .go-lbl{min-width:100%;margin-bottom:-.2rem;}
+  .go-note{min-width:0;width:100%;font-size:16px;}
+  .go-acts .dish-mini{flex:1;}
+  .g-actions .dish-mini{flex:1;justify-content:center;text-align:center;}
+  /* sheets, modals, forms */
+  .modal-input{font-size:16px;}
+  .pool-form input,.pool-form textarea{font-size:16px;}
+  .rsheet-actions{gap:.5rem;}
+  .rs-act{min-width:calc(50% - .25rem);padding:.7rem .6rem;}
+  .exp-opt{padding:.85rem .9rem;}
+  .page-back{padding:.55rem 1rem;}
+}
+@media(max-width:380px){
+  .dish-hero-text{min-width:100%;}
+  .dstat b{font-size:1.05rem;}
+  .dtab-btn{font-size:.78rem;padding:.7rem .35rem;}
+  .dtab-cnt{font-size:.9rem;}
+  .rs-act{min-width:100%;}
+  .go-unit{padding:.18rem .5rem;font-size:.72rem;}
+  .nav-menu{min-width:190px;}
 }
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
@@ -772,7 +837,7 @@ body.rsheet-open{overflow:hidden;}
   .meal{border:1.5px solid #333!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid;}
   .day-name{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .meal::before{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .meal-regen,.day-retry,.meal-tap,.meal-fav,.meal-foot,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast,.page{display:none!important;}
+  .meal-regen,.day-retry,.meal-tap,.meal-fav,.meal-foot,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast,.page,.nav-menu,.mast-burger{display:none!important;}
   /* per-meal recipes injected for "Plan + recipes" export */
   .meal-recipe-print{display:block!important;font-size:9pt;line-height:1.45;border-top:1px dashed #999;margin-top:6pt;padding-top:6pt;}
   .meal-recipe-print .mrp-t{font-weight:700;margin-bottom:3pt;}
@@ -807,6 +872,19 @@ body.rsheet-open{overflow:hidden;}
       <button class="mast-icon" onclick="goRoute('#/dishes')" aria-label="Dishes" data-tip="My Dishes"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.8"/><circle cx="12" cy="12" r="6.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.1"/><path d="M8.7 10.2 C8.7 7.9 12 7.9 12 10 C12 7.9 15.3 7.9 15.3 10.2 C15.3 12.5 12 15.1 12 15.1 C12 15.1 8.7 12.5 8.7 10.2 Z" fill="var(--berry)"/></svg></button>
       <button class="mast-icon" onclick="openGroceries()" aria-label="Grocery" data-tip="Grocery">🛒</button>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Dark mode" data-tip="Dark mode">🌙</button>
+      <button class="mast-burger" id="mastBurger" onclick="toggleNavMenu(event)" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="nav-menu" id="navMenu" aria-label="Main menu">
+        <button class="nav-item" onclick="navGo('#/dishes')">
+          <span class="nav-ic"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.8"/><circle cx="12" cy="12" r="6.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.1"/><path d="M8.7 10.2 C8.7 7.9 12 7.9 12 10 C12 7.9 15.3 7.9 15.3 10.2 C15.3 12.5 12 15.1 12 15.1 C12 15.1 8.7 12.5 8.7 10.2 Z" fill="var(--berry)"/></svg></span>
+          My Dishes
+        </button>
+        <button class="nav-item" onclick="navGo('#/groceries')">
+          <span class="nav-ic">🛒</span> Grocery
+        </button>
+        <button class="nav-item" onclick="toggleTheme();closeNavMenu();">
+          <span class="nav-ic" id="navThemeIc">🌙</span> <span id="navThemeLbl">Dark mode</span>
+        </button>
+      </nav>
     </div>
   </div>
 </header>
@@ -1718,6 +1796,7 @@ function finishChat(){
 
 function mealodyHome(){
   // always leave whatever page we're on, then return to the welcome/banner
+  closeNavMenu();
   goRoute('');
   if(typeof restartChat==='function'){restartChat();}
   window.scrollTo({top:0,behavior:'smooth'});
@@ -2435,6 +2514,37 @@ function route(){
 }
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
+
+/* ── MOBILE NAV MENU ── */
+function toggleNavMenu(e){
+  if(e)e.stopPropagation();
+  const m=document.getElementById('navMenu'),b=document.getElementById('mastBurger');
+  const open=!m.classList.contains('open');
+  m.classList.toggle('open',open);
+  b.classList.toggle('open',open);
+  b.setAttribute('aria-expanded',open?'true':'false');
+  if(open)syncNavTheme();
+}
+function closeNavMenu(){
+  const m=document.getElementById('navMenu'),b=document.getElementById('mastBurger');
+  if(!m)return;
+  m.classList.remove('open');b.classList.remove('open');
+  b.setAttribute('aria-expanded','false');
+}
+function navGo(hash){closeNavMenu();goRoute(hash);}
+function syncNavTheme(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const ic=document.getElementById('navThemeIc'),lbl=document.getElementById('navThemeLbl');
+  if(ic)ic.textContent=dark?'☀️':'🌙';
+  if(lbl)lbl.textContent=dark?'Light mode':'Dark mode';
+}
+// tapping anywhere else closes the menu
+document.addEventListener('click',function(e){
+  const m=document.getElementById('navMenu');
+  if(!m||!m.classList.contains('open'))return;
+  if(e.target.closest('#navMenu')||e.target.closest('#mastBurger'))return;
+  closeNavMenu();
+});
 
 function grocBackAction(){
   grocListOpen?goRoute('#/groceries'):goRoute('');
@@ -3639,8 +3749,9 @@ function resetPlanner(){
 
 function toggleTheme(){
   const html=document.documentElement;const btn=document.getElementById('themeToggle');
-  if(html.getAttribute('data-theme')==='dark'){html.removeAttribute('data-theme');btn.textContent='🌙';localStorage.setItem('mealody_theme','light');}
-  else{html.setAttribute('data-theme','dark');btn.textContent='☀️';localStorage.setItem('mealody_theme','dark');}
+  if(html.getAttribute('data-theme')==='dark'){html.removeAttribute('data-theme');if(btn)btn.textContent='🌙';localStorage.setItem('mealody_theme','light');}
+  else{html.setAttribute('data-theme','dark');if(btn)btn.textContent='☀️';localStorage.setItem('mealody_theme','dark');}
+  if(typeof syncNavTheme==='function')syncNavTheme();
 }
 (function(){
   if(localStorage.getItem('mealody_theme')==='dark'){
