@@ -493,6 +493,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .meal-fav svg{display:block;}
 .rsheet-badges{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.35rem;}
 .rsheet-badge{font-size:.74rem;font-weight:700;color:var(--ink);background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.25rem .7rem;}
+.rsheet-badge.draft{background:var(--berry);color:#fff;border-color:var(--berry);}
 .rsheet-tip{background:var(--cream);border:2px dashed var(--rs-mc,var(--grape));border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.85rem;color:var(--ink);line-height:1.55;}
 .rsheet-loading{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:2.2rem 1rem;text-align:center;}
 .rsheet-pot{font-size:2.2rem;animation:potbounce 1.2s var(--bounce) infinite;}
@@ -576,38 +577,38 @@ body.rsheet-open{overflow:hidden;}
 .dstat span{font-size:.7rem;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.05em;}
 .dstat.pick{border-color:var(--berry);}
 .dstat.pick b{color:var(--berry);}
-.tabs2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.6rem;}
-.tab2{display:flex;align-items:center;gap:.8rem;text-align:left;border:3px solid var(--ink);background:var(--card);border-radius:var(--r);padding:1rem 1.1rem;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:5px 5px 0 var(--line);transition:all .2s var(--bounce);}
-.tab2:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--line);}
-.tab2.on{box-shadow:5px 5px 0 var(--berry);background:var(--cream);}
-.tab2#tabPool.on{box-shadow:5px 5px 0 var(--grape);}
-.t2-ico{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);background:#fff0f5;color:var(--berry);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;}
-.t2-ico.pool{background:var(--cream);}
-[data-theme="dark"] .t2-ico{background:rgba(255,79,129,.16);}
-.t2-text{display:flex;flex-direction:column;line-height:1.25;flex:1;min-width:0;}
-.t2-text b{font-family:'Fraunces',serif;font-size:1.02rem;}
-.t2-text span{font-size:.74rem;color:var(--soft);font-weight:600;}
-.t2-cnt{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--soft);flex-shrink:0;}
-.tab2.on .t2-cnt{color:var(--ink);}
+/* segmented two-column tab control — one divided bar, clearly clickable */
+.seg{display:grid;grid-template-columns:1fr 3px 1fr;align-items:stretch;border:3px solid var(--ink);border-radius:var(--r);background:var(--card);box-shadow:5px 5px 0 var(--line);overflow:hidden;margin-bottom:1.6rem;}
+.seg-btn{display:flex;align-items:center;justify-content:center;gap:.55rem;border:none;background:var(--card);color:var(--soft);font-family:inherit;font-weight:800;font-size:.95rem;padding:1rem .8rem;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease);position:relative;}
+.seg-btn:hover{background:var(--cream);color:var(--ink);}
+.seg-div{background:var(--ink);}
+.seg-btn.on{color:#fff;background:var(--berry);}
+#tabPool.seg-btn.on{background:var(--grape);}
+.seg-ico{display:inline-flex;align-items:center;font-size:1rem;}
+.seg-ico svg{display:block;}
+.seg-btn.on .seg-ico{color:#fff;}
+.seg-lbl{white-space:nowrap;}
+.seg-cnt{font-family:'Fraunces',serif;font-size:1.05rem;background:var(--line);color:var(--ink);border-radius:99px;padding:.05rem .55rem;min-width:28px;}
+.seg-btn.on .seg-cnt{background:rgba(255,255,255,.9);}
 .dish-mini.solid{background:var(--grape);color:#fff;border-color:var(--grape);}
 .form-msg{font-size:.82rem;color:var(--berry);font-weight:700;margin-top:.5rem;}
-/* sticky tray for dishes picked for the next plan */
-.pick-tray{position:fixed;left:50%;bottom:1.1rem;transform:translate(-50%,calc(100% + 2rem));opacity:0;visibility:hidden;width:min(680px,calc(100vw - 1.6rem));background:var(--card);border:3px solid var(--ink);border-radius:var(--r);box-shadow:0 6px 0 var(--berry);padding:.85rem 1.1rem;z-index:870;transition:transform .4s var(--bounce),opacity .3s ease,visibility .3s;}
-.pick-tray.on{transform:translate(-50%,0);opacity:1;visibility:visible;}
-.pt-top{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
-.pt-title{font-family:'Fraunces',serif;font-weight:700;font-size:1rem;}
-.pt-title em{color:var(--berry);font-style:normal;}
-.pt-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.55rem;max-height:60px;overflow:hidden;}
-.pt-chip{font-size:.74rem;font-weight:700;background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.22rem .6rem;display:flex;align-items:center;gap:.35rem;}
-.pt-chip button{border:none;background:none;cursor:pointer;color:var(--soft);font-weight:800;font-size:.8rem;line-height:1;padding:0;}
-.pt-chip button:hover{color:var(--berry);}
-.pt-go{margin-left:auto;border:2px solid var(--berry);background:var(--berry);color:#fff;border-radius:99px;padding:.5rem 1rem;font-family:inherit;font-weight:800;font-size:.84rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18);transition:transform .15s var(--bounce);white-space:nowrap;}
-.pt-go:hover{transform:translateY(-2px);}
-.pt-clear{border:none;background:none;color:var(--soft);font-family:inherit;font-weight:700;font-size:.78rem;cursor:pointer;text-decoration:underline;}
+/* picks basket — lives in the page flow, so it never covers a form */
+.pick-basket{display:none;background:var(--card);border:3px solid var(--berry);border-radius:var(--r);box-shadow:5px 5px 0 var(--berry);padding:.9rem 1.1rem;margin-bottom:1.3rem;animation:chatPop .35s var(--bounce);}
+.pick-basket.on{display:block;}
+.pb-top{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;}
+.pb-title{font-family:'Fraunces',serif;font-weight:700;font-size:1rem;}
+.pb-title em{color:var(--berry);font-style:normal;}
+.pb-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem;}
+.pb-chip{font-size:.75rem;font-weight:700;background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.24rem .62rem;display:flex;align-items:center;gap:.4rem;}
+.pb-chip button{border:none;background:none;cursor:pointer;color:var(--soft);font-weight:800;font-size:.8rem;line-height:1;padding:0;}
+.pb-chip button:hover{color:var(--berry);}
+.pb-go{margin-left:auto;border:2px solid var(--berry);background:var(--berry);color:#fff;border-radius:99px;padding:.5rem 1rem;font-family:inherit;font-weight:800;font-size:.84rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.15);transition:transform .15s var(--bounce);white-space:nowrap;}
+.pb-go:hover{transform:translateY(-2px);}
+.pb-clear{border:none;background:none;color:var(--soft);font-family:inherit;font-weight:700;font-size:.78rem;cursor:pointer;text-decoration:underline;}
 @media(max-width:560px){
-  .tabs2{grid-template-columns:1fr;gap:.6rem;}
-  .tab2{padding:.8rem .9rem;}
-  .pt-go{width:100%;margin-left:0;}
+  .seg{grid-template-columns:1fr 3px 1fr;}
+  .seg-btn{flex-direction:column;gap:.25rem;padding:.8rem .5rem;font-size:.85rem;}
+  .pb-go{width:100%;margin-left:0;}
 }
 .tab{border:none;background:none;font-family:inherit;font-weight:800;font-size:.95rem;color:var(--soft);padding:.7rem 1.1rem;cursor:pointer;border-radius:var(--r-sm) var(--r-sm) 0 0;position:relative;transition:color .2s var(--ease);}
 .tab:hover{color:var(--ink);}
@@ -676,7 +677,7 @@ body.rsheet-open{overflow:hidden;}
   .meal{border:1.5px solid #333!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid;}
   .day-name{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .meal::before{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .meal-regen,.day-retry,.meal-tap,.meal-fav,.meal-foot,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast,.page,.pick-tray{display:none!important;}
+  .meal-regen,.day-retry,.meal-tap,.meal-fav,.meal-foot,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast,.page{display:none!important;}
   /* per-meal recipes injected for "Plan + recipes" export */
   .meal-recipe-print{display:block!important;font-size:9pt;line-height:1.45;border-top:1px dashed #999;margin-top:6pt;padding-top:6pt;}
   .meal-recipe-print .mrp-t{font-weight:700;margin-bottom:3pt;}
@@ -853,16 +854,25 @@ body.rsheet-open{overflow:hidden;}
         <div class="dstat pick"><b id="statPick">0</b><span>picked</span></div>
       </div>
     </div>
-    <div class="tabs2">
-      <button class="tab2 on" id="tabFav" onclick="switchDishTab('fav')">
-        <span class="t2-ico" id="tabFavIco"></span>
-        <span class="t2-text"><b>My Favorites</b><span id="t2SubFav">saved from your weeks</span></span>
-        <span class="t2-cnt" id="cntFav">0</span>
+    <div class="pick-basket" id="pickBasket">
+      <div class="pb-top">
+        <span class="pb-title" id="pbTitle"></span>
+        <button class="pb-clear" onclick="clearPicks()">clear</button>
+        <button class="pb-go" onclick="planWithPicks()">Plan my week with these →</button>
+      </div>
+      <div class="pb-chips" id="pbChips"></div>
+    </div>
+    <div class="seg" role="tablist">
+      <button class="seg-btn on" id="tabFav" onclick="switchDishTab('fav')" role="tab">
+        <span class="seg-ico" id="tabFavIco"></span>
+        <span class="seg-lbl">My Favorites</span>
+        <span class="seg-cnt" id="cntFav">0</span>
       </button>
-      <button class="tab2" id="tabPool" onclick="switchDishTab('pool')">
-        <span class="t2-ico pool">🍲</span>
-        <span class="t2-text"><b>My Pool</b><span id="t2SubPool">recipes you added</span></span>
-        <span class="t2-cnt" id="cntPool">0</span>
+      <span class="seg-div" aria-hidden="true"></span>
+      <button class="seg-btn" id="tabPool" onclick="switchDishTab('pool')" role="tab">
+        <span class="seg-ico">🍲</span>
+        <span class="seg-lbl">My Pool</span>
+        <span class="seg-cnt" id="cntPool">0</span>
       </button>
     </div>
     <div id="dishTabBody"></div>
@@ -874,16 +884,6 @@ body.rsheet-open{overflow:hidden;}
     Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
-
-<!-- ===== PICKED-DISHES TRAY (floats on the My Dishes page) ===== -->
-<div class="pick-tray" id="pickTray">
-  <div class="pt-top">
-    <span class="pt-title" id="ptTitle"></span>
-    <button class="pt-clear" onclick="clearPicks()">clear</button>
-    <button class="pt-go" onclick="planWithPicks()">Plan my week with these →</button>
-  </div>
-  <div class="pt-chips" id="ptChips"></div>
-</div>
 
 <!-- ===== GROCERIES PANE ===== -->
 <div class="rsheet-backdrop mpane-b" id="grocBackdrop" onclick="closeGroceries()"></div>
@@ -1571,7 +1571,8 @@ function finishChat(){
 }
 
 function mealodyHome(){
-  // return to the welcome/banner (fresh start)
+  // always leave whatever page we're on, then return to the welcome/banner
+  goRoute('');
   if(typeof restartChat==='function'){restartChat();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -2009,15 +2010,25 @@ function renderRecipeBody(m){
     const r=m.recipe;
     const serves=m.serves||(lastInputs?lastInputs.servings:'?');
     const saved=isDishSaved(m.name);
-    const actions=(rsheetCtx&&rsheetCtx.mode==='saved')
-      ?`<button class="rs-act" onclick="grocFromSheet(this)">🛒 Add to groceries</button>
+    const mode=rsheetCtx&&rsheetCtx.mode;
+    let actions;
+    if(mode==='draft'){
+      actions=`<button class="rs-act on" onclick="saveDraftRecipe()">💾 Save recipe</button>
+        <button class="rs-act" onclick="aiFillFromSheet()">↻ Ask again</button>
+        <button class="rs-act" onclick="grocFromSheet(this)">🛒 Add to groceries</button>
+        <button class="rs-act" onclick="discardDraft()">Not now</button>`;
+    }else if(mode==='saved'){
+      actions=`<button class="rs-act" onclick="grocFromSheet(this)">🛒 Add to groceries</button>
         <button class="rs-act" onclick="printRecipeFromSheet()">🖨️ Recipe PDF</button>
-        <button class="rs-act" onclick="removeSavedFromSheet()">🗑️ Remove</button>`
-      :`<button class="rs-act heart ${saved?'on':''}" onclick="toggleSaveFromSheet(this)">${HEART_SVG}<span>${saved?'Saved':'Save dish'}</span></button>
+        <button class="rs-act" onclick="removeSavedFromSheet()">🗑️ Remove</button>`;
+    }else{
+      actions=`<button class="rs-act heart ${saved?'on':''}" onclick="toggleSaveFromSheet(this)">${HEART_SVG}<span>${saved?'Saved':'Save dish'}</span></button>
         <button class="rs-act" onclick="grocFromSheet(this)">🛒 Groceries</button>
         <button class="rs-act" onclick="printRecipeFromSheet()">🖨️ Recipe PDF</button>`;
+    }
     body.innerHTML=`
       <div class="rsheet-badges">
+        ${mode==='draft'?'<span class="rsheet-badge draft">✨ Draft — not saved yet</span>':''}
         ${r.time?`<span class="rsheet-badge">⏱️ ${r.time}</span>`:''}
         <span class="rsheet-badge">🍽️ Serves ${serves}</span>
       </div>
@@ -2225,7 +2236,6 @@ function route(){
   const dp=document.getElementById('dishesPage');
   if(dp)dp.classList.toggle('on',isDishes);
   if(isDishes){renderDishTab();track('page_view',{page:'dishes'});}
-  else{const t=document.getElementById('pickTray');if(t)t.classList.remove('on');}
   if(onPage)window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
 }
 window.addEventListener('hashchange',route);
@@ -2335,16 +2345,15 @@ function renderDishTab(){
 
 /* the floating tray that collects everything picked for the next plan */
 function renderPickTray(){
-  const tray=document.getElementById('pickTray');
-  if(!tray)return;
+  const basket=document.getElementById('pickBasket');
+  if(!basket)return;
   const picked=pickedDishes();
-  const onPage=(location.hash||'').startsWith('#/dishes');
-  if(!picked.length||!onPage){tray.classList.remove('on');return;}
+  if(!picked.length){basket.classList.remove('on');return;}
   const n=picked.length;
-  document.getElementById('ptTitle').innerHTML=`🍲 <em>${n}</em> dish${n>1?'es':''} ready for your next week`;
-  document.getElementById('ptChips').innerHTML=picked.map(d=>
-    `<span class="pt-chip">${d.name}<button onclick="togglePick('${d.src}',${d.id})" title="Remove">✕</button></span>`).join('');
-  tray.classList.add('on');
+  document.getElementById('pbTitle').innerHTML=`🍲 <em>${n}</em> dish${n>1?'es':''} ready for your next week`;
+  document.getElementById('pbChips').innerHTML=picked.map(d=>
+    `<span class="pb-chip">${d.name}<button onclick="togglePick('${d.src}',${d.id})" title="Remove">✕</button></span>`).join('');
+  basket.classList.add('on');
 }
 function planWithPicks(){
   goRoute('');
@@ -2402,9 +2411,8 @@ function chooseAIRecipe(){
   if(!id)return;
   const d=findStored(src,id);
   document.getElementById('rsheetMeta').textContent='Mealody is writing it…';
-  document.getElementById('rsheetBody').innerHTML=`<div class="rsheet-loading"><div class="rsheet-pot">🍳</div><div class="skel-msg">${randomFunny()}</div></div>`;
   rsheetMeal={name:d.name,why:d.note||'',ingredients:d.ingredients||'',recipe:null,serves:d.servings};
-  rsheetCtx={mode:'saved',src,id};
+  rsheetCtx={mode:'draft',src,id};
   aiFillFromSheet();
 }
 function chooseManualRecipe(){
@@ -2596,9 +2604,8 @@ function newDishThen(how){
   if(how==='none'){closeRecipeSheet();showToast('Added to your pool 🍲',2200);return;}
   if(how==='ai'){
     rsheetMeal={name:dish.name,why:dish.note||'',ingredients:'',recipe:null,serves:''};
-    rsheetCtx={mode:'saved',src:'pool',id:dish.id};
+    rsheetCtx={mode:'draft',src:'pool',id:dish.id};
     document.getElementById('rsheetMeta').textContent='Mealody is writing it…';
-    document.getElementById('rsheetBody').innerHTML=`<div class="rsheet-loading"><div class="rsheet-pot">🍳</div><div class="skel-msg">${randomFunny()}</div></div>`;
     aiFillFromSheet();
   }else{
     rsheetCtx={mode:'manual',src:'pool',id:dish.id};
@@ -2659,13 +2666,53 @@ function openDishFrom(src,id){
   document.getElementById('rsheetBody').scrollTop=0;
 }
 async function aiFillFromSheet(){
-  if(!rsheetCtx||rsheetCtx.mode!=='saved')return;
-  const {src,id}=rsheetCtx;
+  if(!rsheetCtx||(rsheetCtx.mode!=='saved'&&rsheetCtx.mode!=='draft'))return;
+  const src=rsheetCtx.src||'pool',id=rsheetCtx.id;
+  const d=findStored(src,id);
+  if(!d)return;
   document.getElementById('rsheetBody').innerHTML=`<div class="rsheet-loading"><div class="rsheet-pot">🍳</div><div class="skel-msg">${randomFunny()}</div></div>`;
-  await aiFillRecipe(src||'pool',id,null);
-  const d=findStored(src||'pool',id);
-  if(d&&d.recipe){rsheetMeal.recipe=d.recipe;renderRecipeBody(rsheetMeal);}
-  else document.getElementById('rsheetBody').innerHTML=`<div class="rsheet-placeholder" style="text-align:center;cursor:pointer" onclick="aiFillFromSheet()">😅 That didn't work — <b>tap to try again</b></div>`;
+  try{
+    const r=await aiDraftRecipe(d);
+    rsheetMeal={name:d.name,why:d.note||d.why||'',ingredients:d.ingredients||'',recipe:r,serves:d.servings};
+    rsheetCtx={mode:'draft',src,id};
+    renderRecipeBody(rsheetMeal);
+  }catch(e){
+    console.error('ai fill failed',e);
+    document.getElementById('rsheetBody').innerHTML=`<div class="rsheet-placeholder" style="text-align:center;cursor:pointer" onclick="aiFillFromSheet()">😅 That didn't work — <b>tap to try again</b></div>`;
+  }
+}
+/* writes a recipe but does NOT store it — the cook decides whether to keep it */
+async function aiDraftRecipe(d){
+  const inp=lastInputs||{servings:d.servings||2,diet:d.diet||'Vegetarian',allergies:''};
+  const r=await callAI(`You are Mealody, a friendly home cook writing a SHORT, clear recipe.
+Dish: ${d.name}.${d.note?` Context from the cook: ${d.note}`:''} Servings: ${inp.servings}. Diet: ${inp.diet}. Strictly avoid: ${inp.allergies||'none'}.
+Rules (keep them tight):
+- "time": total time like "25 min"
+- "ing": ingredients as "item – quantity" strings scaled to ${inp.servings} servings, max 10 items
+- "steps": max 8 steps, each ONE short plain sentence
+- "tip": ONE short practical tip
+- everyday language, no filler, no greetings
+Respond ONLY with valid JSON, no markdown: {"time":"","ing":[""],"steps":[""],"tip":""}`,900);
+  if(!r||!r.steps)throw new Error('bad recipe');
+  return r;
+}
+/* keep the drafted recipe on the dish */
+function saveDraftRecipe(){
+  if(!rsheetCtx||rsheetCtx.mode!=='draft'||!rsheetMeal||!rsheetMeal.recipe)return;
+  const {src,id}=rsheetCtx;
+  const d=findStored(src,id);
+  updateStored(src,id,{recipe:rsheetMeal.recipe,servings:(d&&d.servings)||(lastInputs?lastInputs.servings:'')});
+  cachePutRecipe(rsheetMeal.name,rsheetMeal.recipe);
+  rsheetCtx={mode:'saved',src,id};
+  renderRecipeBody(rsheetMeal);
+  renderDishTab();
+  showToast('Recipe saved to your pool 💾',2400);
+  track('pool_recipe_saved',{how:'ai'});
+}
+function discardDraft(){
+  if(!rsheetCtx)return;
+  rsheetCtx={mode:'saved',src:rsheetCtx.src,id:rsheetCtx.id};
+  closeRecipeSheet();
 }
 function removeSavedFromSheet(){
   if(!rsheetCtx||rsheetCtx.mode!=='saved')return;
