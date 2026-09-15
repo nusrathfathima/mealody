@@ -548,10 +548,12 @@ body.rsheet-open{overflow:hidden;}
 .dl-btn{width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s var(--bounce);}
 .dl-btn:hover{transform:scale(1.12);}
 .dl-empty{text-align:center;color:var(--soft);font-size:.9rem;padding:2rem 1rem;line-height:1.6;}
-.g-row{position:relative;overflow:hidden;border-bottom:2px dashed var(--line);}
+.g-row{position:relative;border-bottom:2px dashed var(--line);}
+.g-swipe{position:relative;overflow:hidden;}
 .g-row:last-child{border-bottom:none;}
-.g-del-layer{position:absolute;inset:0;background:#e03131;display:flex;align-items:center;justify-content:flex-end;padding-right:1.1rem;color:#fff;font-weight:800;font-size:.85rem;opacity:.55;transition:opacity .15s var(--ease);}
-.g-row.arm .g-del-layer{opacity:1;}
+.g-del-layer{position:absolute;inset:0;background:#e03131;display:flex;align-items:center;justify-content:flex-end;padding-right:1.1rem;color:#fff;font-weight:800;font-size:.85rem;opacity:0;visibility:hidden;transition:opacity .15s var(--ease);}
+.g-row.swiping .g-del-layer{opacity:.6;visibility:visible;}
+.g-row.arm .g-del-layer{opacity:1;visibility:visible;}
 .g-slide{position:relative;display:flex;align-items:center;gap:.6rem;padding:.65rem .2rem;background:var(--card);user-select:none;touch-action:pan-y;will-change:transform;}
 .g-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .2rem;user-select:none;}
 .g-box{width:22px;height:22px;border:2px solid var(--ink);border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;background:var(--card);cursor:pointer;transition:all .15s var(--bounce);}
@@ -566,7 +568,7 @@ body.rsheet-open{overflow:hidden;}
 .g-dots:hover{color:var(--ink);background:var(--cream);}
 /* per-item options */
 .g-opts{display:none;padding:0 .2rem;}
-.g-opts.open{display:block;padding:.7rem .2rem 1rem;animation:chatPop .25s var(--bounce);}
+.g-opts.open{display:block;position:relative;z-index:2;background:var(--cream);border:2px solid var(--line);border-radius:var(--r-sm);padding:.8rem .9rem 1rem;margin:0 0 .6rem;animation:chatPop .25s var(--bounce);}
 .go-head{display:flex;gap:.45rem;flex-wrap:wrap;margin-bottom:.7rem;}
 .go-tag{font-size:.72rem;font-weight:700;background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.18rem .6rem;color:var(--soft);}
 .go-row{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem;flex-wrap:wrap;}
@@ -583,6 +585,8 @@ body.rsheet-open{overflow:hidden;}
 .go-note{flex:1;min-width:150px;border:2px solid var(--line);border-radius:99px;padding:.45rem .8rem;font-family:inherit;font-size:.85rem;background:var(--cream);color:var(--ink);}
 .go-note:focus{outline:none;border-color:var(--lime);}
 .go-acts{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem;}
+.modal-input{width:100%;border:3px solid var(--ink);border-radius:99px;padding:.75rem 1.1rem;font-family:inherit;font-size:1rem;background:var(--cream);color:var(--ink);box-shadow:3px 3px 0 var(--line);}
+.modal-input:focus{outline:none;border-color:var(--lime);box-shadow:3px 3px 0 var(--lime);}
 .g-hint{font-size:.78rem;color:var(--soft);text-align:center;margin-top:.8rem;}
 @media(hover:hover){.g-hint{display:none;}}
 .g-add{display:flex;gap:.6rem;margin-bottom:1.1rem;}
@@ -993,6 +997,24 @@ body.rsheet-open{overflow:hidden;}
     Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
+
+<!-- ===== RENAME LIST MODAL ===== -->
+<div class="rsheet-backdrop mpane-b" id="renameBackdrop" onclick="closeRenameModal()"></div>
+<div class="rsheet mpane" id="renamePane" role="dialog" aria-modal="true" style="--rs-mc:var(--lime)">
+  <div class="rsheet-head">
+    <button class="rsheet-close" onclick="closeRenameModal()" aria-label="Close">✕</button>
+    <div class="rsheet-title" id="renameTitle">Rename list</div>
+    <div class="rsheet-meta">Usually the store you shop at</div>
+  </div>
+  <div class="rsheet-body">
+    <input id="renameInput" class="modal-input" maxlength="40" placeholder="e.g. Aldi, Patel Brothers, Costco"/>
+    <div id="renameMsg" class="form-msg"></div>
+    <div class="rsheet-actions">
+      <button class="rs-act on" onclick="submitRename()" id="renameGo">Save name</button>
+      <button class="rs-act m-cancel" onclick="closeRenameModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== EXPORT CHOOSER ===== -->
 <div class="rsheet-backdrop mpane-b" id="exportBackdrop" onclick="closeExportChooser()"></div>
@@ -1698,6 +1720,7 @@ function mealodyHome(){
 }
 function restartChat(){
   // reset everything and rebuild the conversation
+  currentPlan=null;clearSavedPlan();
   rebuildChatSteps();
   ingList=[];leftList=[];
   selectedMoods=new Set([randomDefaultMood()]);
@@ -1811,6 +1834,7 @@ async function generatePlan(){
         }
         revealedCount++;updateProgress();
       });
+      savePlan();            // keep the week safe as each chunk lands
     }
 
     // safety: fill any gaps
@@ -1821,6 +1845,7 @@ async function generatePlan(){
     // if the user already opened a recipe while days were still cooking,
     // sweep the queue again so late-arriving days get their recipes too
     if(recipeQueueStarted)runRecipeQueue();
+    savePlan();
     // gentle one-time hint that meal cards are tappable (skipped once they've tapped)
     showRecipeNudge();
 
@@ -2184,7 +2209,7 @@ function closeRecipeSheet(){
 document.addEventListener('keydown',function(e){
   if(e.key!=='Escape')return;
   if(rsheetFor||rsheetMeal){closeRecipeSheet();return;}
-  closeMyDishes();closeGroceries();closeExportChooser();
+  closeMyDishes();closeGroceries();closeExportChooser();closeRenameModal();
 });
 
 /* mark a card as having its recipe ready */
@@ -2227,7 +2252,7 @@ async function fetchRecipeFor(dayIdx,slotKey){
   try{
     const r=await callAI(singleRecipePrompt(m),900);
     if(r&&r.steps){
-      m.recipe=r;cachePutRecipe(m.name,r);markRecipeReady(dayIdx,slotKey);
+      m.recipe=r;cachePutRecipe(m.name,r);markRecipeReady(dayIdx,slotKey);savePlan();
       if(rsheetFor&&rsheetFor.dayIdx===dayIdx&&rsheetFor.slotKey===slotKey)renderRecipeBody(m);
     }
   }catch(e){
@@ -2270,7 +2295,7 @@ async function runRecipeQueue(){
         (res.recipes||[]).forEach((r,i)=>{
           const it=items[i];
           if(it&&r&&r.steps){
-            it.m.recipe=r;cachePutRecipe(it.m.name,r);markRecipeReady(it.di,it.s);
+            it.m.recipe=r;cachePutRecipe(it.m.name,r);markRecipeReady(it.di,it.s);savePlan();
             if(rsheetFor&&rsheetFor.dayIdx===it.di&&rsheetFor.slotKey===it.s)renderRecipeBody(it.m);
           }
         });
@@ -2325,6 +2350,43 @@ function showToast(msg,ms){
 function showRecipeNudge(){
   try{if(localStorage.getItem('mealody.recipeTapped'))return;}catch(e){}
   showToast('Tap any meal to see its full recipe 📖',6000);
+}
+
+/* ══════════ PLAN PERSISTENCE — a refresh shouldn't cost you your week ══════════ */
+const PLAN_KEY='mealody.currentPlan';
+function savePlan(){
+  try{
+    if(!currentPlan||!lastInputs)return;
+    localStorage.setItem(PLAN_KEY,JSON.stringify({plan:currentPlan,inputs:lastInputs,savedAt:Date.now()}));
+  }catch(e){/* storage full — the week just won't survive a refresh */}
+}
+function clearSavedPlan(){try{localStorage.removeItem(PLAN_KEY);}catch(e){}}
+function restorePlan(){
+  let saved;
+  try{saved=JSON.parse(localStorage.getItem(PLAN_KEY)||'null');}catch(e){return false;}
+  if(!saved||!saved.plan||!saved.plan.days||!saved.plan.days.length)return false;
+  // a week older than 7 days isn't "this week" any more
+  if(Date.now()-(saved.savedAt||0)>7*24*60*60*1000){clearSavedPlan();return false;}
+  currentPlan=saved.plan;lastInputs=saved.inputs;
+  // rebuild the chat's own state so "Start over" and swaps still behave
+  try{
+    diet=lastInputs.diet||diet;servings=lastInputs.servings||servings;dietTouched=true;
+  }catch(e){}
+  document.getElementById('chatSection').style.display='none';
+  document.getElementById('loadingSection').style.display='none';
+  renderShell({theme:currentPlan.theme,note:currentPlan.note},lastInputs);
+  currentPlan.days.forEach((d,i)=>{
+    if(!d)return;
+    d.error?renderDayError(d.day||DAYS[i],i):renderDay(d,i);
+  });
+  hideProgress();
+  // recipes already generated come back with the plan; mark those cards
+  currentPlan.days.forEach((d,i)=>{
+    if(!d||d.error)return;
+    ['breakfast','lunch','dinner'].forEach(sl=>{if(d[sl]&&d[sl].recipe)markRecipeReady(i,sl);});
+  });
+  syncCardHearts();
+  return true;
 }
 
 /* ══════════ ROUTING (hash-based pages) ══════════ */
@@ -2986,59 +3048,55 @@ function renderGrocOverview(body){
             <button class="dish-mini m-groc" onclick="shareList('${l.id}',this)">📤 Share</button>
           </div>
         </div>`;}).join('')}
-      <div class="add-dish-card" onclick="showListForm()"><span class="plus">＋</span>New list</div>
+      <div class="add-dish-card" onclick="openRenameModal()"><span class="plus">＋</span>New list</div>
     </div>
     ${lists.length?'':`<div class="page-empty" style="margin-top:1.2rem;">
         <div class="empty-art">🛒</div>
         <b>No lists yet</b><br/>
         Make one per store — Aldi, the Indian grocery, wherever you shop. Recipe ingredients land here too.
-        <div style="margin-top:1.1rem;"><button class="dish-mini solid" onclick="showListForm()">＋ Make your first list</button></div>
+        <div style="margin-top:1.1rem;"><button class="dish-mini solid" onclick="openRenameModal()">＋ Make your first list</button></div>
       </div>`}`;
 }
-let editingListId=null;
-function showListForm(editId){
-  editingListId=editId||null;
-  const l=editId?findList(editId):null;
-  // inside a list there's no overview grid, so the form goes above the items
-  let host=document.getElementById('grocFormHost');
-  if(!host){
-    host=document.createElement('div');host.id='grocFormHost';
-    const body=document.getElementById('grocBody2');
-    body.insertBefore(host,body.firstChild);
-  }
-  host.innerHTML=`<div class="pool-form">
-    <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;">${l?'Rename this list':'New shopping list'}</div>
-    <label>List name <span style="font-weight:400;color:var(--soft);">— usually the store</span></label>
-    <input id="listName" placeholder="e.g. Aldi, Patel Brothers, Costco" maxlength="40" value="${l?String(l.name).replace(/"/g,'&quot;'):''}"/>
-    <div class="pool-actions">
-      <button class="dish-mini solid" onclick="addList()">${l?'Save name':'Create list'}</button>
-      <button class="dish-mini m-cancel" onclick="hideListForm()">Cancel</button>
-    </div>
-    <div id="listFormMsg" class="form-msg"></div>
-  </div>`;
-  const el=document.getElementById('listName');el.focus();el.select();
-  el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addList();}});
-  host.scrollIntoView({behavior:'smooth',block:'nearest'});
+/* rename / new list as a small modal */
+let renameForId=null;
+function openRenameModal(id){
+  const l=id?findList(id):null;
+  renameForId=id||null;
+  document.getElementById('renameTitle').textContent=l?'Rename list':'New shopping list';
+  document.getElementById('renameGo').textContent=l?'Save name':'Create list';
+  const inp=document.getElementById('renameInput');
+  inp.value=l?l.name:'';
+  document.getElementById('renameMsg').textContent='';
+  document.getElementById('renameBackdrop').classList.add('open');
+  document.getElementById('renamePane').classList.add('open');
+  document.body.classList.add('rsheet-open');
+  setTimeout(()=>{inp.focus();inp.select();},60);
+  inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();submitRename();}};
 }
-function hideListForm(){const h=document.getElementById('grocFormHost');if(h)h.innerHTML='';editingListId=null;}
-function addList(){
-  const el=document.getElementById('listName');
-  const name=(el.value||'').trim().replace(/\s+/g,' ');
-  const msg=document.getElementById('listFormMsg');
-  if(!name){msg.textContent='Give the list a name 🙂';el.focus();return;}
-  if(looksGibberish(name)){msg.textContent="That doesn't look like a store or list name — try \"Aldi\" or \"Weekend shop\" 🛒";el.select();return;}
-  if(loadGrocLists().some(l=>l.name.toLowerCase()===name.toLowerCase()&&String(l.id)!==String(editingListId))){
+function closeRenameModal(){
+  renameForId=null;
+  document.getElementById('renameBackdrop').classList.remove('open');
+  document.getElementById('renamePane').classList.remove('open');
+  document.body.classList.remove('rsheet-open');
+}
+function submitRename(){
+  const inp=document.getElementById('renameInput');
+  const msg=document.getElementById('renameMsg');
+  const name=(inp.value||'').trim().replace(/\s+/g,' ');
+  if(!name){msg.textContent='Give the list a name 🙂';inp.focus();return;}
+  if(looksGibberish(name)){msg.textContent="That doesn't look like a store or list name — try \"Aldi\" or \"Weekend shop\" 🛒";inp.select();return;}
+  if(loadGrocLists().some(l=>l.name.toLowerCase()===name.toLowerCase()&&String(l.id)!==String(renameForId))){
     msg.textContent='You already have a list with that name.';return;
   }
-  if(editingListId){
-    updateList(editingListId,x=>{x.name=name;});
-    hideListForm();renderGroceries();
+  if(renameForId){
+    updateList(renameForId,x=>{x.name=name;});
+    closeRenameModal();renderGroceries();
     showToast('List renamed ✏️',2000);
-    return;
+  }else{
+    const l=createList(name);
+    closeRenameModal();
+    goRoute('#/groceries/'+l.id);
   }
-  const l=createList(name);
-  hideListForm();
-  goRoute('#/groceries/'+l.id);
 }
 function deleteList(id){
   const l=findList(id);
@@ -3058,12 +3116,14 @@ function renderGrocDetail(body,id){
     :'Add your first item below.';
   document.getElementById('grocStat').innerHTML='';
   const row=x=>`<div class="g-row" data-item="${x.id}">
+      <div class="g-swipe">
       <div class="g-del-layer"><span>Delete</span></div>
       <div class="g-slide ${x.checked?'done':''}" ontouchstart="gTouchStart(event)" ontouchmove="gTouchMove(event)" ontouchend="gTouchEnd(event,'${id}','${x.id}')">
         <span class="g-box" onclick="toggleGrocItem('${id}','${x.id}')"></span>
         <span class="g-name" onclick="toggleGrocItem('${id}','${x.id}')">${x.item}${x.note?`<span class="g-note">📝 ${x.note}</span>`:''}</span>
         ${x.qty?`<span class="g-qty">${x.qty}</span>`:''}
         <button class="g-dots" onclick="toggleItemOpts('${id}','${x.id}')" aria-label="Item options">⋯</button>
+      </div>
       </div>
       <div class="g-opts" id="opts-${x.id}"></div>
     </div>`;
@@ -3082,7 +3142,7 @@ function renderGrocDetail(body,id){
     ${l.items.length?'<div class="g-hint">💡 On a phone, swipe an item left to delete it.</div>':''}
     <div class="g-actions">
       <button class="dish-mini m-groc" onclick="shareList('${id}',this)">📤 Share list</button>
-      <button class="dish-mini m-edit" onclick="showListForm('${id}')">✏️ Rename</button>
+      <button class="dish-mini m-edit" onclick="openRenameModal('${id}')">✏️ Rename</button>
       ${done.length?`<button class="dish-mini m-recipe" onclick="clearCheckedGroc('${id}')">Clear ${done.length} checked</button>`:''}
     </div>`;
   const inp=document.getElementById('gItemInput');
@@ -3187,7 +3247,7 @@ function saveItemNote(listId,itemId){
 let gSwipe=null;
 function gTouchStart(e){
   const el=e.currentTarget;
-  gSwipe={el,x:e.touches[0].clientX,y:e.touches[0].clientY,dx:0,locked:null};
+  gSwipe={el,row:el.closest('.g-row'),x:e.touches[0].clientX,y:e.touches[0].clientY,dx:0,locked:null};
   el.style.transition='none';
 }
 function gTouchMove(e){
@@ -3199,18 +3259,18 @@ function gTouchMove(e){
   e.preventDefault();                       // stop the page scrolling mid-swipe
   gSwipe.dx=Math.max(-120,Math.min(0,dx));
   gSwipe.el.style.transform=`translateX(${gSwipe.dx}px)`;
-  gSwipe.el.parentElement.classList.toggle('arm',gSwipe.dx<-64);
+  if(gSwipe.row){gSwipe.row.classList.add('swiping');gSwipe.row.classList.toggle('arm',gSwipe.dx<-64);}
 }
 function gTouchEnd(e,listId,itemId){
   if(!gSwipe)return;
-  const {el,dx}=gSwipe;
+  const {el,row,dx}=gSwipe;
   el.style.transition='transform .2s var(--ease)';
   if(dx<-64){
     el.style.transform='translateX(-100%)';
     setTimeout(()=>deleteGrocItem(listId,itemId),160);
   }else{
     el.style.transform='translateX(0)';
-    el.parentElement.classList.remove('arm');
+    if(row)setTimeout(()=>row.classList.remove('arm','swiping'),200);
   }
   gSwipe=null;
 }
@@ -3505,6 +3565,7 @@ Respond ONLY with valid JSON, no markdown: {"name":"","why":"","ingredients":""}
     const slotLabel=slotKey.charAt(0).toUpperCase()+slotKey.slice(1);
     card.outerHTML=mealCard(data,slotLabel,dayIdx,slotKey);
     if(data.recipe)markRecipeReady(dayIdx,slotKey);
+    savePlan();
   }catch(err){
     card.classList.remove('regenerating');
     console.error(err);
@@ -3558,8 +3619,11 @@ function toggleTheme(){
     document.documentElement.setAttribute('data-theme','dark');
     var b=document.getElementById('themeToggle');if(b)b.textContent='☀️';
   }
-  // honor a deep link like nusrathfathima.com/#/dishes on first load
-  if(location.hash&&location.hash.startsWith('#/'))setTimeout(route,0);
+  // bring back the week the cook was looking at, then honour any deep link
+  setTimeout(function(){
+    try{restorePlan();}catch(e){console.error('restore failed',e);}
+    if(location.hash&&location.hash.startsWith('#/'))route();
+  },0);
 })();
 
 
