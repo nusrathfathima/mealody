@@ -517,13 +517,13 @@ body.rsheet-open{overflow:hidden;}
 [data-tip="My Dishes"]{--tip-bg:var(--berry);}
 [data-tip="Grocery"]{--tip-bg:var(--lime);}
 [data-tip="Dark mode"]{--tip-bg:var(--grape);}
-[data-tip="My Dishes"]:hover{background:#fff0f5;border-color:var(--berry);transform:translateY(-2px) rotate(-6deg);}
-[data-tip="Grocery"]:hover{background:#eafaf0;border-color:var(--lime);transform:translateY(-2px) rotate(-6deg);}
-[data-tip="Dark mode"]:hover{background:#f2edff;border-color:var(--grape);transform:translateY(-2px) rotate(-6deg);}
+[data-tip="My Dishes"]:hover{background:#fff0f5;border-color:var(--berry);transform:translateY(-2px);}
+[data-tip="Grocery"]:hover{background:#eafaf0;border-color:var(--lime);transform:translateY(-2px);}
+[data-tip="Dark mode"]:hover{background:#f2edff;border-color:var(--grape);transform:translateY(-2px);}
 [data-theme="dark"] [data-tip="My Dishes"]:hover{background:rgba(255,107,151,.18);}
 [data-theme="dark"] [data-tip="Grocery"]:hover{background:rgba(86,212,132,.18);}
 [data-theme="dark"] [data-tip="Dark mode"]:hover{background:rgba(155,128,255,.18);}
-.mast-icon:hover{transform:translateY(-2px) rotate(-6deg);}
+.mast-icon:hover{transform:translateY(-2px);}
 .masthead .mast-right{justify-self:end;}
 @media(max-width:380px){.mast-icon{width:32px;height:32px;font-size:.85rem;}.theme-toggle{width:36px;height:36px;}.mast-right{gap:.4rem;}}
 
@@ -600,7 +600,7 @@ body.rsheet-open{overflow:hidden;}
 .dtab-div{background:var(--ink);}
 .dtab-btn.on{color:#fff;background:var(--berry);}
 #tabPool.dtab-btn.on{background:var(--grape);}
-.dtab-ico{display:inline-flex;align-items:center;font-size:1rem;}
+.dtab-ico{display:inline-flex;align-items:center;font-size:1rem;color:var(--berry);}
 .dtab-ico svg{display:block;}
 .dtab-btn.on .dtab-ico{color:#fff;}
 .dtab-lbl{white-space:nowrap;}
@@ -609,16 +609,16 @@ body.rsheet-open{overflow:hidden;}
 .dish-mini.solid{background:var(--grape);color:#fff;border-color:var(--grape);}
 .form-msg{font-size:.82rem;color:var(--berry);font-weight:700;margin-top:.5rem;}
 /* picks basket — lives in the page flow, so it never covers a form */
-.pick-basket{display:none;background:var(--card);border:3px solid var(--berry);border-radius:var(--r);box-shadow:5px 5px 0 var(--berry);padding:.9rem 1.1rem;margin-bottom:1.3rem;animation:chatPop .35s var(--bounce);}
+.pick-basket{display:none;background:var(--card);border:3px solid var(--lime);border-radius:var(--r);box-shadow:5px 5px 0 var(--lime);padding:.9rem 1.1rem;margin-bottom:1.3rem;animation:chatPop .35s var(--bounce);}
 .pick-basket.on{display:block;}
 .pb-top{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;}
 .pb-title{font-family:'Fraunces',serif;font-weight:700;font-size:1rem;}
-.pb-title em{color:var(--berry);font-style:normal;}
+.pb-title em{color:var(--lime);font-style:normal;}
 .pb-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.6rem;}
 .pb-chip{font-size:.75rem;font-weight:700;background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.24rem .62rem;display:flex;align-items:center;gap:.4rem;}
 .pb-chip button{border:none;background:none;cursor:pointer;color:var(--soft);font-weight:800;font-size:.8rem;line-height:1;padding:0;}
 .pb-chip button:hover{color:var(--berry);}
-.pb-go{margin-left:auto;border:2px solid var(--berry);background:var(--berry);color:#fff;border-radius:99px;padding:.5rem 1rem;font-family:inherit;font-weight:800;font-size:.84rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.15);transition:transform .15s var(--bounce);white-space:nowrap;}
+.pb-go{margin-left:auto;border:2px solid var(--lime);background:var(--lime);color:#fff;border-radius:99px;padding:.5rem 1rem;font-family:inherit;font-weight:800;font-size:.84rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.15);transition:transform .15s var(--bounce);white-space:nowrap;}
 .pb-go:hover{transform:translateY(-2px);}
 .pb-clear{border:none;background:none;color:var(--soft);font-family:inherit;font-weight:700;font-size:.78rem;cursor:pointer;text-decoration:underline;}
 @media(max-width:560px){
@@ -664,7 +664,12 @@ body.rsheet-open{overflow:hidden;}
 .dish-pick:hover{background:var(--berry);color:#fff;border-color:var(--berry);transform:scale(1.12);}
 .dish-pick.on{background:var(--berry);border-color:var(--berry);color:#fff;transform:scale(1.06);}
 .dish-close{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--soft);cursor:pointer;font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .18s var(--bounce);}
-.dish-close:hover{background:#e03131;border-color:#e03131;color:#fff;transform:rotate(90deg) scale(1.1);}
+.dish-close:hover{background:#e03131;border-color:#e03131;color:#fff;transform:scale(1.12);}
+/* the card clips its corners, so this bubble hugs the right edge instead of centring */
+[data-tip="Delete"]{--tip-bg:#e03131;}
+[data-tip="Delete"]::after{left:auto;right:-4px;transform:translateX(0) translateY(-4px) scale(.9);top:calc(100% + 8px);}
+[data-tip="Delete"]:hover::after{transform:translateX(0) translateY(0) scale(1);}
+[data-tip="Delete"]::before{top:calc(100% + 1px);}
 /* close / cancel buttons everywhere go red on hover */
 .rsheet-close:hover{background:#e03131;border-color:#e03131;color:#fff;transform:rotate(90deg) scale(1.08);}
 .dish-mini.m-cancel:hover,.pb-chip button:hover,.dl-btn.danger:hover{color:#e03131;}
@@ -2442,7 +2447,7 @@ function dishCardHTML(d,src,i){
   return `<div class="dish-card tint${(i||0)%6} ${d.mix?'picked':''}">
     <div class="dish-top">
       <button class="dish-pick ${d.mix?'on':''}" onclick="togglePick('${src}',${d.id})" title="${d.mix?'Picked for next plan':'Use in my next plan'}">${d.mix?'✓':'+'}</button>
-      <button class="dish-close" onclick="removeStoredDish('${src}',${d.id})" title="Remove this dish" aria-label="Remove">✕</button>
+      <button class="dish-close" onclick="removeStoredDish('${src}',${d.id})" data-tip="Delete" aria-label="Delete this dish">✕</button>
     </div>
     <h4 onclick="openDishFrom('${src}',${d.id})">${src==='fav'?`<span class="card-heart">${HEART_SVG}</span> `:''}${d.name}</h4>
     ${d.why||d.note?`<div class="dish-note">${d.why||d.note}</div>`:''}
