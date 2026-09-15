@@ -470,8 +470,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .rsheet-slot{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#fff;background:var(--rs-mc,var(--grape));padding:.2rem .6rem;border-radius:99px;width:fit-content;margin:.35rem 0 .5rem;}
 .rsheet-title{font-family:'Fraunces',serif;font-size:1.45rem;font-weight:700;line-height:1.2;padding-right:2.4rem;}
 .rsheet-meta{font-size:.82rem;color:var(--soft);margin-top:.3rem;}
-.rsheet-close{position:absolute;top:1.15rem;right:1.1rem;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--sun);color:var(--ink);cursor:pointer;font-size:.9rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:transform .2s var(--bounce);z-index:2;}
-.rsheet-close:hover{transform:rotate(90deg) scale(1.08);}
+.rsheet-close{position:absolute;top:1.15rem;right:1.1rem;width:34px;height:34px;border-radius:50%;border:2px solid var(--ink);background:var(--sun);color:var(--ink);cursor:pointer;font-size:.9rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .2s var(--bounce);z-index:2;}
 .rsheet-body{padding:1.2rem 1.5rem 1.6rem;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .rsheet-sec{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:700;margin:1.2rem 0 .6rem;display:flex;align-items:center;gap:.45rem;}
 .rsheet-sec:first-child{margin-top:0;}
@@ -517,6 +516,8 @@ body.rsheet-open{overflow:hidden;}
 .rsheet-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.3rem;}
 .rs-act{flex:1;min-width:128px;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:99px;padding:.6rem .9rem;font-family:inherit;font-weight:800;font-size:.82rem;cursor:pointer;box-shadow:0 3px 0 var(--line);transition:all .15s var(--bounce);}
 .rs-act:hover{transform:translateY(-2px);}
+.rs-act.m-cancel:hover{background:#ffe9e9;border-color:#e03131;color:#e03131;}
+[data-theme="dark"] .rs-act.m-cancel:hover{background:rgba(224,49,49,.2);}
 .rs-act.on{background:var(--grape);color:#fff;}
 .rs-act.heart{display:flex;align-items:center;justify-content:center;gap:.4rem;color:var(--berry);}
 .rs-act.heart svg{display:block;}
@@ -529,7 +530,7 @@ body.rsheet-open{overflow:hidden;}
 .dl-info{flex:1;cursor:pointer;min-width:0;}
 .dl-name{font-weight:800;font-size:.95rem;}
 .dl-meta{font-size:.74rem;color:var(--soft);margin-top:.15rem;}
-.dl-btn{width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s var(--bounce);}
+.dl-btn{width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s var(--bounce);}
 .dl-btn:hover{transform:scale(1.12);}
 .dl-empty{text-align:center;color:var(--soft);font-size:.9rem;padding:2rem 1rem;line-height:1.6;}
 .g-item{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:2px dashed var(--line);cursor:pointer;user-select:none;}
@@ -616,10 +617,26 @@ body.rsheet-open{overflow:hidden;}
 .tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;background:var(--grape);}
 .tab .cnt{font-size:.75rem;background:var(--line);color:var(--ink);border-radius:99px;padding:.1rem .45rem;margin-left:.35rem;}
 .dish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
-.dish-card{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:1.1rem 1.2rem;box-shadow:5px 5px 0 var(--line);display:flex;flex-direction:column;gap:.5rem;transition:transform .18s var(--bounce);position:relative;}
-.dish-card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--grape);}
-.dish-card.picked{box-shadow:5px 5px 0 var(--berry);}
-.dish-card h4{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;line-height:1.25;padding-right:2rem;cursor:pointer;}
+.dish-card{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:1.1rem 1.2rem;box-shadow:5px 5px 0 var(--line);display:flex;flex-direction:column;gap:.5rem;transition:transform .18s var(--bounce),box-shadow .18s var(--bounce);position:relative;}
+.dish-card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--card-tint,var(--grape));}
+.dish-card.picked{box-shadow:5px 5px 0 var(--berry);border-color:var(--berry);}
+.dish-card.picked:hover{box-shadow:7px 7px 0 var(--berry);}
+/* each card gets its own tint so the grid feels alive */
+.dish-card.tint0{background:#fff6e3;--card-tint:var(--sun);}
+.dish-card.tint1{background:#eafaf0;--card-tint:var(--lime);}
+.dish-card.tint2{background:#e9f6fe;--card-tint:var(--sky);}
+.dish-card.tint3{background:#f2edff;--card-tint:var(--grape);}
+.dish-card.tint4{background:#fff1e8;--card-tint:var(--tang);}
+.dish-card.tint5{background:#ffeef4;--card-tint:var(--berry);}
+[data-theme="dark"] .dish-card.tint0{background:#332b1f;}
+[data-theme="dark"] .dish-card.tint1{background:#1d3328;}
+[data-theme="dark"] .dish-card.tint2{background:#1b2f3b;}
+[data-theme="dark"] .dish-card.tint3{background:#2a2350;}
+[data-theme="dark"] .dish-card.tint4{background:#362518;}
+[data-theme="dark"] .dish-card.tint5{background:#37202c;}
+.dish-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.1rem;}
+.dish-card h4{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;line-height:1.25;cursor:pointer;transition:color .15s var(--ease);}
+.dish-card h4:hover{color:var(--grape);}
 .dish-note{font-size:.84rem;color:var(--soft);line-height:1.5;}
 .dish-tags{display:flex;gap:.4rem;flex-wrap:wrap;}
 .dish-tag{font-size:.7rem;font-weight:700;background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.15rem .55rem;color:var(--soft);}
@@ -627,8 +644,23 @@ body.rsheet-open{overflow:hidden;}
 .dish-mini{border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:99px;padding:.35rem .7rem;font-family:inherit;font-weight:800;font-size:.75rem;cursor:pointer;transition:transform .15s var(--bounce);}
 .dish-mini:hover{transform:translateY(-2px);}
 .dish-mini.on{background:var(--berry);color:#fff;border-color:var(--berry);}
-.dish-pick{position:absolute;top:.8rem;right:.9rem;width:28px;height:28px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .18s var(--bounce);}
-.dish-pick.on{background:var(--berry);border-color:var(--berry);color:#fff;transform:scale(1.08);}
+.dish-pick{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.85rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .18s var(--bounce);}
+.dish-pick:hover{background:var(--berry);color:#fff;border-color:var(--berry);transform:scale(1.12);}
+.dish-pick.on{background:var(--berry);border-color:var(--berry);color:#fff;transform:scale(1.06);}
+.dish-close{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--soft);cursor:pointer;font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .18s var(--bounce);}
+.dish-close:hover{background:#e03131;border-color:#e03131;color:#fff;transform:rotate(90deg) scale(1.1);}
+/* close / cancel buttons everywhere go red on hover */
+.rsheet-close:hover{background:#e03131;border-color:#e03131;color:#fff;transform:rotate(90deg) scale(1.08);}
+.dish-mini.m-cancel:hover,.pb-chip button:hover,.dl-btn.danger:hover{color:#e03131;}
+.dish-mini.m-cancel:hover{background:#ffe9e9;border-color:#e03131;}
+[data-theme="dark"] .dish-mini.m-cancel:hover{background:rgba(224,49,49,.2);}
+/* colored hovers so each action reads at a glance */
+.dish-mini.m-recipe:hover{background:var(--grape);border-color:var(--grape);color:#fff;}
+.dish-mini.m-edit:hover{background:var(--sun);border-color:var(--sun);color:var(--ink);}
+.dish-mini.m-groc:hover{background:var(--lime);border-color:var(--lime);color:#fff;}
+.dish-mini.solid:hover{background:var(--grape-dim);border-color:var(--grape-dim);}
+.page-back:hover{background:var(--sun);}
+.pb-clear:hover{color:#e03131;}
 .page-empty{text-align:center;color:var(--soft);padding:2.6rem 1rem;line-height:1.7;border:3px dashed var(--line);border-radius:var(--r);background:var(--card);}
 .page-empty b{color:var(--ink);font-size:1.05rem;}
 .empty-art{font-size:2.6rem;margin-bottom:.6rem;animation:floaty 4s ease-in-out infinite;}
@@ -2016,7 +2048,7 @@ function renderRecipeBody(m){
       actions=`<button class="rs-act on" onclick="saveDraftRecipe()">💾 Save recipe</button>
         <button class="rs-act" onclick="aiFillFromSheet()">↻ Ask again</button>
         <button class="rs-act" onclick="grocFromSheet(this)">🛒 Add to groceries</button>
-        <button class="rs-act" onclick="discardDraft()">Not now</button>`;
+        <button class="rs-act m-cancel" onclick="discardDraft()">Not now</button>`;
     }else if(mode==='saved'){
       actions=`<button class="rs-act" onclick="grocFromSheet(this)">🛒 Add to groceries</button>
         <button class="rs-act" onclick="printRecipeFromSheet()">🖨️ Recipe PDF</button>
@@ -2321,7 +2353,7 @@ function renderDishTab(){
   renderPickTray();
   if(dishTab==='fav'){
     body.innerHTML=favs.length
-      ?`<div class="dish-grid">${favs.map(d=>dishCardHTML(d,'fav')).join('')}</div>`
+      ?`<div class="dish-grid">${favs.map((d,i)=>dishCardHTML(d,'fav',i)).join('')}</div>`
       :`<div class="page-empty">
           <div class="empty-art">💗</div>
           <b>No favorites yet</b><br/>
@@ -2333,7 +2365,7 @@ function renderDishTab(){
     const addCard=`<div class="add-dish-card" onclick="showPoolForm()"><span class="plus">＋</span>Add your own dish</div>`;
     body.innerHTML=`<div id="poolFormHost"></div>`+
       (pool.length
-        ?`<div class="dish-grid">${pool.map(d=>dishCardHTML(d,'pool')).join('')}${addCard}</div>`
+        ?`<div class="dish-grid">${pool.map((d,i)=>dishCardHTML(d,'pool',i)).join('')}${addCard}</div>`
         :`<div class="page-empty">
             <div class="empty-art">🍛</div>
             <b>Your pool is empty</b><br/>
@@ -2363,23 +2395,25 @@ function planWithPicks(){
     showToast('Your picked dishes are waiting at the last question 💗',4200);
   },60);
 }
-function dishCardHTML(d,src){
+function dishCardHTML(d,src,i){
   const tags=[];
   if(d.recipe)tags.push('📖 Recipe');
   if(src==='fav'&&d.slot)tags.push(d.slot.charAt(0).toUpperCase()+d.slot.slice(1));
   if(d.servings)tags.push('Serves '+d.servings);
   if(src==='pool'&&!d.recipe)tags.push('No recipe yet');
-  return `<div class="dish-card ${d.mix?'picked':''}">
-    <button class="dish-pick ${d.mix?'on':''}" onclick="togglePick('${src}',${d.id})" title="${d.mix?'Picked for next plan':'Use in my next plan'}">${d.mix?'✓':'+'}</button>
+  return `<div class="dish-card tint${(i||0)%6} ${d.mix?'picked':''}">
+    <div class="dish-top">
+      <button class="dish-pick ${d.mix?'on':''}" onclick="togglePick('${src}',${d.id})" title="${d.mix?'Picked for next plan':'Use in my next plan'}">${d.mix?'✓':'+'}</button>
+      <button class="dish-close" onclick="removeStoredDish('${src}',${d.id})" title="Remove this dish" aria-label="Remove">✕</button>
+    </div>
     <h4 onclick="openDishFrom('${src}',${d.id})">${src==='fav'?`<span class="card-heart">${HEART_SVG}</span> `:''}${d.name}</h4>
     ${d.why||d.note?`<div class="dish-note">${d.why||d.note}</div>`:''}
     ${tags.length?`<div class="dish-tags">${tags.map(t=>`<span class="dish-tag">${t}</span>`).join('')}</div>`:''}
     <div class="dish-row">
-      ${d.recipe?`<button class="dish-mini" onclick="openDishFrom('${src}',${d.id})">📖 Recipe</button>`
-                :`<button class="dish-mini" onclick="askRecipeChoice('${src}',${d.id})">📝 Add recipe</button>`}
-      ${src==='pool'?`<button class="dish-mini" onclick="showPoolForm(${d.id})" title="Edit name & notes">✏️ Edit</button>`:''}
-      <button class="dish-mini" onclick="grocFromStored('${src}',${d.id},this)">🛒 Groceries</button>
-      <button class="dish-mini" onclick="removeStoredDish('${src}',${d.id})">✕</button>
+      ${d.recipe?`<button class="dish-mini m-recipe" onclick="openDishFrom('${src}',${d.id})">📖 Recipe</button>`
+                :`<button class="dish-mini m-recipe" onclick="askRecipeChoice('${src}',${d.id})">📝 Add recipe</button>`}
+      ${src==='pool'?`<button class="dish-mini m-edit" onclick="showPoolForm(${d.id})" title="Edit name & notes">✏️ Edit</button>`:''}
+      <button class="dish-mini m-groc" onclick="grocFromStored('${src}',${d.id},this)">🛒 Groceries</button>
     </div>
   </div>`;
 }
@@ -2502,10 +2536,12 @@ function showPoolForm(editId){
     <div class="pool-actions">
       ${d
         ?`<button class="dish-mini solid" onclick="savePoolEdit()">Save changes</button>
-           <button class="dish-mini" onclick="askRecipeChoice('pool',${d.id})">📝 ${d.recipe?'Redo recipe':'Add recipe'}</button>`
+           ${d.recipe?`<button class="dish-mini m-recipe" onclick="hidePoolForm();openDishFrom('pool',${d.id})">📖 View recipe</button>
+           <button class="dish-mini m-edit" onclick="askRecipeChoice('pool',${d.id})">↻ Redo recipe</button>`
+           :`<button class="dish-mini m-recipe" onclick="askRecipeChoice('pool',${d.id})">📝 Add recipe</button>`}`
         :`<button class="dish-mini solid" onclick="addPoolDish()">Add dish</button>
-           <button class="dish-mini" onclick="openAskAI()">✨ Ask AI</button>`}
-      <button class="dish-mini" onclick="hidePoolForm()">Cancel</button>
+           <button class="dish-mini m-edit" onclick="openAskAI()">✨ Ask AI</button>`}
+      <button class="dish-mini m-cancel" onclick="hidePoolForm()">Cancel</button>
     </div>
     <div id="poolFormMsg" class="form-msg"></div>
   </div>`;
