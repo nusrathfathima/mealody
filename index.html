@@ -576,8 +576,39 @@ body.rsheet-open{overflow:hidden;}
 .dstat span{font-size:.7rem;font-weight:700;color:var(--soft);text-transform:uppercase;letter-spacing:.05em;}
 .dstat.pick{border-color:var(--berry);}
 .dstat.pick b{color:var(--berry);}
-.tab-ico{display:inline-flex;align-items:center;color:var(--berry);vertical-align:-3px;}
-.tab-ico svg{display:block;}
+.tabs2{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.6rem;}
+.tab2{display:flex;align-items:center;gap:.8rem;text-align:left;border:3px solid var(--ink);background:var(--card);border-radius:var(--r);padding:1rem 1.1rem;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:5px 5px 0 var(--line);transition:all .2s var(--bounce);}
+.tab2:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--line);}
+.tab2.on{box-shadow:5px 5px 0 var(--berry);background:var(--cream);}
+.tab2#tabPool.on{box-shadow:5px 5px 0 var(--grape);}
+.t2-ico{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);background:#fff0f5;color:var(--berry);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;}
+.t2-ico.pool{background:var(--cream);}
+[data-theme="dark"] .t2-ico{background:rgba(255,79,129,.16);}
+.t2-text{display:flex;flex-direction:column;line-height:1.25;flex:1;min-width:0;}
+.t2-text b{font-family:'Fraunces',serif;font-size:1.02rem;}
+.t2-text span{font-size:.74rem;color:var(--soft);font-weight:600;}
+.t2-cnt{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:700;color:var(--soft);flex-shrink:0;}
+.tab2.on .t2-cnt{color:var(--ink);}
+.dish-mini.solid{background:var(--grape);color:#fff;border-color:var(--grape);}
+.form-msg{font-size:.82rem;color:var(--berry);font-weight:700;margin-top:.5rem;}
+/* sticky tray for dishes picked for the next plan */
+.pick-tray{position:fixed;left:50%;bottom:1.1rem;transform:translate(-50%,calc(100% + 2rem));opacity:0;visibility:hidden;width:min(680px,calc(100vw - 1.6rem));background:var(--card);border:3px solid var(--ink);border-radius:var(--r);box-shadow:0 6px 0 var(--berry);padding:.85rem 1.1rem;z-index:870;transition:transform .4s var(--bounce),opacity .3s ease,visibility .3s;}
+.pick-tray.on{transform:translate(-50%,0);opacity:1;visibility:visible;}
+.pt-top{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
+.pt-title{font-family:'Fraunces',serif;font-weight:700;font-size:1rem;}
+.pt-title em{color:var(--berry);font-style:normal;}
+.pt-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.55rem;max-height:60px;overflow:hidden;}
+.pt-chip{font-size:.74rem;font-weight:700;background:var(--cream);border:2px solid var(--line);border-radius:99px;padding:.22rem .6rem;display:flex;align-items:center;gap:.35rem;}
+.pt-chip button{border:none;background:none;cursor:pointer;color:var(--soft);font-weight:800;font-size:.8rem;line-height:1;padding:0;}
+.pt-chip button:hover{color:var(--berry);}
+.pt-go{margin-left:auto;border:2px solid var(--berry);background:var(--berry);color:#fff;border-radius:99px;padding:.5rem 1rem;font-family:inherit;font-weight:800;font-size:.84rem;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.18);transition:transform .15s var(--bounce);white-space:nowrap;}
+.pt-go:hover{transform:translateY(-2px);}
+.pt-clear{border:none;background:none;color:var(--soft);font-family:inherit;font-weight:700;font-size:.78rem;cursor:pointer;text-decoration:underline;}
+@media(max-width:560px){
+  .tabs2{grid-template-columns:1fr;gap:.6rem;}
+  .tab2{padding:.8rem .9rem;}
+  .pt-go{width:100%;margin-left:0;}
+}
 .tab{border:none;background:none;font-family:inherit;font-weight:800;font-size:.95rem;color:var(--soft);padding:.7rem 1.1rem;cursor:pointer;border-radius:var(--r-sm) var(--r-sm) 0 0;position:relative;transition:color .2s var(--ease);}
 .tab:hover{color:var(--ink);}
 .tab.on{color:var(--ink);background:var(--card);}
@@ -645,7 +676,7 @@ body.rsheet-open{overflow:hidden;}
   .meal{border:1.5px solid #333!important;box-shadow:none!important;break-inside:avoid;page-break-inside:avoid;}
   .day-name{background:#333!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   .meal::before{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  .meal-regen,.day-retry,.meal-tap,.meal-fav,.meal-foot,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast,.page{display:none!important;}
+  .meal-regen,.day-retry,.meal-tap,.meal-fav,.meal-foot,.rsheet-backdrop,.rsheet,.mpane,.mpane-b,.toast,.page,.pick-tray{display:none!important;}
   /* per-meal recipes injected for "Plan + recipes" export */
   .meal-recipe-print{display:block!important;font-size:9pt;line-height:1.45;border-top:1px dashed #999;margin-top:6pt;padding-top:6pt;}
   .meal-recipe-print .mrp-t{font-weight:700;margin-bottom:3pt;}
@@ -822,9 +853,17 @@ body.rsheet-open{overflow:hidden;}
         <div class="dstat pick"><b id="statPick">0</b><span>picked</span></div>
       </div>
     </div>
-    <div class="tabs">
-      <button class="tab on" id="tabFav" onclick="switchDishTab('fav')"><span class="tab-ico" id="tabFavIco"></span> My Favorites <span class="cnt" id="cntFav">0</span></button>
-      <button class="tab" id="tabPool" onclick="switchDishTab('pool')"><span class="tab-ico">🍲</span> My Pool <span class="cnt" id="cntPool">0</span></button>
+    <div class="tabs2">
+      <button class="tab2 on" id="tabFav" onclick="switchDishTab('fav')">
+        <span class="t2-ico" id="tabFavIco"></span>
+        <span class="t2-text"><b>My Favorites</b><span id="t2SubFav">saved from your weeks</span></span>
+        <span class="t2-cnt" id="cntFav">0</span>
+      </button>
+      <button class="tab2" id="tabPool" onclick="switchDishTab('pool')">
+        <span class="t2-ico pool">🍲</span>
+        <span class="t2-text"><b>My Pool</b><span id="t2SubPool">recipes you added</span></span>
+        <span class="t2-cnt" id="cntPool">0</span>
+      </button>
     </div>
     <div id="dishTabBody"></div>
   </div>
@@ -835,6 +874,16 @@ body.rsheet-open{overflow:hidden;}
     Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
+
+<!-- ===== PICKED-DISHES TRAY (floats on the My Dishes page) ===== -->
+<div class="pick-tray" id="pickTray">
+  <div class="pt-top">
+    <span class="pt-title" id="ptTitle"></span>
+    <button class="pt-clear" onclick="clearPicks()">clear</button>
+    <button class="pt-go" onclick="planWithPicks()">Plan my week with these →</button>
+  </div>
+  <div class="pt-chips" id="ptChips"></div>
+</div>
 
 <!-- ===== GROCERIES PANE ===== -->
 <div class="rsheet-backdrop mpane-b" id="grocBackdrop" onclick="closeGroceries()"></div>
@@ -2176,6 +2225,7 @@ function route(){
   const dp=document.getElementById('dishesPage');
   if(dp)dp.classList.toggle('on',isDishes);
   if(isDishes){renderDishTab();track('page_view',{page:'dishes'});}
+  else{const t=document.getElementById('pickTray');if(t)t.classList.remove('on');}
   if(onPage)window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
 }
 window.addEventListener('hashchange',route);
@@ -2247,47 +2297,62 @@ function renderDishTab(){
   const body=document.getElementById('dishTabBody');
   if(!body)return;
   const favs=loadDishes(),pool=loadPool();
-  const picked=pickedDishes().length;
+  const picked=pickedDishes();
   const ico=document.getElementById('tabFavIco');if(ico)ico.innerHTML=HEART_SVG;
   document.getElementById('cntFav').textContent=favs.length;
   document.getElementById('cntPool').textContent=pool.length;
   document.getElementById('statFav').textContent=favs.length;
   document.getElementById('statPool').textContent=pool.length;
-  document.getElementById('statPick').textContent=picked;
+  document.getElementById('statPick').textContent=picked.length;
   const sub=document.getElementById('dishHeroSub');
-  if(sub)sub.textContent=picked
-    ?`${picked} dish${picked>1?'es are':' is'} waiting to join your next plan — just start a new week. 💗`
-    :(favs.length||pool.length)
-      ?'Tap ＋ on any dish to line it up for your next weekly plan.'
-      :"Nothing saved yet — favorites you heart and recipes you add will live here.";
-  const mixBar=picked?`<div class="mix-bar">
-      <b>${picked} dish${picked>1?'es':''} picked for your next plan 🍲</b>
-      <span>Mealody will weave them in where they fit.</span>
-      <button class="dish-mini" onclick="clearPicks()" style="margin-left:auto;">Clear picks</button>
-    </div>`:'';
+  if(sub)sub.textContent=(favs.length||pool.length)
+    ?'Tap ＋ on any dish to line it up for your next weekly plan.'
+    :"Nothing saved yet — favorites you heart and recipes you add will live here.";
+  renderPickTray();
   if(dishTab==='fav'){
-    body.innerHTML=mixBar+(favs.length
+    body.innerHTML=favs.length
       ?`<div class="dish-grid">${favs.map(d=>dishCardHTML(d,'fav')).join('')}</div>`
       :`<div class="page-empty">
           <div class="empty-art">💗</div>
           <b>No favorites yet</b><br/>
           Plan a week, then tap the heart on any meal card to keep it here forever.
-          <div style="margin-top:1.1rem;"><button class="dish-mini" style="background:var(--grape);color:#fff;border-color:var(--grape);" onclick="goRoute('')">Plan a week →</button></div>
-        </div>`);
+          <div style="margin-top:1.1rem;"><button class="dish-mini solid" onclick="goRoute('')">Plan a week →</button></div>
+        </div>`;
   }else{
     // newest dishes first, "add your own" sits at the end once the pool has something in it
     const addCard=`<div class="add-dish-card" onclick="showPoolForm()"><span class="plus">＋</span>Add your own dish</div>`;
-    body.innerHTML=mixBar+
-      `<div id="poolFormHost"></div>`+
+    body.innerHTML=`<div id="poolFormHost"></div>`+
       (pool.length
         ?`<div class="dish-grid">${pool.map(d=>dishCardHTML(d,'pool')).join('')}${addCard}</div>`
         :`<div class="page-empty">
             <div class="empty-art">🍛</div>
             <b>Your pool is empty</b><br/>
             Add family recipes, takeaway favorites, anything you cook often — then pick them when planning a week.
-            <div style="margin-top:1.1rem;"><button class="dish-mini" style="background:var(--grape);color:#fff;border-color:var(--grape);" onclick="showPoolForm()">＋ Add your first dish</button></div>
+            <div style="margin-top:1.1rem;"><button class="dish-mini solid" onclick="showPoolForm()">＋ Add your first dish</button></div>
           </div>`);
   }
+}
+
+/* the floating tray that collects everything picked for the next plan */
+function renderPickTray(){
+  const tray=document.getElementById('pickTray');
+  if(!tray)return;
+  const picked=pickedDishes();
+  const onPage=(location.hash||'').startsWith('#/dishes');
+  if(!picked.length||!onPage){tray.classList.remove('on');return;}
+  const n=picked.length;
+  document.getElementById('ptTitle').innerHTML=`🍲 <em>${n}</em> dish${n>1?'es':''} ready for your next week`;
+  document.getElementById('ptChips').innerHTML=picked.map(d=>
+    `<span class="pt-chip">${d.name}<button onclick="togglePick('${d.src}',${d.id})" title="Remove">✕</button></span>`).join('');
+  tray.classList.add('on');
+}
+function planWithPicks(){
+  goRoute('');
+  setTimeout(()=>{
+    if(typeof restartChat==='function')restartChat();
+    window.scrollTo({top:0,behavior:'smooth'});
+    showToast('Your picked dishes are waiting at the last question 💗',4200);
+  },60);
 }
 function dishCardHTML(d,src){
   const tags=[];
@@ -2303,6 +2368,7 @@ function dishCardHTML(d,src){
     <div class="dish-row">
       ${d.recipe?`<button class="dish-mini" onclick="openDishFrom('${src}',${d.id})">📖 Recipe</button>`
                 :`<button class="dish-mini" onclick="askRecipeChoice('${src}',${d.id})">📝 Add recipe</button>`}
+      ${src==='pool'?`<button class="dish-mini" onclick="showPoolForm(${d.id})" title="Edit name & notes">✏️ Edit</button>`:''}
       <button class="dish-mini" onclick="grocFromStored('${src}',${d.id},this)">🛒 Groceries</button>
       <button class="dish-mini" onclick="removeStoredDish('${src}',${d.id})">✕</button>
     </div>
@@ -2411,39 +2477,133 @@ function updateStored(src,id,patch){
   return d;
 }
 
-/* ---- add your own dish (quick add) ---- */
-function showPoolForm(){
+/* ---- add / edit your own dish ---- */
+let pendingPoolDish=null,editingPoolId=null;
+
+function showPoolForm(editId){
   const host=document.getElementById('poolFormHost');
-  if(!host||host.innerHTML.trim())return;
+  if(!host)return;
+  const d=editId?findStored('pool',editId):null;
+  editingPoolId=editId||null;
   host.innerHTML=`<div class="pool-form">
-    <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;">Add a dish to your pool</div>
+    <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;">${d?'Edit this dish':'Add a dish to your pool'}</div>
     <label>Dish name</label>
-    <input id="poolName" placeholder="e.g. Amma's tomato rice" maxlength="80"/>
+    <input id="poolName" placeholder="e.g. Amma's tomato rice" maxlength="80" value="${d?String(d.name).replace(/"/g,'&quot;'):''}"/>
     <label>Notes <span style="font-weight:400;color:var(--soft);">(optional — why you love it, when you cook it)</span></label>
-    <textarea id="poolNote" placeholder="Sunday comfort food. Uses up leftover rice." maxlength="200"></textarea>
+    <textarea id="poolNote" placeholder="Sunday comfort food. Uses up leftover rice." maxlength="200">${d?String(d.note||'').replace(/</g,'&lt;'):''}</textarea>
     <div class="pool-actions">
-      <button class="dish-mini" style="background:var(--grape);color:#fff;border-color:var(--grape);" onclick="addPoolDish(false)">Add dish</button>
-      <button class="dish-mini" onclick="addPoolDish(true)">✨ Add + ask AI to write recipe</button>
+      ${d
+        ?`<button class="dish-mini solid" onclick="savePoolEdit()">Save changes</button>
+           <button class="dish-mini" onclick="askRecipeChoice('pool',${d.id})">📝 ${d.recipe?'Redo recipe':'Add recipe'}</button>`
+        :`<button class="dish-mini solid" onclick="addPoolDish()">Add dish</button>
+           <button class="dish-mini" onclick="openAskAI()">✨ Ask AI</button>`}
       <button class="dish-mini" onclick="hidePoolForm()">Cancel</button>
     </div>
-    <div id="poolFormMsg" style="font-size:.82rem;color:var(--berry);font-weight:700;margin-top:.5rem;"></div>
+    <div id="poolFormMsg" class="form-msg"></div>
   </div>`;
-  document.getElementById('poolName').focus();
+  const el=document.getElementById('poolName');el.focus();
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();d?savePoolEdit():addPoolDish();}});
+  host.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
-function hidePoolForm(){const h=document.getElementById('poolFormHost');if(h)h.innerHTML='';}
-async function addPoolDish(withRecipe){
+function hidePoolForm(){
+  const h=document.getElementById('poolFormHost');if(h)h.innerHTML='';
+  editingPoolId=null;pendingPoolDish=null;
+}
+
+/* Catch keyboard-mashing before it becomes a dish name.
+   Only judges mostly-Latin text, so Telugu/Hindi/Arabic names pass untouched. */
+function looksGibberish(s){
+  const t=String(s).trim();
+  if(t.length<2)return true;
+  const letters=t.replace(/[^A-Za-z]/g,'');
+  if(!/[A-Za-z\u00C0-\u024F]/.test(t)&&!/[^\x00-\x7F]/.test(t))return true; // numbers/symbols only
+  if(/[^\x00-\x7F]/.test(t))return false;                                    // non-Latin script — let it be
+  if(letters.length<2)return true;
+  if(letters.length<=4&&letters===letters.toUpperCase())return false;         // BLT, PB&J, LSA
+  if(/(.)\1{2,}/i.test(letters))return true;                                 // aaaa / zzzz
+  const vowels=(letters.match(/[aeiouAEIOU]/g)||[]).length;
+  if(vowels===0)return true;                                                 // no vowels at all
+  if(letters.length>=8&&vowels/letters.length<0.2)return true;               // long and vowel-starved
+  if(/[bcdfghjklmnpqrstvwxz]{5,}/i.test(letters))return true;                // 5+ consonants in a row
+  if(/^(?:asdf|qwer|zxcv|wasd|jkl|hjkl|test123)/i.test(letters))return true; // home-row mashing
+  return false;
+}
+function readPoolForm(){
   const nameEl=document.getElementById('poolName');
-  const name=(nameEl.value||'').trim();
+  const name=(nameEl.value||'').trim().replace(/\s+/g,' ');
   const note=(document.getElementById('poolNote').value||'').trim();
   const msg=document.getElementById('poolFormMsg');
-  if(!name){msg.textContent='Give your dish a name first 🙂';nameEl.focus();return;}
+  msg.textContent='';
+  if(!name){msg.textContent='Give your dish a name first 🙂';nameEl.focus();return null;}
+  if(looksGibberish(name)){msg.textContent="That doesn't look like a dish name — try something like \"Lemon rice\" 🍋";nameEl.focus();nameEl.select();return null;}
+  const clash=loadPool().some(d=>d.name.toLowerCase()===name.toLowerCase()&&d.id!==editingPoolId);
+  if(clash){msg.textContent='That dish is already in your pool.';return null;}
+  return {name,note};
+}
+function addPoolDish(){
+  const v=readPoolForm();
+  if(!v)return null;
   const pool=loadPool();
-  if(pool.some(d=>d.name.toLowerCase()===name.toLowerCase())){msg.textContent='That dish is already in your pool.';return;}
-  const dish={id:Date.now(),name,note,recipe:null,savedAt:Date.now(),mix:false,own:true};
+  const dish={id:Date.now(),name:v.name,note:v.note,recipe:null,savedAt:Date.now(),mix:false,own:true};
   pool.unshift(dish);savePool(pool);
-  track('pool_dish_added',{with_recipe:!!withRecipe});
+  track('pool_dish_added');
   hidePoolForm();renderDishTab();
-  if(withRecipe)aiFillRecipe('pool',dish.id,null);
+  showToast('Added to your pool 🍲',2200);
+  return dish;
+}
+function savePoolEdit(){
+  const v=readPoolForm();
+  if(!v||!editingPoolId)return;
+  updateStored('pool',editingPoolId,{name:v.name,note:v.note});
+  hidePoolForm();renderDishTab();
+  showToast('Dish updated ✏️',2200);
+}
+/* "Ask AI" → three clear ways forward */
+function openAskAI(){
+  const v=readPoolForm();
+  if(!v)return;
+  pendingPoolDish=v;
+  rsheetFor=null;rsheetMeal=null;
+  rsheetCtx={mode:'newchoice'};
+  const sheet=document.getElementById('rsheet');
+  sheet.style.setProperty('--rs-mc','var(--grape)');
+  document.getElementById('rsheetSlot').textContent='New dish';
+  document.getElementById('rsheetTitle').textContent=v.name;
+  document.getElementById('rsheetMeta').textContent='How would you like to add this one?';
+  document.getElementById('rsheetBody').innerHTML=`
+    <button class="exp-opt" onclick="newDishThen('ai')">
+      <b>✨ Ask AI to write the recipe</b><span>Mealody writes ingredients, steps and a tip for you</span>
+    </button>
+    <button class="exp-opt" onclick="newDishThen('manual')">
+      <b>📝 I'll write it myself</b><span>Type your own ingredients and steps, exactly how you cook it</span>
+    </button>
+    <button class="exp-opt" onclick="newDishThen('none')">
+      <b>➕ Just add the dish</b><span>Save the name now — you can add the recipe any time later</span>
+    </button>`;
+  document.getElementById('rsheetBackdrop').classList.add('open');
+  sheet.classList.add('open');
+  document.body.classList.add('rsheet-open');
+}
+function newDishThen(how){
+  const v=pendingPoolDish;
+  if(!v)return;
+  const pool=loadPool();
+  const dish={id:Date.now(),name:v.name,note:v.note,recipe:null,savedAt:Date.now(),mix:false,own:true};
+  pool.unshift(dish);savePool(pool);
+  pendingPoolDish=null;
+  track('pool_dish_added',{how});
+  hidePoolForm();renderDishTab();
+  if(how==='none'){closeRecipeSheet();showToast('Added to your pool 🍲',2200);return;}
+  if(how==='ai'){
+    rsheetMeal={name:dish.name,why:dish.note||'',ingredients:'',recipe:null,serves:''};
+    rsheetCtx={mode:'saved',src:'pool',id:dish.id};
+    document.getElementById('rsheetMeta').textContent='Mealody is writing it…';
+    document.getElementById('rsheetBody').innerHTML=`<div class="rsheet-loading"><div class="rsheet-pot">🍳</div><div class="skel-msg">${randomFunny()}</div></div>`;
+    aiFillFromSheet();
+  }else{
+    rsheetCtx={mode:'manual',src:'pool',id:dish.id};
+    chooseManualRecipe();
+  }
 }
 async function aiFillRecipe(src,id,btn){
   const d=findStored(src,id);
