@@ -548,15 +548,29 @@ body.rsheet-open{overflow:hidden;}
 .dl-btn{width:32px;height:32px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s var(--bounce);}
 .dl-btn:hover{transform:scale(1.12);}
 .dl-empty{text-align:center;color:var(--soft);font-size:.9rem;padding:2rem 1rem;line-height:1.6;}
-.g-item{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;border-bottom:2px dashed var(--line);cursor:pointer;user-select:none;}
-.g-box{width:20px;height:20px;border:2px solid var(--ink);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;background:var(--card);}
-.g-item.done .g-box{background:var(--lime);}
-.g-item.done .g-box::after{content:"✓";}
+.g-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .2rem;border-bottom:2px dashed var(--line);user-select:none;}
+.g-box{width:22px;height:22px;border:2px solid var(--ink);border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;background:var(--card);cursor:pointer;transition:all .15s var(--bounce);}
+.g-box:hover{border-color:var(--lime);transform:scale(1.1);}
+.g-item.done .g-box{background:var(--lime);border-color:var(--lime);}
+.g-item.done .g-box::after{content:"✓";color:#fff;}
 .g-item.done .g-name{text-decoration:line-through;color:var(--soft);}
-.g-name{flex:1;font-size:.9rem;}
-.g-qty{font-size:.78rem;color:var(--soft);}
-.g-actions{display:flex;gap:.6rem;margin-top:1.1rem;}
-.g-actions .rs-act{min-width:0;}
+.g-name{flex:1;font-size:.95rem;cursor:pointer;min-width:0;word-break:break-word;}
+.g-qty{font-size:.8rem;color:var(--soft);white-space:nowrap;}
+.g-del{border:none;background:none;color:var(--faint);font-size:.85rem;font-weight:800;cursor:pointer;padding:.2rem .35rem;border-radius:6px;transition:color .15s var(--ease);}
+.g-del:hover{color:#e03131;}
+.g-add{display:flex;gap:.6rem;margin-bottom:1.1rem;}
+.g-add input{flex:1;border:3px solid var(--ink);border-radius:99px;padding:.75rem 1.1rem;font-family:inherit;font-size:.95rem;background:var(--card);color:var(--ink);box-shadow:3px 3px 0 var(--line);}
+.g-add input:focus{outline:none;border-color:var(--lime);box-shadow:3px 3px 0 var(--lime);}
+.g-add .dish-mini{padding:.6rem 1.2rem;font-size:.9rem;}
+.g-list{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:.4rem 1.1rem;box-shadow:5px 5px 0 var(--line);}
+.g-list .g-item:last-child{border-bottom:none;}
+.g-divider{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);padding:.9rem 0 .4rem;border-top:2px solid var(--line);margin-top:.4rem;}
+.g-actions{display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap;}
+.glist-badge{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--mc,var(--grape));padding:.2rem .6rem;border-radius:99px;}
+.gbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:.2rem;}
+.gbar span{display:block;height:100%;background:var(--mc,var(--lime));transition:width .35s var(--ease);}
+.groc-hero{box-shadow:7px 7px 0 var(--lime);}
+.groc-hero .dish-hero-art{font-size:2.6rem;}
 
 /* ===== EXPORT CHOOSER ===== */
 .exp-opt{display:block;width:100%;text-align:left;border:2px solid var(--ink);background:var(--cream);border-radius:var(--r-sm);padding:1rem 1.1rem;margin-bottom:.7rem;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:0 3px 0 var(--line);transition:transform .15s var(--bounce);}
@@ -663,13 +677,10 @@ body.rsheet-open{overflow:hidden;}
 .dish-pick{width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:.85rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .18s var(--bounce);}
 .dish-pick:hover{background:var(--berry);color:#fff;border-color:var(--berry);transform:scale(1.12);}
 .dish-pick.on{background:var(--berry);border-color:var(--berry);color:#fff;transform:scale(1.06);}
-.dish-close{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);background:transparent;color:var(--soft);cursor:pointer;font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .18s var(--bounce);}
-.dish-close:hover{background:#e03131;border-color:#e03131;color:#fff;transform:scale(1.12);}
-/* the card clips its corners, so this bubble hugs the right edge instead of centring */
-[data-tip="Delete"]{--tip-bg:#e03131;}
-[data-tip="Delete"]::after{left:auto;right:-4px;transform:translateX(0) translateY(-4px) scale(.9);top:calc(100% + 8px);}
-[data-tip="Delete"]:hover::after{transform:translateX(0) translateY(0) scale(1);}
-[data-tip="Delete"]::before{top:calc(100% + 1px);}
+.dish-close{height:30px;min-width:30px;padding:0 .5rem;border-radius:99px;border:2px solid var(--line);background:transparent;color:var(--soft);cursor:pointer;font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:color .18s var(--ease),border-color .18s var(--ease);}
+.dish-close:hover{color:#e03131;border-color:#e03131;}
+.dc-word{max-width:0;overflow:hidden;white-space:nowrap;font-size:.74rem;font-weight:700;opacity:0;transition:max-width .22s var(--ease),opacity .18s var(--ease),margin .22s var(--ease);}
+.dish-close:hover .dc-word{max-width:52px;opacity:1;margin-right:.3rem;}
 /* close / cancel buttons everywhere go red on hover */
 .rsheet-close:hover{background:#e03131;border-color:#e03131;color:#fff;transform:rotate(90deg) scale(1.08);}
 .dish-mini.m-cancel:hover,.pb-chip button:hover,.dl-btn.danger:hover{color:#e03131;}
@@ -932,22 +943,29 @@ body.rsheet-open{overflow:hidden;}
   </div>
 </section>
 
+<!-- ===== GROCERIES PAGE ===== -->
+<section class="page" id="grocPage">
+  <div class="wrap">
+    <div class="page-head">
+      <button class="page-back" id="grocBack" onclick="grocBackAction()">← Back to planner</button>
+    </div>
+    <div class="dish-hero groc-hero">
+      <div class="dish-hero-art" aria-hidden="true">🛒</div>
+      <div class="dish-hero-text">
+        <div class="page-title" id="grocTitle">Groceries</div>
+        <div class="page-sub" id="grocSub"></div>
+      </div>
+      <div class="dish-stats" id="grocStat"></div>
+    </div>
+    <div id="grocBody2"></div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
-
-<!-- ===== GROCERIES PANE ===== -->
-<div class="rsheet-backdrop mpane-b" id="grocBackdrop" onclick="closeGroceries()"></div>
-<div class="rsheet mpane" id="grocPane" role="dialog" aria-modal="true" style="--rs-mc:var(--lime)">
-  <div class="rsheet-head">
-    <button class="rsheet-close" onclick="closeGroceries()" aria-label="Close">✕</button>
-    <div class="rsheet-title">🛒 Groceries</div>
-    <div class="rsheet-meta">Builds up as you add ingredients from recipes — sticks around between plans</div>
-  </div>
-  <div class="rsheet-body" id="grocBody"></div>
-</div>
 
 <!-- ===== EXPORT CHOOSER ===== -->
 <div class="rsheet-backdrop mpane-b" id="exportBackdrop" onclick="closeExportChooser()"></div>
@@ -2310,12 +2328,24 @@ function route(){
   if(!onPage)mainDisplayMemo=null;
   const dp=document.getElementById('dishesPage');
   if(dp)dp.classList.toggle('on',isDishes);
+  const gp=document.getElementById('grocPage');
+  if(gp)gp.classList.toggle('on',isGroc);
   if(isDishes){renderDishTab();track('page_view',{page:'dishes'});}
+  if(isGroc){
+    renderGroceries();
+    const inList=/^#\/groceries\/.+/.test(h);
+    const back=document.getElementById('grocBack');
+    if(back)back.textContent=inList?'← All lists':'← Back to planner';
+    track('page_view',{page:'groceries'});
+  }
   if(onPage)window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
 }
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
 
+function grocBackAction(){
+  grocListOpen?goRoute('#/groceries'):goRoute('');
+}
 /* ══════════ MY DISHES PAGE (Favorites + Pool) ══════════ */
 let dishTab='fav';
 function switchDishTab(t){
@@ -2447,7 +2477,7 @@ function dishCardHTML(d,src,i){
   return `<div class="dish-card tint${(i||0)%6} ${d.mix?'picked':''}">
     <div class="dish-top">
       <button class="dish-pick ${d.mix?'on':''}" onclick="togglePick('${src}',${d.id})" title="${d.mix?'Picked for next plan':'Use in my next plan'}">${d.mix?'✓':'+'}</button>
-      <button class="dish-close" onclick="removeStoredDish('${src}',${d.id})" data-tip="Delete" aria-label="Delete this dish">✕</button>
+      <button class="dish-close" onclick="removeStoredDish('${src}',${d.id})" aria-label="Delete this dish"><span class="dc-word">Delete</span>✕</button>
     </div>
     <h4 onclick="openDishFrom('${src}',${d.id})">${src==='fav'?`<span class="card-heart">${HEART_SVG}</span> `:''}${d.name}</h4>
     ${d.why||d.note?`<div class="dish-note">${d.why||d.note}</div>`:''}
@@ -2809,8 +2839,9 @@ function grocFromStored(src,id,btn){
     ?d.recipe.ing
     :String(d.ingredients||'').split(',').map(s=>s.trim()).filter(Boolean);
   if(!ings.length){showToast('No ingredients saved yet — write the recipe first ✨');return;}
-  addIngsToGroceries(ings);
+  const n=addIngsToGroceries(ings);
   if(btn){const o=btn.textContent;btn.textContent='🛒 Added ✓';setTimeout(()=>{btn.textContent=o;},1600);}
+  showToast(`${n||'All'} item${n===1?'':'s'} added to "${MENU_LIST_NAME}" 🛒`,3000);
   track('groceries_added');
 }
 /* legacy name kept so older buttons keep working */
@@ -2819,26 +2850,61 @@ function openSavedDish(id){openDishFrom('fav',id);}
 function removeDish(id){removeStoredDish('fav',id);}
 function renderDishList(){renderDishTab();}
 
-/* ══════════ STEP 6: GROCERIES (persistent list, localStorage) ══════════ */
-function loadGroc(){try{return JSON.parse(localStorage.getItem('mealody.groceries')||'[]');}catch(e){return[];}}
-function saveGroc(a){try{localStorage.setItem('mealody.groceries',JSON.stringify(a));}catch(e){}}
-
+/* ══════════ GROCERIES — shopping lists by store ══════════ */
+const MENU_LIST_NAME="This week's menu";
+function loadGrocLists(){
+  try{
+    let lists=JSON.parse(localStorage.getItem('mealody.grocLists')||'null');
+    if(!lists){
+      // migrate the old single flat list so nothing is lost
+      const old=JSON.parse(localStorage.getItem('mealody.groceries')||'[]');
+      lists=old.length?[{id:Date.now(),name:'My groceries',items:old,createdAt:Date.now(),updatedAt:Date.now()}]:[];
+      localStorage.setItem('mealody.grocLists',JSON.stringify(lists));
+    }
+    return lists;
+  }catch(e){return[];}
+}
+function saveGrocLists(l){try{localStorage.setItem('mealody.grocLists',JSON.stringify(l));}catch(e){}}
+function findList(id){return loadGrocLists().find(l=>String(l.id)===String(id));}
+function updateList(id,fn){
+  const lists=loadGrocLists();
+  const l=lists.find(x=>String(x.id)===String(id));
+  if(!l)return null;
+  fn(l);l.updatedAt=Date.now();
+  saveGrocLists(lists);
+  return l;
+}
+function createList(name){
+  const lists=loadGrocLists();
+  const l={id:Date.now(),name:name.trim(),items:[],createdAt:Date.now(),updatedAt:Date.now()};
+  lists.unshift(l);saveGrocLists(lists);
+  track('groc_list_created');
+  return l;
+}
+function parseIngLine(line){
+  const parts=String(line).split(/\s+[–—-]\s+/);
+  return {item:(parts[0]||String(line)).trim(),qty:(parts.slice(1).join(' ')||'').trim()};
+}
+/* ingredients from a recipe land in the auto-created menu list */
 function addIngsToGroceries(ings){
-  const g=loadGroc();let added=0;
+  let lists=loadGrocLists();
+  let menu=lists.find(l=>l.name===MENU_LIST_NAME);
+  if(!menu){menu=createList(MENU_LIST_NAME);lists=loadGrocLists();menu=lists.find(l=>String(l.id)===String(menu.id));}
+  let added=0;
   (ings||[]).forEach(line=>{
-    const parts=String(line).split(/\s+[–—-]\s+/);
-    const item=(parts[0]||String(line)).trim();
-    const qty=(parts.slice(1).join(' ')||'').trim();
+    const {item,qty}=parseIngLine(line);
     if(!item)return;
-    const ex=g.find(x=>x.item.toLowerCase()===item.toLowerCase()&&!x.checked);
+    const ex=menu.items.find(x=>x.item.toLowerCase()===item.toLowerCase()&&!x.checked);
     if(ex){
       if(qty&&ex.qty&&ex.qty!==qty&&!ex.qty.includes(qty))ex.qty+=' + '+qty;
       else if(qty&&!ex.qty)ex.qty=qty;
     }else{
-      g.push({id:Date.now()+Math.random(),item,qty,checked:false});added++;
+      menu.items.push({id:Date.now()+Math.random(),item,qty,checked:false});added++;
     }
   });
-  saveGroc(g);renderGrocList();
+  menu.updatedAt=Date.now();
+  saveGrocLists(lists);
+  renderGroceries();
   return added;
 }
 function grocFromSheet(btn){
@@ -2846,61 +2912,195 @@ function grocFromSheet(btn){
   const ings=(rsheetMeal.recipe&&rsheetMeal.recipe.ing&&rsheetMeal.recipe.ing.length)
     ?rsheetMeal.recipe.ing
     :String(rsheetMeal.ingredients||'').split(',').map(s=>s.trim()).filter(Boolean);
-  addIngsToGroceries(ings);
+  const n=addIngsToGroceries(ings);
   const old=btn.textContent;btn.textContent='🛒 Added ✓';
   setTimeout(()=>{btn.textContent=old;},1600);
+  showToast(`${n||'All'} item${n===1?'':'s'} added to "${MENU_LIST_NAME}" 🛒`,3000);
   track('groceries_added');
 }
-function grocFromSaved(id,btn){
-  const d=loadDishes().find(x=>x.id===id);
-  if(!d)return;
-  const ings=(d.recipe&&d.recipe.ing&&d.recipe.ing.length)
-    ?d.recipe.ing
-    :String(d.ingredients||'').split(',').map(s=>s.trim()).filter(Boolean);
-  addIngsToGroceries(ings);
-  btn.textContent='✓';setTimeout(()=>{btn.textContent='🛒';},1600);
-  track('groceries_added');
-}
-function openGroceries(){
-  closeMyDishes();closeExportChooser();
-  renderGrocList();
-  document.getElementById('grocBackdrop').classList.add('open');
-  document.getElementById('grocPane').classList.add('open');
-}
-function closeGroceries(){
-  document.getElementById('grocBackdrop').classList.remove('open');
-  document.getElementById('grocPane').classList.remove('open');
-}
-function renderGrocList(){
-  const body=document.getElementById('grocBody');
+/* header button + routing */
+function openGroceries(){goRoute('#/groceries');}
+function closeGroceries(){}
+
+let grocListOpen=null;
+function renderGroceries(){
+  const h=location.hash||'';
+  const m=h.match(/^#\/groceries\/(.+)$/);
+  grocListOpen=m?m[1]:null;
+  const body=document.getElementById('grocBody2');
   if(!body)return;
-  const g=loadGroc();
-  if(!g.length){
-    body.innerHTML=`<div class="dl-empty">Your grocery list is empty.<br/>Open any recipe and tap <b>🛒 Groceries</b> to drop its ingredients in here. 🥕</div>`;
-    return;
-  }
-  body.innerHTML=g.map(x=>`
-    <div class="g-item ${x.checked?'done':''}" onclick="toggleGrocItem('${x.id}')">
-      <span class="g-box"></span>
-      <span class="g-name">${x.item}</span>
+  grocListOpen?renderGrocDetail(body,grocListOpen):renderGrocOverview(body);
+}
+function renderGrocOverview(body){
+  const lists=loadGrocLists();
+  document.getElementById('grocTitle').textContent='Groceries';
+  document.getElementById('grocSub').textContent=lists.length
+    ?'One list per store — tap a list to shop it.'
+    :'Make a list for each store you shop at.';
+  const total=lists.reduce((a,l)=>a+l.items.filter(i=>!i.checked).length,0);
+  document.getElementById('grocStat').innerHTML=lists.length
+    ?`<div class="dstat"><b>${lists.length}</b><span>lists</span></div>
+      <div class="dstat pick" style="border-color:var(--lime);"><b style="color:var(--lime);">${total}</b><span>to buy</span></div>`:'';
+  body.innerHTML=`<div id="grocFormHost"></div>
+    <div class="dish-grid">
+      ${lists.map((l,i)=>{
+        const left=l.items.filter(x=>!x.checked).length,done=l.items.length-left;
+        const pct=l.items.length?Math.round(done/l.items.length*100):0;
+        return `<div class="dish-card tint${i%6}">
+          <div class="dish-top">
+            <span class="glist-badge">${l.items.length} item${l.items.length===1?'':'s'}</span>
+            <button class="dish-close" onclick="deleteList('${l.id}')" aria-label="Delete this list"><span class="dc-word">Delete</span>✕</button>
+          </div>
+          <h4 onclick="goRoute('#/groceries/${l.id}')">${l.name}</h4>
+          <div class="dish-note">${left?`${left} still to buy`:(l.items.length?'All done 🎉':'Empty list')}</div>
+          <div class="gbar"><span style="width:${pct}%"></span></div>
+          <div class="dish-row">
+            <button class="dish-mini m-recipe" onclick="goRoute('#/groceries/${l.id}')">Open list →</button>
+            <button class="dish-mini m-groc" onclick="shareList('${l.id}',this)">📤 Share</button>
+          </div>
+        </div>`;}).join('')}
+      <div class="add-dish-card" onclick="showListForm()"><span class="plus">＋</span>New list</div>
+    </div>
+    ${lists.length?'':`<div class="page-empty" style="margin-top:1.2rem;">
+        <div class="empty-art">🛒</div>
+        <b>No lists yet</b><br/>
+        Make one per store — Aldi, the Indian grocery, wherever you shop. Recipe ingredients land here too.
+        <div style="margin-top:1.1rem;"><button class="dish-mini solid" onclick="showListForm()">＋ Make your first list</button></div>
+      </div>`}`;
+}
+function showListForm(){
+  const host=document.getElementById('grocFormHost');
+  if(!host)return;
+  host.innerHTML=`<div class="pool-form">
+    <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;">New shopping list</div>
+    <label>List name <span style="font-weight:400;color:var(--soft);">— usually the store</span></label>
+    <input id="listName" placeholder="e.g. Aldi, Patel Brothers, Costco" maxlength="40"/>
+    <div class="pool-actions">
+      <button class="dish-mini solid" onclick="addList()">Create list</button>
+      <button class="dish-mini m-cancel" onclick="hideListForm()">Cancel</button>
+    </div>
+    <div id="listFormMsg" class="form-msg"></div>
+  </div>`;
+  const el=document.getElementById('listName');el.focus();
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addList();}});
+}
+function hideListForm(){const h=document.getElementById('grocFormHost');if(h)h.innerHTML='';}
+function addList(){
+  const el=document.getElementById('listName');
+  const name=(el.value||'').trim().replace(/\s+/g,' ');
+  const msg=document.getElementById('listFormMsg');
+  if(!name){msg.textContent='Give the list a name 🙂';el.focus();return;}
+  if(loadGrocLists().some(l=>l.name.toLowerCase()===name.toLowerCase())){msg.textContent='You already have a list with that name.';return;}
+  const l=createList(name);
+  hideListForm();
+  goRoute('#/groceries/'+l.id);
+}
+function deleteList(id){
+  const l=findList(id);
+  if(!l)return;
+  if(l.items.length&&!confirm(`Delete "${l.name}" and its ${l.items.length} item${l.items.length===1?'':'s'}?`))return;
+  saveGrocLists(loadGrocLists().filter(x=>String(x.id)!==String(id)));
+  if(grocListOpen&&String(grocListOpen)===String(id))goRoute('#/groceries');
+  else renderGroceries();
+}
+function renderGrocDetail(body,id){
+  const l=findList(id);
+  if(!l){goRoute('#/groceries');return;}
+  const left=l.items.filter(x=>!x.checked),done=l.items.filter(x=>x.checked);
+  document.getElementById('grocTitle').textContent=l.name;
+  document.getElementById('grocSub').textContent=l.items.length
+    ?`${left.length} to buy · ${done.length} in the cart`
+    :'Add your first item below.';
+  document.getElementById('grocStat').innerHTML='';
+  const row=x=>`<div class="g-item ${x.checked?'done':''}">
+      <span class="g-box" onclick="toggleGrocItem('${id}','${x.id}')"></span>
+      <span class="g-name" onclick="toggleGrocItem('${id}','${x.id}')">${x.item}</span>
       ${x.qty?`<span class="g-qty">${x.qty}</span>`:''}
-    </div>`).join('')+
-    `<div class="g-actions">
-      <button class="rs-act" onclick="clearCheckedGroc()">Clear checked</button>
-      <button class="rs-act" onclick="clearAllGroc()">Clear all</button>
+      <button class="g-del" onclick="deleteGrocItem('${id}','${x.id}')" aria-label="Delete item">✕</button>
     </div>`;
+  body.innerHTML=`
+    <div class="g-add">
+      <input id="gItemInput" placeholder="Add an item — e.g. tomatoes 500g" maxlength="60"/>
+      <button class="dish-mini solid" onclick="addGrocItem('${id}')">Add</button>
+    </div>
+    <div class="g-list">
+      ${left.map(row).join('')}
+      ${done.length?`<div class="g-divider">In the cart (${done.length})</div>`:''}
+      ${done.map(row).join('')}
+    </div>
+    ${l.items.length?'':`<div class="page-empty" style="margin-top:1rem;"><div class="empty-art">🥕</div><b>Nothing here yet</b><br/>Type an item above, or tap 🛒 on any recipe to send its ingredients here.</div>`}
+    <div class="g-actions">
+      <button class="dish-mini m-groc" onclick="shareList('${id}',this)">📤 Share list</button>
+      <button class="dish-mini m-edit" onclick="renameList('${id}')">✏️ Rename</button>
+      ${done.length?`<button class="dish-mini m-recipe" onclick="clearCheckedGroc('${id}')">Clear ${done.length} checked</button>`:''}
+    </div>`;
+  const inp=document.getElementById('gItemInput');
+  if(inp){
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addGrocItem(id);}});
+    if(document.activeElement===document.body)inp.focus();
+  }
 }
-function toggleGrocItem(id){
-  const g=loadGroc();
-  const x=g.find(i=>String(i.id)===String(id));
-  if(x){x.checked=!x.checked;saveGroc(g);renderGrocList();}
+function addGrocItem(id){
+  const inp=document.getElementById('gItemInput');
+  const raw=(inp.value||'').trim();
+  if(!raw)return;
+  const {item,qty}=parseIngLine(raw);
+  updateList(id,l=>{
+    const ex=l.items.find(x=>x.item.toLowerCase()===item.toLowerCase()&&!x.checked);
+    if(ex){if(qty)ex.qty=ex.qty?ex.qty+' + '+qty:qty;}
+    else l.items.push({id:Date.now()+Math.random(),item,qty,checked:false});
+  });
+  inp.value='';
+  renderGroceries();
+  const again=document.getElementById('gItemInput');if(again)again.focus();
+  track('groc_item_added');
 }
-function clearCheckedGroc(){
-  saveGroc(loadGroc().filter(i=>!i.checked));renderGrocList();
+function toggleGrocItem(listId,itemId){
+  updateList(listId,l=>{
+    const x=l.items.find(i=>String(i.id)===String(itemId));
+    if(x)x.checked=!x.checked;
+  });
+  renderGroceries();
 }
-function clearAllGroc(){
-  if(!confirm('Clear the whole grocery list?'))return;
-  saveGroc([]);renderGrocList();
+function deleteGrocItem(listId,itemId){
+  updateList(listId,l=>{l.items=l.items.filter(i=>String(i.id)!==String(itemId));});
+  renderGroceries();
+}
+function clearCheckedGroc(id){
+  updateList(id,l=>{l.items=l.items.filter(i=>!i.checked);});
+  renderGroceries();
+}
+function renameList(id){
+  const l=findList(id);
+  if(!l)return;
+  const name=prompt('Rename this list:',l.name);
+  if(!name||!name.trim())return;
+  updateList(id,x=>{x.name=name.trim();});
+  renderGroceries();
+}
+/* share via the phone's own share sheet, clipboard everywhere else */
+function listAsText(l){
+  const left=l.items.filter(x=>!x.checked),done=l.items.filter(x=>x.checked);
+  const line=x=>`• ${x.item}${x.qty?` — ${x.qty}`:''}`;
+  let t=`🛒 ${l.name}\n\n`+(left.length?left.map(line).join('\n'):'(nothing left to buy)');
+  if(done.length)t+=`\n\nAlready got:\n`+done.map(line).join('\n');
+  return t+`\n\nMade with Mealody 🍲`;
+}
+async function shareList(id,btn){
+  const l=findList(id);
+  if(!l)return;
+  if(!l.items.length){showToast('That list is empty — add something first 🙂');return;}
+  const text=listAsText(l);
+  track('groc_list_shared');
+  try{
+    if(navigator.share){await navigator.share({title:l.name,text});return;}
+    await navigator.clipboard.writeText(text);
+    if(btn){const o=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>{btn.textContent=o;},1800);}
+    showToast('List copied — paste it anywhere 📋',3000);
+  }catch(e){
+    if(e&&e.name==='AbortError')return;   // user dismissed the share sheet
+    showToast("Couldn't share that — try copying it manually 😅");
+  }
 }
 
 /* ══════════ STEP 5: EXPORT CHOOSER + SELECTIVE RECIPE PDF ══════════ */
