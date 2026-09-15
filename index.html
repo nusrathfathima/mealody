@@ -1277,11 +1277,15 @@ renderSuggest(LEFT_SUGGEST,'leftSuggest',leftList,'addLeft');
 /* ── AI INGREDIENT / FOOD VALIDATION (checks spelling + gibberish) ── */
 async function validateFoodTerm(term,kind){
   // kind: 'ingredient' | 'leftover dish' | 'allergen'
+  const extra=kind==='grocery item'
+    ?'Anything sold in a supermarket counts — food, drinks, household and toiletry items.'
+    :'';
   const prompt=`You are a food term checker. A user typed "${term}" as a ${kind}.
+${extra}
 Decide one of:
-- "ok": it's already a valid, correctly-spelled ${kind} (a real food/dish/allergen).
+- "ok": it's already a valid, correctly-spelled ${kind}.
 - "correct": it's a real ${kind} but misspelled — provide the correct spelling.
-- "invalid": it's gibberish or not a food/${kind} at all.
+- "invalid": it's gibberish or not a ${kind} at all.
 Respond ONLY with strict JSON, no markdown:
 {"status":"ok|correct|invalid","suggestion":"corrected term or empty","reason":"very short"}`;
   try{
@@ -1293,9 +1297,9 @@ Respond ONLY with strict JSON, no markdown:
 }
 
 // Shows a friendly inline confirm inside the current chat input card
-function askFoodConfirm(original,suggestion,onYes,onNo,kind){
+function askFoodConfirm(original,suggestion,onYes,onNo,kind,anchorEl){
   clearFoodPopups();
-  const anchor=foodConfirmAnchor(kind);
+  const anchor=anchorEl||foodConfirmAnchor(kind);
   const holder=document.createElement('div');
   holder.className='food-confirm';
   holder.innerHTML=`<div class="fc-q">🤔 Did you mean <b>${suggestion}</b>? <span class="fc-you">(you typed "${original}")</span></div>
@@ -1307,9 +1311,9 @@ function askFoodConfirm(original,suggestion,onYes,onNo,kind){
   holder.querySelector('.fc-yes').onclick=()=>{holder.remove();onYes();};
   holder.querySelector('.fc-no').onclick=()=>{holder.remove();onNo();};
 }
-function askFoodReject(original,reason,onKeep,kind){
+function askFoodReject(original,reason,onKeep,kind,anchorEl){
   clearFoodPopups();
-  const anchor=foodConfirmAnchor(kind);
+  const anchor=anchorEl||foodConfirmAnchor(kind);
   const holder=document.createElement('div');
   holder.className='food-confirm reject';
   holder.innerHTML=`<div class="fc-oops">🤨 Hold on…</div>
@@ -1322,7 +1326,7 @@ function askFoodReject(original,reason,onKeep,kind){
   holder.querySelector('.fc-yes').onclick=()=>{holder.remove();onKeep();};
   holder.querySelector('.fc-no').onclick=()=>{holder.remove();};
 }
-function clearFoodPopups(){document.querySelectorAll('#chatInputHost .food-confirm,#chatInputHost .food-checking').forEach(n=>n.remove());}
+function clearFoodPopups(){document.querySelectorAll('.food-confirm,.food-checking').forEach(n=>n.remove());}
 
 // Wrap a typed term: validate, then add / correct / ask
 async function smartAddTerm(term,kind,addFn){
@@ -2970,9 +2974,21 @@ function createList(name){
   track('groc_list_created');
   return l;
 }
+const QTY_UNITS='g|kg|ml|l|litre|liter|oz|lb|lbs|pcs|pc|pack|packs|packet|dozen|bunch|bunches|can|cans|tin|tins|box|boxes|bag|bags|bottle|bottles|jar|jars|cup|cups|tbsp|tsp|kilo|kilos|gram|grams';
+/* Splits "tomatoes 500g", "2 kg rice", "rice – 2 cups" or plain "tomatoes".
+   Quantity is entirely optional — a bare item name is perfectly fine. */
 function parseIngLine(line){
-  const parts=String(line).split(/\s+[–—-]\s+/);
-  return {item:(parts[0]||String(line)).trim(),qty:(parts.slice(1).join(' ')||'').trim()};
+  let t=String(line).trim();
+  // explicit dash form wins
+  const dash=t.split(/\s+[–—-]\s+/);
+  if(dash.length>1)return {item:dash[0].trim(),qty:dash.slice(1).join(' ').trim()};
+  // trailing quantity: "tomatoes 500g", "milk 2 l", "eggs 12"
+  let m=t.match(new RegExp('^(.*?)[\\s,]+(\\d+(?:[.,]\\d+)?\\s*(?:'+QTY_UNITS+')?)$','i'));
+  if(m&&m[1].trim()&&/[a-z\u00C0-\u024F\u0900-\u0DFF]/i.test(m[1]))return {item:m[1].trim(),qty:m[2].trim()};
+  // leading quantity: "500g tomatoes", "2 kg rice"
+  m=t.match(new RegExp('^(\\d+(?:[.,]\\d+)?\\s*(?:'+QTY_UNITS+')?)[\\s,]+(.*)$','i'));
+  if(m&&m[2].trim())return {item:m[2].trim(),qty:m[1].trim()};
+  return {item:t,qty:''};
 }
 /* ingredients from a recipe land in the auto-created menu list */
 function addIngsToGroceries(ings){
@@ -3129,10 +3145,9 @@ function renderGrocDetail(body,id){
     </div>`;
   body.innerHTML=`
     <div class="g-add">
-      <input id="gItemInput" placeholder="Add an item — e.g. tomatoes 500g" maxlength="60"/>
+      <input id="gItemInput" placeholder="Add an item — e.g. tomatoes (quantity optional)" maxlength="60"/>
       <button class="dish-mini solid" onclick="addGrocItem('${id}')">Add</button>
     </div>
-    <div id="gAddMsg" class="form-msg"></div>
     <div class="g-list">
       ${left.map(row).join('')}
       ${done.length?`<div class="g-divider">In the cart (${done.length})</div>`:''}
@@ -3275,26 +3290,39 @@ function gTouchEnd(e,listId,itemId){
   gSwipe=null;
 }
 
-function addGrocItem(id){
-  const inp=document.getElementById('gItemInput');
-  const msg=document.getElementById('gAddMsg');
-  const raw=(inp.value||'').trim().replace(/\s+/g,' ');
-  if(msg)msg.textContent='';
-  if(!raw){inp.focus();return;}
-  const {item,qty}=splitQty(raw);
-  if(looksGibberish(item)){
-    if(msg)msg.textContent="That doesn't look like a grocery item — try \"tomatoes 500g\" 🍅";
-    inp.focus();inp.select();return;
-  }
+function commitGrocItem(id,item,qty){
   updateList(id,l=>{
     const ex=l.items.find(x=>x.item.toLowerCase()===item.toLowerCase()&&!x.checked);
     if(ex){if(qty)ex.qty=ex.qty?ex.qty+' + '+qty:qty;}
     else l.items.push({id:Date.now()+Math.random(),item,qty,note:'',checked:false});
   });
-  inp.value='';
   renderGroceries();
   const again=document.getElementById('gItemInput');if(again)again.focus();
   track('groc_item_added');
+}
+async function addGrocItem(id){
+  const inp=document.getElementById('gItemInput');
+  const raw=(inp.value||'').trim().replace(/\s+/g,' ');
+  if(!raw){inp.focus();return;}
+  const {item,qty}=parseIngLine(raw);   // quantity is optional — a bare name is fine
+  inp.value='';
+  clearFoodPopups();
+  const anchor=document.querySelector('#grocBody2 .g-add');
+  // pantry staples and household basics skip the check — instant and free
+  const known=[...ING_SUGGEST,...LEFT_SUGGEST].flatMap(c=>c.items||[]).map(x=>x.toLowerCase());
+  const household=['paper towels','toilet paper','dish soap','detergent','foil','cling film','trash bags','napkins','sponge','shampoo','soap','toothpaste','batteries'];
+  if(known.includes(item.toLowerCase())||household.includes(item.toLowerCase())){commitGrocItem(id,item,qty);return;}
+  const waits=['👃 Giving it a sniff…','🤔 Tasting the word…','📖 Checking my cookbook…','🛒 Checking the shelves…'];
+  const hint=document.createElement('div');hint.className='food-checking';
+  hint.textContent=waits[Math.floor(Math.random()*waits.length)];
+  if(anchor)insertAfter(hint,anchor);
+  const v=await validateFoodTerm(item,'grocery item');
+  hint.remove();
+  if(v.status==='correct'&&v.suggestion){
+    askFoodConfirm(item,v.suggestion,()=>commitGrocItem(id,v.suggestion,qty),()=>commitGrocItem(id,item,qty),'grocery item',anchor);
+  }else if(v.status==='invalid'){
+    askFoodReject(item,v.reason,()=>commitGrocItem(id,item,qty),'grocery item',anchor);
+  }else{commitGrocItem(id,item,qty);}
 }
 
 /* ---- per-item options (⋯) ---- */
