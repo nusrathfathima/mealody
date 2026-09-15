@@ -508,6 +508,21 @@ body.rsheet-open{overflow:hidden;}
 /* ===== HEADER ICON BUTTONS ===== */
 .mast-icon{width:38px;height:38px;border-radius:50%;border:2px solid var(--ink);background:var(--card);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s var(--bounce);box-shadow:0 3px 0 var(--line);}
 .mast-icon svg{display:block;flex-shrink:0;}
+/* playful tooltips for the header buttons */
+[data-tip]{position:relative;}
+[data-tip]::after{content:attr(data-tip);position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%) translateY(-4px) scale(.9);background:var(--tip-bg,var(--grape));color:#fff;border:2px solid var(--ink);border-radius:99px;padding:.28rem .7rem;font-size:.72rem;font-weight:800;font-family:inherit;white-space:nowrap;letter-spacing:.01em;opacity:0;pointer-events:none;transition:all .22s var(--bounce);box-shadow:0 3px 0 rgba(0,0,0,.18);z-index:60;}
+[data-tip]::before{content:"";position:absolute;top:calc(100% + 3px);left:50%;transform:translateX(-50%) scale(.6);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:7px solid var(--ink);opacity:0;transition:all .22s var(--bounce);z-index:61;}
+[data-tip]:hover::after,[data-tip]:focus-visible::after{opacity:1;transform:translateX(-50%) translateY(0) scale(1);}
+[data-tip]:hover::before,[data-tip]:focus-visible::before{opacity:1;transform:translateX(-50%) scale(1);}
+[data-tip="My Dishes"]{--tip-bg:var(--berry);}
+[data-tip="Grocery"]{--tip-bg:var(--lime);}
+[data-tip="Dark mode"]{--tip-bg:var(--grape);}
+[data-tip="My Dishes"]:hover{background:#fff0f5;border-color:var(--berry);transform:translateY(-2px) rotate(-6deg);}
+[data-tip="Grocery"]:hover{background:#eafaf0;border-color:var(--lime);transform:translateY(-2px) rotate(-6deg);}
+[data-tip="Dark mode"]:hover{background:#f2edff;border-color:var(--grape);transform:translateY(-2px) rotate(-6deg);}
+[data-theme="dark"] [data-tip="My Dishes"]:hover{background:rgba(255,107,151,.18);}
+[data-theme="dark"] [data-tip="Grocery"]:hover{background:rgba(86,212,132,.18);}
+[data-theme="dark"] [data-tip="Dark mode"]:hover{background:rgba(155,128,255,.18);}
 .mast-icon:hover{transform:translateY(-2px) rotate(-6deg);}
 .masthead .mast-right{justify-self:end;}
 @media(max-width:380px){.mast-icon{width:32px;height:32px;font-size:.85rem;}.theme-toggle{width:36px;height:36px;}.mast-right{gap:.4rem;}}
@@ -579,18 +594,18 @@ body.rsheet-open{overflow:hidden;}
 .dstat.pick{border-color:var(--berry);}
 .dstat.pick b{color:var(--berry);}
 /* segmented two-column tab control — one divided bar, clearly clickable */
-.seg{display:grid;grid-template-columns:1fr 3px 1fr;align-items:stretch;border:3px solid var(--ink);border-radius:var(--r);background:var(--card);box-shadow:5px 5px 0 var(--line);overflow:hidden;margin-bottom:1.6rem;}
-.seg-btn{display:flex;align-items:center;justify-content:center;gap:.55rem;border:none;background:var(--card);color:var(--soft);font-family:inherit;font-weight:800;font-size:.95rem;padding:1rem .8rem;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease);position:relative;}
-.seg-btn:hover{background:var(--cream);color:var(--ink);}
-.seg-div{background:var(--ink);}
-.seg-btn.on{color:#fff;background:var(--berry);}
-#tabPool.seg-btn.on{background:var(--grape);}
-.seg-ico{display:inline-flex;align-items:center;font-size:1rem;}
-.seg-ico svg{display:block;}
-.seg-btn.on .seg-ico{color:#fff;}
-.seg-lbl{white-space:nowrap;}
-.seg-cnt{font-family:'Fraunces',serif;font-size:1.05rem;background:var(--line);color:var(--ink);border-radius:99px;padding:.05rem .55rem;min-width:28px;}
-.seg-btn.on .seg-cnt{background:rgba(255,255,255,.9);}
+.dtab{display:grid;grid-template-columns:1fr 3px 1fr;align-items:stretch;border:3px solid var(--ink);border-radius:var(--r);background:var(--card);box-shadow:5px 5px 0 var(--line);overflow:hidden;margin-bottom:1.6rem;}
+.dtab-btn{display:flex;align-items:center;justify-content:center;gap:.55rem;border:none;background:var(--card);color:var(--soft);font-family:inherit;font-weight:800;font-size:.95rem;padding:1rem .8rem;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease);position:relative;}
+.dtab-btn:hover{background:var(--cream);color:var(--ink);}
+.dtab-div{background:var(--ink);}
+.dtab-btn.on{color:#fff;background:var(--berry);}
+#tabPool.dtab-btn.on{background:var(--grape);}
+.dtab-ico{display:inline-flex;align-items:center;font-size:1rem;}
+.dtab-ico svg{display:block;}
+.dtab-btn.on .dtab-ico{color:#fff;}
+.dtab-lbl{white-space:nowrap;}
+.dtab-cnt{font-family:'Fraunces',serif;font-size:1.05rem;background:var(--line);color:var(--ink);border-radius:99px;padding:.05rem .55rem;min-width:28px;}
+.dtab-btn.on .dtab-cnt{background:rgba(255,255,255,.9);}
 .dish-mini.solid{background:var(--grape);color:#fff;border-color:var(--grape);}
 .form-msg{font-size:.82rem;color:var(--berry);font-weight:700;margin-top:.5rem;}
 /* picks basket — lives in the page flow, so it never covers a form */
@@ -607,8 +622,8 @@ body.rsheet-open{overflow:hidden;}
 .pb-go:hover{transform:translateY(-2px);}
 .pb-clear{border:none;background:none;color:var(--soft);font-family:inherit;font-weight:700;font-size:.78rem;cursor:pointer;text-decoration:underline;}
 @media(max-width:560px){
-  .seg{grid-template-columns:1fr 3px 1fr;}
-  .seg-btn{flex-direction:column;gap:.25rem;padding:.8rem .5rem;font-size:.85rem;}
+  .dtab{grid-template-columns:1fr 3px 1fr;}
+  .dtab-btn{flex-direction:column;gap:.25rem;padding:.8rem .5rem;font-size:.85rem;}
   .pb-go{width:100%;margin-left:0;}
 }
 .tab{border:none;background:none;font-family:inherit;font-weight:800;font-size:.95rem;color:var(--soft);padding:.7rem 1.1rem;cursor:pointer;border-radius:var(--r-sm) var(--r-sm) 0 0;position:relative;transition:color .2s var(--ease);}
@@ -617,24 +632,25 @@ body.rsheet-open{overflow:hidden;}
 .tab.on::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:3px;background:var(--grape);}
 .tab .cnt{font-size:.75rem;background:var(--line);color:var(--ink);border-radius:99px;padding:.1rem .45rem;margin-left:.35rem;}
 .dish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
-.dish-card{background:var(--card);border:3px solid var(--ink);border-radius:var(--r);padding:1.1rem 1.2rem;box-shadow:5px 5px 0 var(--line);display:flex;flex-direction:column;gap:.5rem;transition:transform .18s var(--bounce),box-shadow .18s var(--bounce);position:relative;}
-.dish-card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--card-tint,var(--grape));}
-.dish-card.picked{box-shadow:5px 5px 0 var(--berry);border-color:var(--berry);}
-.dish-card.picked:hover{box-shadow:7px 7px 0 var(--berry);}
-/* each card gets its own tint so the grid feels alive */
-.dish-card.tint0{background:#fff6e3;--card-tint:var(--sun);}
-.dish-card.tint1{background:#eafaf0;--card-tint:var(--lime);}
-.dish-card.tint2{background:#e9f6fe;--card-tint:var(--sky);}
-.dish-card.tint3{background:#f2edff;--card-tint:var(--grape);}
-.dish-card.tint4{background:#fff1e8;--card-tint:var(--tang);}
-.dish-card.tint5{background:#ffeef4;--card-tint:var(--berry);}
-[data-theme="dark"] .dish-card.tint0{background:#332b1f;}
-[data-theme="dark"] .dish-card.tint1{background:#1d3328;}
-[data-theme="dark"] .dish-card.tint2{background:#1b2f3b;}
+.dish-card{background:var(--card);border:2.5px solid var(--ink);border-radius:18px;padding:1.3rem;display:flex;flex-direction:column;gap:.6rem;transition:all .2s var(--bounce);position:relative;overflow:hidden;box-shadow:5px 5px 0 var(--line);}
+.dish-card::before{content:"";position:absolute;top:0;left:0;right:0;height:7px;background:var(--mc,var(--grape));}
+.dish-card:hover{transform:translateY(-4px) rotate(-1deg);box-shadow:8px 10px 0 var(--mc,var(--grape));}
+.dish-card.picked{border-color:var(--berry);box-shadow:5px 5px 0 var(--berry);}
+.dish-card.picked:hover{box-shadow:8px 10px 0 var(--berry);}
+/* same shape as the planner's meal cards — only the tint rotates */
+.dish-card.tint0{--mc:var(--tang);background:#fff6ef;}
+.dish-card.tint1{--mc:var(--lime);background:#f1fbf4;}
+.dish-card.tint2{--mc:var(--sky);background:#eef8fe;}
+.dish-card.tint3{--mc:var(--grape);background:#f5f1ff;}
+.dish-card.tint4{--mc:var(--sun);background:#fffaec;}
+.dish-card.tint5{--mc:var(--berry);background:#fff2f6;}
+[data-theme="dark"] .dish-card.tint0{background:#32241c;}
+[data-theme="dark"] .dish-card.tint1{background:#1d3227;}
+[data-theme="dark"] .dish-card.tint2{background:#1b2e39;}
 [data-theme="dark"] .dish-card.tint3{background:#2a2350;}
-[data-theme="dark"] .dish-card.tint4{background:#362518;}
-[data-theme="dark"] .dish-card.tint5{background:#37202c;}
-.dish-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.1rem;}
+[data-theme="dark"] .dish-card.tint4{background:#332c1c;}
+[data-theme="dark"] .dish-card.tint5{background:#361f2b;}
+.dish-top{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.35rem;}
 .dish-card h4{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;line-height:1.25;cursor:pointer;transition:color .15s var(--ease);}
 .dish-card h4:hover{color:var(--grape);}
 .dish-note{font-size:.84rem;color:var(--soft);line-height:1.5;}
@@ -741,9 +757,9 @@ body.rsheet-open{overflow:hidden;}
     <a href="https://nusrathfathima.com" class="mast-name" target="_blank" rel="noopener">Nusrath Fathima</a>
     <a href="#" class="logo" onclick="mealodyHome();return false;">Mealody<span class="dot">.</span></a>
     <div class="mast-right">
-      <button class="mast-icon" onclick="goRoute('#/dishes')" aria-label="Dishes" title="Dishes"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.8"/><circle cx="12" cy="12" r="6.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.1"/><path d="M8.7 10.2 C8.7 7.9 12 7.9 12 10 C12 7.9 15.3 7.9 15.3 10.2 C15.3 12.5 12 15.1 12 15.1 C12 15.1 8.7 12.5 8.7 10.2 Z" fill="var(--berry)"/></svg></button>
-      <button class="mast-icon" onclick="openGroceries()" aria-label="Grocery" title="Grocery">🛒</button>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Dark mode" title="Dark mode">🌙</button>
+      <button class="mast-icon" onclick="goRoute('#/dishes')" aria-label="Dishes" data-tip="My Dishes"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--sun)" stroke="var(--ink)" stroke-width="1.8"/><circle cx="12" cy="12" r="6.6" fill="var(--card)" stroke="var(--ink)" stroke-width="1.1"/><path d="M8.7 10.2 C8.7 7.9 12 7.9 12 10 C12 7.9 15.3 7.9 15.3 10.2 C15.3 12.5 12 15.1 12 15.1 C12 15.1 8.7 12.5 8.7 10.2 Z" fill="var(--berry)"/></svg></button>
+      <button class="mast-icon" onclick="openGroceries()" aria-label="Grocery" data-tip="Grocery">🛒</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Dark mode" data-tip="Dark mode">🌙</button>
     </div>
   </div>
 </header>
@@ -894,17 +910,17 @@ body.rsheet-open{overflow:hidden;}
       </div>
       <div class="pb-chips" id="pbChips"></div>
     </div>
-    <div class="seg" role="tablist">
-      <button class="seg-btn on" id="tabFav" onclick="switchDishTab('fav')" role="tab">
-        <span class="seg-ico" id="tabFavIco"></span>
-        <span class="seg-lbl">My Favorites</span>
-        <span class="seg-cnt" id="cntFav">0</span>
+    <div class="dtab" role="tablist">
+      <button class="dtab-btn on" id="tabFav" onclick="switchDishTab('fav')" role="tab">
+        <span class="dtab-ico" id="tabFavIco"></span>
+        <span class="dtab-lbl">My Favorites</span>
+        <span class="dtab-cnt" id="cntFav">0</span>
       </button>
-      <span class="seg-div" aria-hidden="true"></span>
-      <button class="seg-btn" id="tabPool" onclick="switchDishTab('pool')" role="tab">
-        <span class="seg-ico">🍲</span>
-        <span class="seg-lbl">My Pool</span>
-        <span class="seg-cnt" id="cntPool">0</span>
+      <span class="dtab-div" aria-hidden="true"></span>
+      <button class="dtab-btn" id="tabPool" onclick="switchDishTab('pool')" role="tab">
+        <span class="dtab-ico">🍲</span>
+        <span class="dtab-lbl">My Pool</span>
+        <span class="dtab-cnt" id="cntPool">0</span>
       </button>
     </div>
     <div id="dishTabBody"></div>
@@ -957,7 +973,10 @@ body.rsheet-open{overflow:hidden;}
 <script>
 /* ── STATE ── */
 const MOODS=['🛋️ Cozy','⚡ Energetic','⏱️ Stressed & quick','🌶️ Adventurous','🥗 Light & fresh','🍲 Comfort food','😴 Lazy / low-effort','✨ Impress someone'];
-let selectedMoods=new Set(['Cozy']);
+const DEFAULT_MOODS=['Cozy','Light & fresh','Lazy / low-effort'];
+function randomDefaultMood(){return DEFAULT_MOODS[Math.floor(Math.random()*DEFAULT_MOODS.length)];}
+let selectedMoods=new Set([randomDefaultMood()]);
+let dietTouched=false;
 let diet='Vegetarian';
 let servings=2;
 let currentPlan=null;
@@ -981,7 +1000,7 @@ MOODS.forEach(m=>{
 document.querySelectorAll('#dietSeg button').forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll('#dietSeg button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');diet=b.dataset.diet;
+    b.classList.add('on');diet=b.dataset.diet;dietTouched=true;   // manual choice wins from here on
   };
 });
 
@@ -1134,6 +1153,25 @@ function addIng(name){
   else{ingList.push(name);}
   renderChips(ingList,'ingChips','removeIng');
   renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');
+  autoDietFromIngredients();
+}
+
+/* The proteins already answer the diet question — so set it for them.
+   The cook can still override it on the Diet step. */
+const MEAT_WORDS=['chicken','lamb','mutton','fish','beef','pork','prawn','shrimp','turkey','bacon','ham','salmon','tuna','crab','duck','goat','sausage','meat','seafood','egg'];
+const ANIMAL_WORDS=['paneer','yogurt','curd','milk','cheese','butter','ghee','cream','honey'];
+function autoDietFromIngredients(){
+  if(dietTouched)return;                       // the cook has spoken — don't fight them
+  const low=ingList.map(x=>String(x).toLowerCase());
+  const hasMeat=low.some(x=>MEAT_WORDS.some(w=>x.includes(w)));
+  const hasAnimal=low.some(x=>ANIMAL_WORDS.some(w=>x.includes(w)));
+  let next=null;
+  if(hasMeat)next='Non-vegetarian';
+  else if(hasAnimal)next='Vegetarian';
+  else if(low.length)next=(diet==='Vegan')?'Vegan':'Vegetarian';
+  if(!next||next===diet)return;
+  diet=next;
+  document.querySelectorAll('#dietSeg button').forEach(b=>b.classList.toggle('on',b.dataset.diet===diet));
 }
 function removeIng(i){ingList.splice(i,1);renderChips(ingList,'ingChips','removeIng');renderSuggest(ING_SUGGEST,'ingSuggest',ingList,'addIng');}
 function ingKey(e){
@@ -1612,8 +1650,8 @@ function restartChat(){
   // reset everything and rebuild the conversation
   rebuildChatSteps();
   ingList=[];leftList=[];
-  selectedMoods=new Set(['Cozy']);
-  diet='Vegetarian';servings=2;
+  selectedMoods=new Set([randomDefaultMood()]);
+  diet='Vegetarian';dietTouched=false;servings=2;
   selectedCuisines=new Set();selectedAllergies=new Set();
   document.getElementById('servingsCount').textContent='2';
   renderChips(ingList,'ingChips','removeIng');renderChips(leftList,'leftChips','removeLeft');
@@ -2554,13 +2592,17 @@ function hidePoolForm(){
   editingPoolId=null;pendingPoolDish=null;
 }
 
-/* Catch keyboard-mashing before it becomes a dish name.
+/* Catch keyboard-mashing and obvious non-dish words before they become a dish name.
    Only judges mostly-Latin text, so Telugu/Hindi/Arabic names pass untouched. */
+const NOT_A_DISH=['hello','hi','hey','bye','goodbye','good morning','good night','ok','okay','yes','no','thanks','thank you','test','testing','sample','example','abc','xyz','none','na','n/a','null','undefined','food','dish','recipe','meal','breakfast','lunch','dinner','something','anything','idk','lol','haha','please','sorry','nothing','new','untitled','asdf','qwerty','blah','random','whatever','my dish','my recipe'];
 function looksGibberish(s){
   const t=String(s).trim();
   if(t.length<2)return true;
+  const bare=t.toLowerCase().replace(/[^a-z\s]/g,'').replace(/\s+/g,' ').trim();
+  if(NOT_A_DISH.includes(bare))return true;                                  // hello / bye / test …
+  if(/^(?:hi|hey|hello|bye|yo|sup)\b/.test(bare)&&bare.split(' ').length<=2)return true;
   const letters=t.replace(/[^A-Za-z]/g,'');
-  if(!/[A-Za-z\u00C0-\u024F]/.test(t)&&!/[^\x00-\x7F]/.test(t))return true; // numbers/symbols only
+  if(!/[A-Za-z\u00C0-\u024F]/.test(t)&&!/[^\x00-\x7F]/.test(t))return true;  // numbers/symbols only
   if(/[^\x00-\x7F]/.test(t))return false;                                    // non-Latin script — let it be
   if(letters.length<2)return true;
   if(letters.length<=4&&letters===letters.toUpperCase())return false;         // BLT, PB&J, LSA
@@ -3033,9 +3075,10 @@ function resetPlanner(){
   document.getElementById('ingType').value='';
   document.getElementById('leftType').value='';
 
-  // reset moods to default (Cozy)
-  selectedMoods=new Set(['🛋️ Cozy']);
-  document.querySelectorAll('#moodChips .chip').forEach(c=>c.classList.toggle('on',c.textContent==='🛋️ Cozy'));
+  // reset moods to a random default vibe
+  const dm=randomDefaultMood();
+  selectedMoods=new Set([dm]);
+  document.querySelectorAll('#moodChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.mood===dm));
 
   // reset diet to Veg
   diet='Vegetarian';
