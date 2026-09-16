@@ -1083,7 +1083,7 @@ body.rsheet-open{overflow:hidden;}
     <div class="dtab" role="tablist">
       <button class="dtab-btn on" id="tabFav" onclick="switchDishTab('fav')" role="tab">
         <span class="dtab-ico" id="tabFavIco"></span>
-        <span class="dtab-lbl">Saved dishes</span>
+        <span class="dtab-lbl">Saved recipes</span>
         <span class="dtab-cnt" id="cntFav">0</span>
       </button>
       <span class="dtab-div" aria-hidden="true"></span>
@@ -1916,8 +1916,12 @@ async function generatePlan(){
     servings,
     cuisine:[...selectedCuisines].join(' & '),
     allergies:[...selectedAllergies].join(', '),
-    myDishes:pickedDishes().map(d=>({name:d.name,ing:(d.recipe&&d.recipe.ing&&d.recipe.ing.join(', '))||d.ingredients||''}))
+    myDishes:[]   // filled in below, once the rest of the inputs are known
   };
+  // only offer picked dishes whose signature ingredients are actually in the kitchen
+  inputs.myDishes=pickedDishes()
+    .map(d=>({name:d.name,ing:(d.recipe&&d.recipe.ing&&d.recipe.ing.join(', '))||d.ingredients||''}))
+    .filter(d=>dishFitsWeek(d,inputs));
   lastInputs=inputs;
   clearError();
   document.getElementById('chatSection').style.display='none';
@@ -2361,6 +2365,55 @@ function markRecipeReady(dayIdx,slotKey){
   if(!card)return;
   const t=card.querySelector('.meal-tap');
   if(t)t.textContent='📖 Recipe ready ✓';
+}
+
+/* ── DO THE COOK'S PICKED DISHES ACTUALLY FIT THIS WEEK? ──
+   The model was still slipping in a picked paneer dish on a chicken week, so the
+   decision is made here first: a dish whose signature ingredient isn't in the
+   kitchen never gets offered to the model at all. */
+const SIGNATURE_INGREDIENTS={
+  paneer:['paneer'],chicken:['chicken'],mutton:['mutton','lamb','goat'],beef:['beef'],pork:['pork','bacon','ham'],
+  fish:['fish','salmon','tuna','tilapia'],prawn:['prawn','shrimp'],egg:['egg','eggs','omelette','omelet','bhurji'],
+  tofu:['tofu'],mushroom:['mushroom'],soya:['soya','soy chunks'],
+  lentil:['dal','daal','lentil','toor','moong','masoor','rajma','chana','chickpea'],
+  spinach:['spinach','palak'],potato:['potato','aloo'],cauliflower:['cauliflower','gobi'],
+  okra:['okra','bhindi'],eggplant:['eggplant','brinjal','baingan'],
+  cheese:['cheese'],yogurt:['curd','yogurt','yoghurt','dahi']
+};
+const VEG_SIGNATURES=['paneer','tofu','mushroom','soya','lentil','spinach','potato','cauliflower','okra','eggplant','cheese','yogurt'];
+const MEAT_SIGNATURES=['chicken','mutton','beef','pork','fish','prawn','egg'];
+
+function signaturesIn(text){
+  const t=' '+String(text||'').toLowerCase()+' ';
+  const found=new Set();
+  Object.keys(SIGNATURE_INGREDIENTS).forEach(key=>{
+    if(SIGNATURE_INGREDIENTS[key].some(w=>t.includes(w)))found.add(key);
+  });
+  return found;
+}
+/* a picked dish is offered only when everything distinctive about it is on hand */
+function dishFitsWeek(dish,inp){
+  const haveText=[inp.ingredients,inp.leftovers].filter(Boolean).join(', ');
+  const have=signaturesIn(haveText);
+  const needText=[dish.ing,dish.name].filter(Boolean).join(', ');
+  const need=signaturesIn(needText);
+  // diet gate first — note "Non-vegetarian" contains the word "vegetarian"
+  const dietStr=String(inp.diet||'').toLowerCase();
+  const isNonVeg=dietStr.includes('non-veg')||dietStr.includes('non veg');
+  const isVegan=dietStr.includes('vegan');
+  const isVeg=!isNonVeg&&(isVegan||dietStr.includes('vegetarian'));
+  if(isVeg&&[...need].some(n=>MEAT_SIGNATURES.includes(n)))return false;
+  if(isVegan&&[...need].some(n=>['paneer','cheese','yogurt','egg'].includes(n)))return false;
+  // allergy gate
+  const avoid=String(inp.allergies||'').toLowerCase();
+  if(avoid){
+    const avoidSig=signaturesIn(avoid);
+    if([...need].some(n=>avoidSig.has(n)))return false;
+  }
+  // a dish with no distinctive ingredient (e.g. "Lemon rice") is always fair game
+  if(!need.size)return true;
+  // every distinctive ingredient it needs must be in the kitchen
+  return [...need].every(n=>have.has(n));
 }
 
 /* ── RECIPE CACHE (localStorage, keyed by dish + servings + diet) ── */
