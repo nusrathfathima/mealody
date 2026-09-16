@@ -525,11 +525,6 @@ body.rsheet-open{overflow:hidden;}
 .nav-item:hover,.nav-item:active{background:var(--cream);}
 .nav-ic{width:30px;height:30px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;}
 .nav-ic svg{display:block;}
-@media(max-width:560px){
-  .mast-burger{display:flex;}
-  .mast-icon,.theme-toggle{display:none;}
-}
-
 .mast-icon{width:38px;height:38px;border-radius:50%;border:2px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .2s var(--bounce);box-shadow:0 3px 0 var(--line);}
 .mast-icon svg{display:block;flex-shrink:0;}
 /* playful tooltips for the header buttons */
@@ -550,6 +545,11 @@ body.rsheet-open{overflow:hidden;}
 .mast-icon:hover{transform:translateY(-2px);}
 .masthead .mast-right{justify-self:end;}
 @media(max-width:380px){.mast-icon{width:32px;height:32px;font-size:.85rem;}.theme-toggle{width:36px;height:36px;}.mast-right{gap:.4rem;}}
+/* placed after the base rules on purpose: on phones the three icons collapse into the burger */
+@media(max-width:560px){
+  .masthead .mast-burger{display:flex;}
+  .masthead .mast-icon,.masthead .theme-toggle{display:none!important;}
+}
 
 /* ===== RECIPE SHEET ACTION BUTTONS ===== */
 .rsheet-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.3rem;}
@@ -621,6 +621,13 @@ body.rsheet-open{overflow:hidden;}
 .g-divider{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);padding:.9rem 0 .4rem;border-top:2px solid var(--line);margin-top:.4rem;}
 .g-actions{display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap;}
 .glist-badge{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--mc,var(--grape));padding:.2rem .6rem;border-radius:99px;}
+/* grocery lists stack one per row */
+.glist-stack{display:flex;flex-direction:column;gap:1rem;}
+.glist-stack .add-dish-card{min-height:0;padding:1rem 1.2rem;flex-direction:row;gap:.6rem;}
+.dish-card.glist{cursor:pointer;}
+.dish-card.glist h4{cursor:pointer;}
+.dish-card.glist:focus-visible{outline:3px solid var(--grape);outline-offset:3px;}
+.dish-card.glist .dish-row{margin-top:.3rem;}
 .gbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:.2rem;}
 .gbar span{display:block;height:100%;background:var(--mc,var(--lime));transition:width .35s var(--ease);}
 .groc-hero{box-shadow:7px 7px 0 var(--lime);}
@@ -827,6 +834,15 @@ body.rsheet-open{overflow:hidden;}
   .rs-act{min-width:100%;}
   .go-unit{padding:.18rem .5rem;font-size:.72rem;}
   .nav-menu{min-width:190px;}
+}
+
+/* touch screens keep :hover stuck after a tap — no lifts or tilts there */
+@media(hover:none){
+  .act-btn:hover,.dish-card:hover,.dish-mini:hover,.mast-icon:hover,.mast-burger:hover,
+  .rs-act:hover,.pb-go:hover,.page-back:hover,.dish-pick:hover,.g-box:hover,.dl-btn:hover,
+  .go-step button:hover,.exp-opt:hover,.add-dish-card:hover,.chip:hover,.cui:hover,
+  .rsheet-close:hover,.dish-close:hover,.meal-fav:hover,.meal-tap:hover,.dish-card h4:hover{transform:none;}
+  .act-btn:active,.dish-mini:active,.rs-act:active{transform:scale(.97);}
 }
 
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
@@ -3166,21 +3182,22 @@ function renderGrocOverview(body){
     ?`<div class="dstat"><b>${lists.length}</b><span>lists</span></div>
       <div class="dstat pick" style="border-color:var(--lime);"><b style="color:var(--lime);">${total}</b><span>to buy</span></div>`:'';
   body.innerHTML=`<div id="grocFormHost"></div>
-    <div class="dish-grid">
+    <div class="glist-stack">
       ${lists.map((l,i)=>{
         const left=l.items.filter(x=>!x.checked).length,done=l.items.length-left;
         const pct=l.items.length?Math.round(done/l.items.length*100):0;
-        return `<div class="dish-card tint${i%6}">
+        return `<div class="dish-card glist tint${i%6}" role="button" tabindex="0"
+             onclick="goRoute('#/groceries/${l.id}')"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goRoute('#/groceries/${l.id}');}">
           <div class="dish-top">
             <span class="glist-badge">${l.items.length} item${l.items.length===1?'':'s'}</span>
-            <button class="dish-close" onclick="deleteList('${l.id}')" aria-label="Delete this list"><span class="dc-word">Delete</span>✕</button>
+            <button class="dish-close" onclick="event.stopPropagation();deleteList('${l.id}')" aria-label="Delete this list"><span class="dc-word">Delete</span>✕</button>
           </div>
-          <h4 onclick="goRoute('#/groceries/${l.id}')">${l.name}</h4>
+          <h4>${l.name}</h4>
           <div class="dish-note">${left?`${left} still to buy`:(l.items.length?'All done 🎉':'Empty list')}</div>
           <div class="gbar"><span style="width:${pct}%"></span></div>
           <div class="dish-row">
-            <button class="dish-mini m-recipe" onclick="goRoute('#/groceries/${l.id}')">Open list →</button>
-            <button class="dish-mini m-groc" onclick="shareList('${l.id}',this)">📤 Share</button>
+            <button class="dish-mini m-groc" onclick="event.stopPropagation();shareList('${l.id}',this)">📤 Share</button>
           </div>
         </div>`;}).join('')}
       <div class="add-dish-card" onclick="openRenameModal()"><span class="plus">＋</span>New list</div>
