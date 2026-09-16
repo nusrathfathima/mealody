@@ -19,6 +19,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --danger:#e03131;
+  --danger-ink:#ffffff;
   --danger-soft:#ffe9e9;
   --cream:#fff8ee;
   --ink:#2d2240;
@@ -43,6 +44,7 @@
 [data-theme="dark"] .bubble.user{color:#fff;}
 [data-theme="dark"]{
   --danger:#ff7a7a;
+  --danger-ink:#2d2240;
   --danger-soft:rgba(255,122,122,.18);
   --cream:#1c1830;
   --ink:#f3eeff;
@@ -365,6 +367,10 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
 .fc-yes{background:var(--lime);color:#fff;box-shadow:0 3px 0 #2ea355;}
 .fc-no{background:var(--card);color:var(--soft);box-shadow:0 3px 0 var(--line);}
 .food-confirm.reject .fc-no{background:var(--berry);color:#fff;box-shadow:0 3px 0 #d83568;}
+/* dark mode: these two panels kept light backgrounds while the text flipped to near-white */
+[data-theme="dark"] .food-confirm.reject{background:rgba(255,107,151,.16);}
+[data-theme="dark"] .food-confirm{background:var(--cream);}
+[data-theme="dark"] .error{background:rgba(255,107,151,.16);color:var(--berry);border-color:var(--berry);}
 .fc-btns button:hover{transform:translateY(-2px);}
 .fc-btns button:active{transform:translateY(1px);}
 .food-checking{margin-top:.6rem;font-size:.84rem;font-weight:700;color:var(--grape);background:var(--cream);border-radius:99px;padding:.4rem .9rem;display:inline-block;animation:pulse 1.1s ease-in-out infinite;}
@@ -563,6 +569,16 @@ body.rsheet-open{overflow:hidden;}
 .rs-act.heart{display:flex;align-items:center;justify-content:center;gap:.4rem;color:var(--berry);}
 .rs-act.heart svg{display:block;}
 .rs-act.heart.on{background:var(--berry);border-color:var(--berry);color:#fff;}
+.rs-act.danger{background:var(--danger);border-color:var(--danger);color:var(--danger-ink);}
+.rs-act.danger:hover{background:var(--danger);filter:brightness(1.08);}
+.confirm-pane{max-width:440px;}
+.confirm-pane .rsheet-body{padding-top:1rem;}
+@media(max-width:560px){
+  .confirm-pane{left:50%;right:auto;bottom:auto;top:50%;width:min(440px,calc(100vw - 2rem));transform:translate(-50%,-46%) scale(.96);border-radius:var(--r);border-bottom:3px solid var(--ink);box-shadow:8px 8px 0 var(--rs-mc,var(--grape));}
+  .confirm-pane.open{transform:translate(-50%,-50%) scale(1);}
+  .confirm-pane::after{display:none;}
+  .confirm-pane .rsheet-head{padding-top:1.5rem;}
+}
 
 /* ===== PANES (My Dishes / Groceries / Export) reuse the rsheet look ===== */
 .mpane{z-index:881;}
@@ -577,7 +593,7 @@ body.rsheet-open{overflow:hidden;}
 .g-row{position:relative;border-bottom:2px dashed var(--line);}
 .g-swipe{position:relative;overflow:hidden;}
 .g-row:last-child{border-bottom:none;}
-.g-del-layer{position:absolute;inset:0;background:var(--danger);display:flex;align-items:center;justify-content:flex-end;padding-right:1.1rem;color:#fff;font-weight:800;font-size:.85rem;opacity:0;visibility:hidden;transition:opacity .15s var(--ease);}
+.g-del-layer{position:absolute;inset:0;background:var(--danger);display:flex;align-items:center;justify-content:flex-end;padding-right:1.1rem;color:var(--danger-ink);font-weight:800;font-size:.85rem;opacity:0;visibility:hidden;transition:opacity .15s var(--ease);}
 .g-row.swiping .g-del-layer{opacity:.6;visibility:visible;}
 .g-row.arm .g-del-layer{opacity:1;visibility:visible;}
 .g-slide{position:relative;display:flex;align-items:center;gap:.6rem;padding:.65rem .2rem;background:var(--card);user-select:none;touch-action:pan-y;will-change:transform;}
@@ -768,7 +784,7 @@ body.rsheet-open{overflow:hidden;}
 .dc-word{max-width:0;overflow:hidden;white-space:nowrap;font-size:.74rem;font-weight:700;opacity:0;transition:max-width .22s var(--ease),opacity .18s var(--ease),margin .22s var(--ease);}
 .dish-close:hover .dc-word{max-width:52px;opacity:1;margin-right:.3rem;}
 /* close / cancel buttons everywhere go red on hover */
-.rsheet-close:hover{background:var(--danger);border-color:var(--danger);color:#fff;transform:rotate(90deg) scale(1.08);}
+.rsheet-close:hover{background:var(--danger);border-color:var(--danger);color:var(--danger-ink);transform:rotate(90deg) scale(1.08);}
 .dish-mini.m-cancel:hover,.pb-chip button:hover,.dl-btn.danger:hover{color:var(--danger);}
 .dish-mini.m-cancel:hover{background:var(--danger-soft);border-color:var(--danger);}
 /* colored hovers so each action reads at a glance */
@@ -1122,6 +1138,22 @@ body.rsheet-open{overflow:hidden;}
     Built by <a href="https://nusrathfathima.com" target="_blank" rel="noopener">Nusrath Fathima</a> · Powered by AI
   </div>
 </footer>
+
+<!-- ===== CONFIRM MODAL ===== -->
+<div class="rsheet-backdrop mpane-b" id="confirmBackdrop" onclick="closeConfirm()"></div>
+<div class="rsheet mpane confirm-pane" id="confirmPane" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+  <div class="rsheet-head">
+    <button class="rsheet-close" onclick="closeConfirm()" aria-label="Close">✕</button>
+    <div class="rsheet-title" id="confirmTitle">Delete this?</div>
+    <div class="rsheet-meta" id="confirmMsg"></div>
+  </div>
+  <div class="rsheet-body">
+    <div class="rsheet-actions">
+      <button class="rs-act danger" id="confirmOk" onclick="confirmProceed()">Delete</button>
+      <button class="rs-act" onclick="closeConfirm()">Cancel</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== RENAME LIST MODAL ===== -->
 <div class="rsheet-backdrop mpane-b" id="renameBackdrop" onclick="closeRenameModal()"></div>
@@ -2339,6 +2371,7 @@ function closeRecipeSheet(){
 document.addEventListener('keydown',function(e){
   if(e.key!=='Escape')return;
   if(rsheetFor||rsheetMeal){closeRecipeSheet();return;}
+  if(confirmAction!==null){closeConfirm();return;}
   closeMyDishes();closeGroceries();closeExportChooser();closeRenameModal();
 });
 
@@ -2561,6 +2594,29 @@ function route(){
 }
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
+
+/* ── CONFIRM DIALOG (used before anything is deleted) ── */
+let confirmAction=null;
+function askConfirm(title,msg,onYes,okLabel){
+  confirmAction=onYes;
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmMsg').textContent=msg||'';
+  document.getElementById('confirmOk').textContent=okLabel||'Delete';
+  document.getElementById('confirmBackdrop').classList.add('open');
+  document.getElementById('confirmPane').classList.add('open');
+  document.body.classList.add('rsheet-open');
+}
+function closeConfirm(){
+  confirmAction=null;
+  document.getElementById('confirmBackdrop').classList.remove('open');
+  document.getElementById('confirmPane').classList.remove('open');
+  document.body.classList.remove('rsheet-open');
+}
+function confirmProceed(){
+  const fn=confirmAction;
+  closeConfirm();
+  if(typeof fn==='function')fn();
+}
 
 /* ── MOBILE NAV MENU ── */
 function toggleNavMenu(e){
@@ -2826,9 +2882,19 @@ function clearPicks(){
   renderDishTab();
 }
 function removeStoredDish(src,id){
+  const d=findStored(src,id);
+  if(!d){doRemoveStoredDish(src,id);return;}
+  askConfirm(
+    'Delete this dish?',
+    `"${d.name}" will be removed from ${src==='pool'?'your pool':'your favorites'}${d.recipe?', along with its saved recipe':''}. This can't be undone.`,
+    ()=>doRemoveStoredDish(src,id)
+  );
+}
+function doRemoveStoredDish(src,id){
   if(src==='fav')saveDishes(loadDishes().filter(d=>d.id!==id));
   else savePool(loadPool().filter(d=>d.id!==id));
   renderDishTab();
+  showToast('Dish deleted',2000);
 }
 function findStored(src,id){
   return (src==='fav'?loadDishes():loadPool()).find(d=>d.id===id);
@@ -3079,8 +3145,11 @@ function discardDraft(){
 }
 function removeSavedFromSheet(){
   if(!rsheetCtx||rsheetCtx.mode!=='saved')return;
-  removeStoredDish(rsheetCtx.src||'fav',rsheetCtx.id);
-  closeRecipeSheet();
+  const {src,id}=rsheetCtx;
+  const d=findStored(src||'fav',id);
+  askConfirm('Delete this dish?',
+    d?`"${d.name}" will be removed${d.recipe?', along with its saved recipe':''}. This can't be undone.`:'',
+    ()=>{closeRecipeSheet();doRemoveStoredDish(src||'fav',id);});
 }
 function grocFromStored(src,id,btn){
   const d=findStored(src,id);
@@ -3279,10 +3348,18 @@ function submitRename(){
 function deleteList(id){
   const l=findList(id);
   if(!l)return;
-  if(l.items.length&&!confirm(`Delete "${l.name}" and its ${l.items.length} item${l.items.length===1?'':'s'}?`))return;
-  saveGrocLists(loadGrocLists().filter(x=>String(x.id)!==String(id)));
-  if(grocListOpen&&String(grocListOpen)===String(id))goRoute('#/groceries');
-  else renderGroceries();
+  askConfirm(
+    'Delete this list?',
+    l.items.length
+      ? `"${l.name}" and its ${l.items.length} item${l.items.length===1?'':'s'} will be removed. This can't be undone.`
+      : `"${l.name}" will be removed.`,
+    ()=>{
+      saveGrocLists(loadGrocLists().filter(x=>String(x.id)!==String(id)));
+      if(grocListOpen&&String(grocListOpen)===String(id))goRoute('#/groceries');
+      else renderGroceries();
+      showToast('List deleted',2000);
+    }
+  );
 }
 function renderGrocDetail(body,id){
   const l=findList(id);
