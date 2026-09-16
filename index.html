@@ -318,7 +318,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   .day-name{font-size:1.25rem;}
   .week-title{font-size:1.6rem;}
   /* masthead: keep 3-col but shrink name so it doesn't crowd the logo */
-  .mast-name{font-size:.8rem;}
+  .mast-name{font-size:.78rem;line-height:1.1;max-width:4.6em;white-space:normal;}
   .logo{font-size:1.45rem;}
   /* chat bubbles a touch wider, avatar smaller */
   .bubble{max-width:84%;font-size:.9rem;}
@@ -338,7 +338,7 @@ footer a{color:var(--grape);text-decoration:none;font-weight:700;}
   .sug-items{grid-template-columns:repeat(3,1fr);}
   .cuisine-grid{grid-template-columns:repeat(3,1fr);}
   .chip,.al-chip{font-size:.8rem;padding:.45rem .85rem;}
-  .mast-name{font-size:.72rem;}
+  .mast-name{font-size:.7rem;max-width:4.4em;}
   .logo{font-size:1.3rem;}
   .cw-mascot{width:66px;height:66px;}
   .hero p{font-size:.9rem;}
@@ -624,13 +624,28 @@ body.rsheet-open{overflow:hidden;}
 .g-divider{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);padding:.9rem 0 .4rem;border-top:2px solid var(--line);margin-top:.4rem;}
 .g-actions{display:flex;gap:.6rem;margin-top:1.2rem;flex-wrap:wrap;}
 .glist-badge{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--mc,var(--grape));padding:.2rem .6rem;border-radius:99px;}
-/* grocery lists stack one per row */
-.glist-stack{display:flex;flex-direction:column;gap:1rem;}
-.glist-stack .add-dish-card{min-height:0;padding:1rem 1.2rem;flex-direction:row;gap:.6rem;}
-.dish-card.glist{cursor:pointer;}
-.dish-card.glist h4{cursor:pointer;}
+/* grocery lists stack one per row, content spread across the card */
+.glist-stack{display:flex;flex-direction:column;gap:.85rem;}
+.glist-stack .add-dish-card{min-height:0;padding:.95rem 1.2rem;flex-direction:row;gap:.6rem;}
+.glist-stack .add-dish-card .plus{font-size:1.3rem;}
+.dish-card.glist{flex-direction:row;align-items:center;gap:1.3rem;padding:.95rem 1.3rem;cursor:pointer;}
+.dish-card.glist h4{cursor:pointer;margin:0;}
 .dish-card.glist:focus-visible{outline:3px solid var(--grape);outline-offset:3px;}
-.dish-card.glist .dish-row{margin-top:.3rem;}
+.gl-main{flex:1 1 34%;min-width:0;display:flex;flex-direction:column;gap:.15rem;}
+.gl-main .dish-note{font-size:.8rem;}
+.gl-prog{flex:1 1 34%;min-width:120px;display:flex;flex-direction:column;gap:.35rem;align-items:flex-start;}
+.gl-prog .gbar{width:100%;margin-top:0;}
+.gl-pct{font-size:.7rem;font-weight:700;color:var(--soft);}
+.gl-acts{display:flex;align-items:center;gap:.55rem;flex-shrink:0;margin-left:auto;}
+.gl-go{font-size:1.2rem;font-weight:800;color:var(--mc,var(--grape));line-height:1;transition:transform .18s var(--bounce);}
+.dish-card.glist:hover .gl-go{transform:translateX(4px);}
+@media(max-width:620px){
+  .dish-card.glist{flex-wrap:wrap;gap:.6rem 1rem;padding:.9rem 1.1rem;}
+  .gl-main{flex:1 1 100%;}
+  .gl-prog{flex:1 1 auto;min-width:110px;}
+  .gl-acts{margin-left:auto;}
+  .gl-go{display:none;}
+}
 .gbar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:.2rem;}
 .gbar span{display:block;height:100%;background:var(--mc,var(--lime));transition:width .35s var(--ease);}
 .groc-hero{box-shadow:7px 7px 0 var(--lime);}
@@ -3196,15 +3211,19 @@ function renderGrocOverview(body){
         return `<div class="dish-card glist tint${i%6}" role="button" tabindex="0"
              onclick="goRoute('#/groceries/${l.id}')"
              onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goRoute('#/groceries/${l.id}');}">
-          <div class="dish-top">
-            <span class="glist-badge">${l.items.length} item${l.items.length===1?'':'s'}</span>
-            <button class="dish-close" onclick="event.stopPropagation();deleteList('${l.id}')" aria-label="Delete this list"><span class="dc-word">Delete</span>✕</button>
+          <div class="gl-main">
+            <h4>${l.name}</h4>
+            <div class="dish-note">${left?`${left} still to buy`:(l.items.length?'All done 🎉':'Empty list')}</div>
           </div>
-          <h4>${l.name}</h4>
-          <div class="dish-note">${left?`${left} still to buy`:(l.items.length?'All done 🎉':'Empty list')}</div>
-          <div class="gbar"><span style="width:${pct}%"></span></div>
-          <div class="dish-row">
+          <div class="gl-prog">
+            <span class="glist-badge">${l.items.length} item${l.items.length===1?'':'s'}</span>
+            <div class="gbar"><span style="width:${pct}%"></span></div>
+            ${l.items.length?`<span class="gl-pct">${pct}% packed</span>`:''}
+          </div>
+          <div class="gl-acts">
             <button class="dish-mini m-groc" onclick="event.stopPropagation();shareList('${l.id}',this)">📤 Share</button>
+            <button class="dish-close" onclick="event.stopPropagation();deleteList('${l.id}')" aria-label="Delete this list"><span class="dc-word">Delete</span>✕</button>
+            <span class="gl-go" aria-hidden="true">→</span>
           </div>
         </div>`;}).join('')}
       <div class="add-dish-card" onclick="openRenameModal()"><span class="plus">＋</span>New list</div>
@@ -3561,7 +3580,7 @@ function clearCheckedGroc(id){
 function listAsText(l){
   const left=l.items.filter(x=>!x.checked),done=l.items.filter(x=>x.checked);
   const line=x=>`• ${x.item}${x.qty?` — ${x.qty}`:''}`;
-  let t=`🛒 ${l.name}\n\n`+(left.length?left.map(line).join('\n'):'(nothing left to buy)');
+  let t=`🛒 ${l.name} grocery list\n\n`+(left.length?left.map(line).join('\n'):'(nothing left to buy)');
   if(done.length)t+=`\n\nAlready got:\n`+done.map(line).join('\n');
   return t+`\n\nMade with Mealody 🍲`;
 }
@@ -3572,7 +3591,7 @@ async function shareList(id,btn){
   const text=listAsText(l);
   track('groc_list_shared');
   try{
-    if(navigator.share){await navigator.share({title:l.name,text});return;}
+    if(navigator.share){await navigator.share({title:l.name+' grocery list',text});return;}
     await navigator.clipboard.writeText(text);
     if(btn){const o=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>{btn.textContent=o;},1800);}
     showToast('List copied — paste it anywhere 📋',3000);
