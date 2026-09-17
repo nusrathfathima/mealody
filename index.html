@@ -580,7 +580,7 @@ body.rsheet-open{overflow:hidden;}
   .confirm-pane .rsheet-head{padding-top:1.5rem;}
 }
 
-/* ===== PANES (My Dishes / Groceries / Export) reuse the rsheet look ===== */
+/* ===== PANES (Favorites / Groceries / Export) reuse the rsheet look ===== */
 .mpane{z-index:881;}
 .mpane-b{z-index:880;}
 .dl-item{display:flex;align-items:center;gap:.7rem;border:2px solid var(--line);border-radius:var(--r-sm);padding:.7rem .9rem;margin-bottom:.6rem;background:var(--cream);}
@@ -687,7 +687,7 @@ body.rsheet-open{overflow:hidden;}
 #rprint{display:none;}
 .meal-recipe-print{display:none;}
 
-/* ===== FULL PAGE VIEWS (My Dishes / Groceries) ===== */
+/* ===== FULL PAGE VIEWS (Favorites / Groceries) ===== */
 .page{display:none;padding:2.5rem 0 4rem;}
 .page.on{display:block;}
 .page-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.6rem;flex-wrap:wrap;}
@@ -1076,7 +1076,7 @@ body.rsheet-open{overflow:hidden;}
       <div class="pb-top">
         <span class="pb-title" id="pbTitle"></span>
         <button class="pb-clear" onclick="clearPicks()">clear</button>
-        <button class="pb-go" onclick="planWithPicks()">Plan my week with these →</button>
+        <button class="pb-go" onclick="planWithPicks()">Plan a week with these →</button>
       </div>
       <div class="pb-chips" id="pbChips"></div>
     </div>
@@ -1606,7 +1606,7 @@ function rebuildChatSteps(){
 // Fun rotating welcome greetings (surprise!)
 const WELCOME_GREETINGS=[
   {t:"Hungry? Let's fix that. 🍲",s:"I'm Mealody, your kitchen buddy — I'll plan your whole week of meals."},
-  {t:"What's cooking, good looking? 😋",s:"I'm Mealody! A few fun questions and your week is planned."},
+  {t:"What's cooking, good looking? 😋",s:"I'm Mealody! Four quick questions and your week is planned."},
   {t:"Let's turn your fridge into a feast! 🥘",s:"Hi, I'm Mealody — a few taps and dinner's sorted all week."},
   {t:"Ready to eat well this week? ✨",s:"I'm Mealody, your meal-planning sidekick. Let's build your week."}
 ];
@@ -2564,7 +2564,7 @@ function restorePlan(){
   // a week older than 7 days isn't "this week" any more
   if(Date.now()-(saved.savedAt||0)>7*24*60*60*1000){clearSavedPlan();return false;}
   currentPlan=saved.plan;lastInputs=saved.inputs;
-  // rebuild the chat's own state so "Start over" and swaps still behave
+  // rebuild the chat's own state so "Start over" and regenerating a meal still behave
   try{
     diet=lastInputs.diet||diet;servings=lastInputs.servings||servings;dietTouched=true;
   }catch(e){}
@@ -2828,7 +2828,9 @@ function renderPickTray(){
   const picked=pickedDishes();
   if(!picked.length){basket.classList.remove('on');return;}
   const n=picked.length;
-  document.getElementById('pbTitle').innerHTML=`🍲 <em>${n}</em> dish${n>1?'es':''} lined up — Mealody will use ${n>1?'the ones':'it'} that fit your ingredients`;
+  document.getElementById('pbTitle').innerHTML=n>1
+    ?`🍲 <em>${n}</em> dishes picked — the ones that suit your ingredients will appear in your next week`
+    :`🍲 <em>1</em> dish picked — it'll appear in your next week if it suits your ingredients`;
   document.getElementById('pbChips').innerHTML=picked.map(d=>
     `<span class="pb-chip">${d.name}<button onclick="togglePick('${d.src}',${d.id})" title="Remove">✕</button></span>`).join('');
   basket.classList.add('on');
@@ -2838,7 +2840,7 @@ function planWithPicks(){
   setTimeout(()=>{
     if(typeof restartChat==='function')restartChat();
     window.scrollTo({top:0,behavior:'smooth'});
-    showToast('Your picked dishes are waiting at the last question 💗',4200);
+    showToast("Starting a fresh week — I'll slot these in wherever they fit 💗",4200);
   },60);
 }
 function dishCardHTML(d,src,i){
@@ -3106,34 +3108,6 @@ function newDishThen(how){
   }else{
     rsheetCtx={mode:'manual',src:'pool',id:dish.id};
     chooseManualRecipe();
-  }
-}
-async function aiFillRecipe(src,id,btn){
-  const d=findStored(src,id);
-  if(!d||d.recipe)return;
-  const cached=cacheGetRecipe(d.name);
-  if(cached){updateStored(src,id,{recipe:cached});renderDishTab();return;}
-  if(btn){btn.textContent='✨ Writing…';btn.disabled=true;}
-  try{
-    const inp=lastInputs||{servings:d.servings||2,diet:d.diet||'Vegetarian',allergies:''};
-    const r=await callAI(`You are Mealody, a friendly home cook writing a SHORT, clear recipe.
-Dish: ${d.name}.${d.note?` Context from the cook: ${d.note}`:''} Servings: ${inp.servings}. Diet: ${inp.diet}. Strictly avoid: ${inp.allergies||'none'}.
-Rules (keep them tight):
-- "time": total time like "25 min"
-- "ing": ingredients as "item – quantity" strings scaled to ${inp.servings} servings, max 10 items
-- "steps": max 8 steps, each ONE short plain sentence
-- "tip": ONE short practical tip
-- everyday language, no filler, no greetings
-Respond ONLY with valid JSON, no markdown: {"time":"","ing":[""],"steps":[""],"tip":""}`,900);
-    if(r&&r.steps){
-      updateStored(src,id,{recipe:r,servings:d.servings||inp.servings});
-      cachePutRecipe(d.name,r);
-      renderDishTab();
-    }else throw new Error('bad recipe');
-  }catch(e){
-    console.error('ai fill failed',e);
-    renderDishTab();
-    showToast("Couldn't write that recipe just now — tap ✨ to try again 😅");
   }
 }
 function openDishFrom(src,id){
@@ -3893,7 +3867,7 @@ Respond ONLY with valid JSON, no markdown: {"name":"","why":"","ingredients":""}
   try{
     const data=await callAI(prompt);
     currentPlan.days[dayIdx][slotKey]=data;
-    // the swapped-in dish might already be in the recipe cache — free win
+    // the regenerated dish might already be in the recipe cache — free win
     const cached=cacheGetRecipe(data.name);
     if(cached)data.recipe=cached;
     const slotLabel=slotKey.charAt(0).toUpperCase()+slotKey.slice(1);
