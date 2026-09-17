@@ -23,20 +23,22 @@ Most meal-planning tools start from a recipe and hand you a shopping list of ing
 
 ## Why it's built this way
 
-This is a deliberately **fundamentals-first** project: vanilla HTML, CSS and JavaScript, no framework, no build step, no database. That's a choice, not a limitation — it's the same reasoning behind building Mealody's Android and iOS companions as native apps (Kotlin/Compose, Swift/SwiftUI) rather than with a cross-platform framework. The goal is to demonstrate that I understand what frameworks abstract away, not just how to use one.
+Mealody is built with plain HTML, CSS and JavaScript — a deliberate choice to demonstrate a solid grasp of the fundamentals frameworks build on top of, and it keeps the app fast, dependency-free, and simple to deploy.
 
-A few decisions worth knowing about:
+A few things worth knowing about:
 
 - **The API key never reaches the browser.** The page calls my own serverless function (`api/generate.js`), which adds the Anthropic key server-side before forwarding the request. The function also clamps the maximum response size, so the endpoint can't be abused to run up a bill even if called directly.
 - **The week generates in batches**, not one giant request — faster to first content, and a failure only affects a few days instead of the whole week.
-- **Recipes are lazy and cached.** Nothing is generated until a card is tapped; a background queue then fills in the rest. Every recipe is cached by dish name, so a dish you've seen before is free the next time.
+- **Recipes are lazy and cached.** Nothing is generated until a card is tapped; a background queue then fills in the rest. Every recipe is cached by dish name, so a dish you've seen before is free the next time — which also roughly halves the AI cost of the feature.
+- **Dish matching is deterministic, not left to the AI.** Whether a saved favorite fits into a new week (say, a paneer dish on a week planned around chicken) is decided in code before anything is sent to the model, so the rule always holds rather than depending on the AI reliably following an instruction.
+- **Dark mode is checked for real contrast**, not just eyeballed — every color pairing is measured against accessibility contrast ratios rather than judged by how it looks on one screen.
 - **Storage is currently client-side.** Favorites, personal recipes, grocery lists and settings live in the browser's `localStorage`. That keeps the app free to run and login-free to use, with the known tradeoff that data doesn't sync across devices — a backend is the planned next step (see below).
 
 ## Stack
 
 | Layer | Choice |
 |---|---|
-| Frontend | Vanilla HTML / CSS / JavaScript — no framework |
+| Frontend | HTML, CSS, JavaScript |
 | AI | Claude Haiku via the Anthropic API |
 | Backend | One serverless function (`api/generate.js`) on Vercel |
 | Hosting | Vercel, auto-deployed from this repo |
@@ -68,15 +70,14 @@ mealody/
 ├── index.html          # The entire app: markup, styles, and logic
 ├── api/
 │   └── generate.js      # Serverless function — proxies requests to Anthropic
-└── docs/                # Product spec (source of truth for the Android/iOS builds)
+└── docs/                # Product spec and supporting docs
 ```
 
 ## What's next
 
 - **A real backend** for saved recipes and grocery lists — accounts, a Postgres database, and background sync — so data follows the user across devices instead of living in one browser.
-- **Native Android** (Kotlin + Jetpack Compose) and **iOS** (Swift + SwiftUI) companion apps, built from scratch using this web app as the design and feature reference.
 - Smaller ideas in progress: a remembered pantry, an installable offline-capable version (PWA), and a full step-by-step "cook mode."
 
 ## About this project
 
-Built by [Nusrath Fathima](https://nusrathfathima.com) as the flagship project in a job-search portfolio. A full write-up of the architecture, the tradeoffs, and the bugs I hit along the way lives in the case study linked from the portfolio site.
+I built Mealody to solve a problem I actually have — deciding what to cook with what's already around — and used it as a chance to get comfortable with the full stack of building and shipping a real AI-powered product: prompting and cost control, protecting a secret API key, designing for both light and dark mode, and making a hundred small UX calls that don't show up in a feature list but shape whether an app feels good to use. It's the centerpiece of my developer portfolio at [nusrathfathima.com](https://nusrathfathima.com), where I write in more depth about the decisions behind it.
